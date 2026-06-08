@@ -58,6 +58,24 @@ public class ClientItemShowController {
 		return "index";
 	}
 
+	@RequestMapping(path = "/client/item/list/{sortType}", method = { RequestMethod.GET, RequestMethod.POST })
+	public String sortString(Model model) {
+
+		/*TODO 現在は全件表示を行っている
+		 * これを売れ筋（注文回数が多い順）に改修する*/
+
+		// 注文情報の商品情報を全件表示
+		List<Item> itemList = itemRepository.findPopularItems();
+
+		// エンティティ内の検索結果をJavaBeansにコピー
+		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
+
+		// 商品情報をViewへ渡す
+		model.addAttribute("items", itemBeanList);
+
+		return "client/item/list";
+	}
+
 	/**
 	 * 詳細表示処理
 	 *
