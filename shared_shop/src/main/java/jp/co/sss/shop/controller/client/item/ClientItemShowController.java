@@ -35,7 +35,7 @@ public class ClientItemShowController {
 	BeanTools beanTools;
 
 	/**
-	 * トップ画面 表示処理
+	 * トップ画面  表示処理
 	 *
 	 * @param model    Viewとの値受渡し
 	 * @return "index" トップ画面

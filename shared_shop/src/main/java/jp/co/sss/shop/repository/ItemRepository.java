@@ -45,7 +45,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 */
 	public Item findByNameAndDeleteFlag(String name, int notDeleted);
 
-	//ClientItemShowController 売れ筋用
+	//ClientItemShowController  売れ筋用
 	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.deleteFlag=0 GROUP BY i ORDER BY COUNT(oi) DESC")
 	List<Item> findPopularItems();
 
