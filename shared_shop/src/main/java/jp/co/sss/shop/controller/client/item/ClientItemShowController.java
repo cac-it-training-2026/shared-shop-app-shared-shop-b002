@@ -47,7 +47,7 @@ public class ClientItemShowController {
 		 * これを売れ筋（注文回数が多い順）に改修する*/
 
 		// 注文情報の商品情報を全件表示
-		List<Item> itemList = itemRepository.findAll();
+		List<Item> itemList = itemRepository.findPopularItems();
 
 		// エンティティ内の検索結果をJavaBeansにコピー
 		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
