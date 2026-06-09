@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.entity.Item;
@@ -59,19 +60,28 @@ public class ClientItemShowController {
 	}
 
 	@RequestMapping(path = "/client/item/list/{sortType}", method = { RequestMethod.GET, RequestMethod.POST })
-	public String sortString(Model model) {
+	public String sort(@PathVariable Integer sortType,
+			@RequestParam(required = false) Integer categoryId,
+			Model model) {
 
-		/*TODO 現在は全件表示を行っている
-		 * これを売れ筋（注文回数が多い順）に改修する*/
+		List<Item> itemList;
 
-		// 注文情報の商品情報を全件表示
-		List<Item> itemList = itemRepository.findPopularItems();
+		// 1. sortTypeに応じてデータ取得メソッドを切り替える
+		if (sortType == 1) {
+			// 新着順
+			itemList = itemRepository.findByDeleteFlagOrderByInsertDateDesc(Constant.NOT_DELETED);
+		} else {
+			// 売れ筋順 (sortType 2)
+			itemList = itemRepository.findPopularItems();
+		}
 
-		// エンティティ内の検索結果をJavaBeansにコピー
+		// 2. エンティティをBeanに変換
 		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
 
-		// 商品情報をViewへ渡す
+		// 3. Viewに必要な情報を渡す
 		model.addAttribute("items", itemBeanList);
+		model.addAttribute("sortType", sortType); // これがHTMLの th:if で使われます
+		model.addAttribute("categoryId", categoryId); // カテゴリ情報を維持
 
 		return "client/item/list";
 	}
