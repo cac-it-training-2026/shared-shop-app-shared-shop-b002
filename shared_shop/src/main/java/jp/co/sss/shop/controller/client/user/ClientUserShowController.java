@@ -1,5 +1,6 @@
 package jp.co.sss.shop.controller.client.user;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +27,7 @@ public class ClientUserShowController {
 
 		UserBean userBean = new UserBean();
 
-		//		BeanUtils.copyProperties(user, userBean);
+		BeanUtils.copyProperties(user, userBean);
 
 		model.addAttribute("userBean", userBean);
 
