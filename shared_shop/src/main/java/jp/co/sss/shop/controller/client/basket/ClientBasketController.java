@@ -21,10 +21,12 @@ public class ClientBasketController {
 	@Autowired
 	private ItemRepository itemRepository;
 
-	@RequestMapping(path = "/client/basket/list", method = RequestMethod.POST)
+	@RequestMapping(path = "/client/basket/list", method = RequestMethod.GET)
 	public String showBasketlist(HttpSession session, Model model) {
+		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
+		model.addAttribute("basketBeans", basketBeans);
 
-		return "/client/basket/list";
+		return "client/basket/list";
 	}
 
 	@RequestMapping(path = "/client/basket/add", method = RequestMethod.POST)
@@ -79,9 +81,9 @@ public class ClientBasketController {
 		//リストへ追加
 		basketBeans.add(basketBean);
 		//セッションへ保存
-		session.setAttribute("basketList", basketBeans);
+		session.setAttribute("basketBeans", basketBeans);
 
-		return "redirect :/client/basket/list";
+		return "redirect:/client/basket/list";
 	}
 
 	@RequestMapping(path = "/client/basket/delete", method = RequestMethod.POST)
