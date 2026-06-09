@@ -52,16 +52,12 @@ public class ClientOrderRegistController {
 	public String inputAdress2(OrderForm form, Model model) {
 
 		form = (OrderForm) session.getAttribute("orderForm");
-		/*確認用*/
-		if (form == null) {
-			form = new OrderForm();
-		}
 		model.addAttribute("orderForm", form);
 
-		Object result = session.getAttribute("result");
+		BindingResult result = (BindingResult) session.getAttribute("result");
 
 		if (result != null) {
-			model.addAttribute("result", result);
+			model.addAttribute(BindingResult.MODEL_KEY_PREFIX + "orderForm", result);
 			session.removeAttribute("result");
 		}
 
