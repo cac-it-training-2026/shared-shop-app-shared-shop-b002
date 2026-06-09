@@ -21,14 +21,37 @@ public class ClientBasketController {
 	@Autowired
 	private ItemRepository itemRepository;
 
+	/**
+	 * 買い物かご一覧画面を表示する。
+	 * セッションから買い物かご情報を取得し、
+	 * リクエストスコープへ登録する。
+	 *
+	 * @param session セッション
+	 * @param model モデル
+	 * @return 買い物かご一覧画面
+	 */
 	@RequestMapping(path = "/client/basket/list", method = RequestMethod.GET)
 	public String showBasketlist(HttpSession session, Model model) {
+		//セッションから買い物かごを取得
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
+		//リクエストスコープへ登録
 		model.addAttribute("basketBeans", basketBeans);
 
 		return "client/basket/list";
 	}
 
+	/**
+	 * 商品を買い物かごへ追加する。
+	 * 未ログイン時はログイン画面へ遷移する。
+	 * 同一商品が既に存在する場合は数量を増やし、
+	 * 存在しない場合は新たに追加する。
+	 * 在庫不足・在庫切れの場合はエラーメッセージを表示する。
+	 *
+	 * @param form 注文情報
+	 * @param session セッション
+	 * @param model モデル
+	 * @return 買い物かご一覧画面
+	 */
 	@RequestMapping(path = "/client/basket/add", method = RequestMethod.POST)
 	public String addBasket(@ModelAttribute OrderForm form, HttpSession session, Model model) {
 
@@ -43,13 +66,13 @@ public class ClientBasketController {
 			basketBeans = new ArrayList<>();
 		}
 		//メッセージの表示用
-		List<String> itemNameListZero = new ArrayList<>(); //在庫なし
+		List<String> itemNameListZero = new ArrayList<>(); //在庫切れ
 		List<String> itemNameListLessThan = new ArrayList<>(); //在庫不足
 
 		//同じ商品があるか確認(拡張for文)
 		for (BasketBean basket : basketBeans) {
 			if (basket.getId().equals(form.getId())) {
-				//在庫なし
+				//在庫切れ
 				if (basket.getStock().equals(0)) {
 					itemNameListZero.add(basket.getName());
 					model.addAttribute("itemNameListZero", itemNameListZero);
@@ -90,16 +113,40 @@ public class ClientBasketController {
 		return "redirect:/client/basket/list";
 	}
 
+	/**
+	 * 買い物かごから指定商品を削除する。
+	 * 商品IDをもとに買い物かご内の商品を削除し、
+	 * 買い物かご一覧画面へ遷移する。
+	 *
+	 * @param form 注文情報
+	 * @param session セッション
+	 * @return 買い物かご一覧画面
+	 */
 	@RequestMapping(path = "/client/basket/delete", method = RequestMethod.POST)
 	public String deleteBasket(@ModelAttribute OrderForm form, HttpSession session) {
+		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
 
-		return "redirect:/client/basket/list ";
+		if (basketBeans != null) {
+			basketBeans.removeIf(
+					basket -> basket.getId().equals(form.getId()));
+		}
+
+		session.setAttribute("basketBeans", basketBeans);
+		return "redirect:/client/basket/list";
 	}
 
-	@RequestMapping(path = "/basket/allDelete", method = RequestMethod.POST)
+	/**
+	 * 買い物かごを空にする。
+	 * セッションに保存されている買い物かご情報を削除し、
+	 * 買い物かご一覧画面へ遷移する。
+	 *
+	 * @param session セッション
+	 * @return 買い物かご一覧画面
+	 */
+	@RequestMapping(path = "/client/basket/allDelete", method = RequestMethod.POST)
 	public String alldeleteBasket(HttpSession session) {
-
-		return "redirect: /client/basket/list";
+		session.removeAttribute("basketBeans");
+		return "redirect:/client/basket/list";
 	}
 
 }
