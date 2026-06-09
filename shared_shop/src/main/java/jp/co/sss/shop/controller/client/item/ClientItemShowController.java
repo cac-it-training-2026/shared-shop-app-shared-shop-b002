@@ -1,7 +1,5 @@
 package jp.co.sss.shop.controller.client.item;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
