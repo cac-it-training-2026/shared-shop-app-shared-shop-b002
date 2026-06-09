@@ -1,16 +1,18 @@
 package jp.co.sss.shop.controller.client.user;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
+import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.util.Constant;
 
 @Controller
 public class ClientUserDeleteController {
@@ -27,16 +29,24 @@ public class ClientUserDeleteController {
 	@Autowired
 	HttpSession session;
 
-	@RequestMapping(path = "/client/user/delete/check/{id}", method = RequestMethod.POST)
-	public String deleteCheckString(@PathVariable Integer id) {
-		User user = userRepository.findByIdAndDeleteFlag(id, 1);
-		if (user == null) {
+	@RequestMapping(path = "/client/user/delete/check", method = RequestMethod.POST)
 
+	public String deleteUsercheck() {
+
+		//セッションからログインユーザーを取得
+		UserBean loginUser = (UserBean) session.getAttribute("user");
+
+		if (loginUser == null) {
+			return "redirect:/syserror";
+		}
+		//DBから最新情報取得
+		User user = userRepository.findByIdAndDeleteFlag(loginUser.getId(), Constant.NOT_DELETED);
+
+		if (user == null) {
 			return "redirect:/syserror";
 		}
 		UserForm form = new UserForm();
-		form.setId(user.getId());
-		form.setName(user.getName());
+		BeanUtils.copyProperties(user, form);
 
 		//セッションに保存
 		session.setAttribute("userForm", form);
@@ -44,42 +54,48 @@ public class ClientUserDeleteController {
 		return "redirect:/client/user/delete/check";
 	}
 
-	//削除確認画面表示
+	//退会確認画面表示
 	@RequestMapping(path = "/client/user/delete/check", method = RequestMethod.GET)
-	public String updatedelete(Model model) {
+	public String updatedeleteUser(Model model) {
 
-		UserForm userForm = (UserForm) session.getAttribute("userForm");
+		UserForm form = (UserForm) session.getAttribute("userForm");
 
-		if (userForm == null) {
+		if (form == null) {
 			return "redirect:/syserror";
 		}
-		model.addAttribute("userForm", userForm);
-		return "/client/user/delete_check";
+		model.addAttribute("userForm", form);
+
+		return "client/user/delete_check";
 	}
 
-	//退会
+	//退会実行
 	@RequestMapping(path = "/client/user/delete/complete", method = RequestMethod.POST)
-	public String deleteComplete(HttpSession session) {
+	public String deleteUsercomplete() {
 		UserForm form = (UserForm) session.getAttribute("userForm");
 		if (form == null) {
 
 			return "redirect:/syserror";
 		}
 		//DBから取得
-		User user = userRepository.findByIdAndDeleteFlag(form.getId(), 1);
+		User user = userRepository.findByIdAndDeleteFlag(form.getId(), Constant.NOT_DELETED);
+		if (user == null) {
+			return "redirect:/syserror";
+		}
 
-		user.setDeleteFlag(0);
+		//論理削除
+		user.setDeleteFlag(Constant.DELETED);
+
+		//DB更新
 		userRepository.save(user);
 
-		session.removeAttribute("userForm");
-
 		session.invalidate();
-		return "redirect:user/delete/complete";
+		return "redirect:/client/user/delete/complete";
+
 	}
 
 	//退会完了画面
-	@RequestMapping(path = "/user/delete/complete", method = RequestMethod.GET)
-	public String deleteComplet() {
-		return "/client/user/delete_complete";
+	@RequestMapping(path = "/client/user/delete/complete", method = RequestMethod.GET)
+	public String deleteUsercomplet() {
+		return "client/user/delete_complete";
 	}
 }
