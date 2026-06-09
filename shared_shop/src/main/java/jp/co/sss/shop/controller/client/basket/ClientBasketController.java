@@ -124,13 +124,24 @@ public class ClientBasketController {
 	 */
 	@RequestMapping(path = "/client/basket/delete", method = RequestMethod.POST)
 	public String deleteBasket(@ModelAttribute OrderForm form, HttpSession session) {
+
+		//セッションから買い物かごを取得
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
-
+		//削除候補リストの作成
+		List<BasketBean> removeList = new ArrayList<>();
+		//拡張for文で買い物かごの中身を１つずつチェック
 		if (basketBeans != null) {
-			basketBeans.removeIf(
-					basket -> basket.getId().equals(form.getId()));
+			//拡張for文で買い物かごの中身を１つずつチェック
+			for (BasketBean basket : basketBeans) {
+				//削除したい商品IDと一致した商品を削除候補リストに追加
+				if (basket.getId().equals(form.getId())) {
+					removeList.add(basket);
+					break;
+				}
+			}
+			//ループ終了後にまとめて削除(安全)
+			basketBeans.removeAll(removeList);
 		}
-
 		session.setAttribute("basketBeans", basketBeans);
 		return "redirect:/client/basket/list";
 	}
