@@ -32,6 +32,10 @@ public class ClientBasketController {
 	@RequestMapping(path = "/client/basket/add", method = RequestMethod.POST)
 	public String addBasket(@ModelAttribute OrderForm form, HttpSession session, Model model) {
 
+		// ログインしていない場合
+		if (session.getAttribute("user") == null) {
+			return "redirect:/login";
+		}
 		//セッションから買い物かごを取得
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
 		//リストがnullならリストを生成する
@@ -39,22 +43,22 @@ public class ClientBasketController {
 			basketBeans = new ArrayList<>();
 		}
 		//メッセージの表示用
-		List<String> itemNameListLessThan = new ArrayList<>(); //在庫不足
 		List<String> itemNameListZero = new ArrayList<>(); //在庫なし
+		List<String> itemNameListLessThan = new ArrayList<>(); //在庫不足
 
 		//同じ商品があるか確認(拡張for文)
 		for (BasketBean basket : basketBeans) {
 			if (basket.getId().equals(form.getId())) {
+				//在庫なし
+				if (basket.getStock().equals(0)) {
+					itemNameListZero.add(basket.getName());
+					model.addAttribute("itemNameListZero", itemNameListZero);
+					return "client/basket/list";
+				}
 				//在庫不足
 				if (basket.getStock().equals(basket.getOrderNum())) {
 					itemNameListLessThan.add(basket.getName());
 					model.addAttribute("itemNameListLessThan", itemNameListLessThan);
-					return "client/basket/list";
-				}
-				//在庫なし
-				if (basket.getStock() == 0) {
-					itemNameListZero.add(basket.getName());
-					model.addAttribute("itemNameListZero", itemNameListZero);
 					return "client/basket/list";
 				}
 
