@@ -36,7 +36,7 @@
 		<form th:action="@{/client/user/delete/complete}"  method="post" class="user_info_form">
 			<input type="submit" value="退会" class="send_button delete" />
 		</form>
-		<form th:action="@{/client/user/detail}" method="post">
+		<form th:action="@{/client/user/detail}" method="get"> //postとgetの変更
 			<input type="submit" value="戻る" class="back_button" />
 		</form>
 	</div>
