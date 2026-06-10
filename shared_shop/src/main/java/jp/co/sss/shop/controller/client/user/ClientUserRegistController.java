@@ -109,8 +109,8 @@ public class ClientUserRegistController {
 		user.setPostalCode(form.getPostalCode());
 		user.setAddress(form.getAddress());
 		user.setPhoneNumber(form.getPhoneNumber());
+		user.setAuthority(2);//DB登録
 
-		//DB登録
 		repository.save(user); // リポジトリを使って保存
 
 		//セッションスコープの入力フォーム情報削除
