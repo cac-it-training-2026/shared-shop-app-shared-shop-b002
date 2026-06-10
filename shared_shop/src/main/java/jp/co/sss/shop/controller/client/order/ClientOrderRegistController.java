@@ -35,6 +35,7 @@ public class ClientOrderRegistController {
 	@Autowired
 	HttpSession session;
 
+	//ご注文のお手続きボタン 押下時処理
 	@RequestMapping(path = "/client/order/address/input", method = RequestMethod.POST)
 	public String inputAddress(@ModelAttribute OrderForm form) {
 		UserBean loginUser = (UserBean) session.getAttribute("user");
@@ -59,6 +60,7 @@ public class ClientOrderRegistController {
 		return "redirect:/client/order/address/input";
 	}
 
+	//届け先入力画面表示処理
 	@RequestMapping(path = "/client/order/address/input", method = RequestMethod.GET)
 	public String inputAdressView(OrderForm form, Model model) {
 
@@ -75,6 +77,7 @@ public class ClientOrderRegistController {
 		return "client/order/address_input";
 	}
 
+	//届け先入力画面 次へボタン 押下時処理
 	@RequestMapping(path = "/client/order/payment/input", method = RequestMethod.POST)
 	public String errorCheck(@Valid @ModelAttribute OrderForm form, BindingResult result) {
 
@@ -90,6 +93,7 @@ public class ClientOrderRegistController {
 		return "redirect:/client/order/payment/input";
 	}
 
+	//支払方法選択画面表示処理
 	@RequestMapping(path = "/client/order/payment/input", method = RequestMethod.GET)
 	public String inputPayment(Model model) {
 		OrderForm form = (OrderForm) session.getAttribute("orderForm");
@@ -99,6 +103,7 @@ public class ClientOrderRegistController {
 		return "client/order/payment_input";
 	}
 
+	//支払方法選択画面 次へボタン 押下時処理
 	@RequestMapping(path = "/client/order/check", method = RequestMethod.POST)
 	public String pushNext(@ModelAttribute OrderForm form) {
 		OrderForm sessionform = (OrderForm) session.getAttribute("orderForm");
@@ -109,6 +114,7 @@ public class ClientOrderRegistController {
 		return "redirect:/client/order/check";
 	}
 
+	//注文確認画面表示処理
 	@RequestMapping(path = "/client/order/check", method = RequestMethod.GET)
 	public String checkOrder(Model model) {
 
@@ -177,10 +183,17 @@ public class ClientOrderRegistController {
 		}
 
 		//各種情報をリクエストスコープ（Model）に設定
-		model.addAttribute("total", totalAmount); // 合計金額
-		model.addAttribute("orderForm", form); // 注文入力フォーム情報
+		model.addAttribute("total", totalAmount); //合計金額
+		model.addAttribute("orderForm", form); //注文入力フォーム情報
 
 		return "client/order/check";
+	}
+
+	//注文確認画面で、戻るボタン押下処理
+	@RequestMapping(path = "/client/order/payment/back", method = RequestMethod.POST)
+	public String backPayment() {
+
+		return "redirect:/client/order/address/input";
 	}
 
 }
