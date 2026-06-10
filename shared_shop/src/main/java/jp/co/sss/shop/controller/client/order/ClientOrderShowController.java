@@ -69,8 +69,13 @@ public class ClientOrderShowController {
 		//表示画面でページングが必要なため、ページ情報付きの検索を行う
 		Page<Order> orderList = orderRepository.findByUserIdOrderByInsertDateDescIdDesc(loginUser.getId(), pageable);
 
-		// 注文情報リストを生成
+		// 注文0件の場合
+		if (orderList.isEmpty()) {
+			return "client/order/list";
+		}
+
 		List<OrderBean> orderBeanList = new ArrayList<>();
+		// 注文情報リストを生成
 		for (Order order : orderList) {
 			OrderBean orderBean = beanTools.copyEntityToOrderBean(order);
 			//orderレコードから紐づくOrderItemのListを取り出す
@@ -84,7 +89,6 @@ public class ClientOrderShowController {
 		//注文情報リストをVIEWへ渡す
 		model.addAttribute("pages", orderList);
 		model.addAttribute("orders", orderBeanList);
-
 		return "client/order/list";
 
 	}
