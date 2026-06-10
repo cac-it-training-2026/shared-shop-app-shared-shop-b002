@@ -1,5 +1,10 @@
 package jp.co.sss.shop.controller.client.order;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.bean.UserBean;
+import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.OrderForm;
+import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.repository.UserRepository;
 
 @Controller
@@ -22,10 +30,13 @@ public class ClientOrderRegistController {
 	UserRepository userRepository;
 
 	@Autowired
+	private ItemRepository itemRepository;
+
+	@Autowired
 	HttpSession session;
 
 	@RequestMapping(path = "/client/order/address/input", method = RequestMethod.POST)
-	public String inputAddress(@ModelAttribute OrderForm form, HttpSession session) {
+	public String inputAddress(@ModelAttribute OrderForm form) {
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 
 		// セッションが切れていた場合はログイン画面へ戻す
@@ -49,7 +60,7 @@ public class ClientOrderRegistController {
 	}
 
 	@RequestMapping(path = "/client/order/address/input", method = RequestMethod.GET)
-	public String inputAdress2(OrderForm form, Model model) {
+	public String inputAdressView(OrderForm form, Model model) {
 
 		form = (OrderForm) session.getAttribute("orderForm");
 		model.addAttribute("orderForm", form);
@@ -80,12 +91,96 @@ public class ClientOrderRegistController {
 	}
 
 	@RequestMapping(path = "/client/order/payment/input", method = RequestMethod.GET)
-	public String inputPayment(Model model, OrderForm form) {
-		form = (OrderForm) session.getAttribute("orderForm");
+	public String inputPayment(Model model) {
+		OrderForm form = (OrderForm) session.getAttribute("orderForm");
 
 		model.addAttribute("orderForm", form);
 
 		return "client/order/payment_input";
+	}
+
+	@RequestMapping(path = "/client/order/check", method = RequestMethod.POST)
+	public String pushNext(@ModelAttribute OrderForm form) {
+		OrderForm sessionform = (OrderForm) session.getAttribute("orderForm");
+
+		sessionform.setPayMethod(form.getPayMethod());
+		session.setAttribute("orderForm", sessionform);
+
+		return "redirect:/client/order/check";
+	}
+
+	@RequestMapping(path = "/client/order/check", method = RequestMethod.GET)
+	public String checkOrder(Model model) {
+
+		//セッションスコープから注文情報を取得
+		OrderForm form = (OrderForm) session.getAttribute("orderForm");
+
+		//セッションスコープから買い物かご情報を取得
+		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
+		int totalAmount = 0;//合計金額用
+
+		List<BasketBean> updatedBasketBeans = new ArrayList<>();
+		List<String> itemNameListLessThan = new ArrayList<>();
+		List<String> itemNameListZero = new ArrayList<>();
+		List<Map<String, Object>> displayItems = new ArrayList<>();
+
+		if (basketBeans != null) {
+			for (BasketBean basket : basketBeans) {
+				//注文商品の最新情報をDBから取得し、商品の在庫チェックを行う
+				Item dbItem = itemRepository.findByIdAndDeleteFlag(basket.getId(), 0);
+
+				//①商品が存在しない、または在庫切れの場合
+				if (dbItem == null || dbItem.getStock() == 0) {
+					itemNameListZero.add(basket.getName());
+					continue;
+				}
+				//②在庫不足の場合：注文数を在庫数と同じにする
+				if (basket.getOrderNum() > dbItem.getStock()) {
+					itemNameListLessThan.add(basket.getName());
+					basket.setOrderNum(dbItem.getStock());
+				}
+
+				//在庫数を最新の状態に更新
+				basket.setStock(dbItem.getStock());
+				updatedBasketBeans.add(basket);
+				//買い物かご情報から、商品ごとの金額小計を算出し、注文商品情報リストに保存
+				int subTotal = dbItem.getPrice() * basket.getOrderNum();
+				totalAmount += subTotal;
+
+				//注文商品情報リスト（Mapのリスト）にデータを格納
+				Map<String, Object> orderItemMap = new HashMap<>();
+				orderItemMap.put("name", dbItem.getName());
+				orderItemMap.put("image", dbItem.getImage());
+				orderItemMap.put("price", dbItem.getPrice());
+				orderItemMap.put("orderNum", basket.getOrderNum());
+				orderItemMap.put("subtotal", subTotal);
+
+				displayItems.add(orderItemMap);
+			}
+		}
+		//在庫状況を反映した買い物かご情報をセッションに保存
+		session.setAttribute("basketBeans", updatedBasketBeans);
+
+		//在庫不足、在庫切れがあった場合の警告メッセージ
+		if (!itemNameListLessThan.isEmpty()) {
+			model.addAttribute("itemNameListLessThan", itemNameListLessThan);
+		}
+		if (!itemNameListZero.isEmpty()) {
+			model.addAttribute("itemNameListZero", itemNameListZero);
+		}
+
+		//注文商品情報リストをリクエストスコープに設定
+		if (updatedBasketBeans != null && !updatedBasketBeans.isEmpty()) {
+			model.addAttribute("orderItemBeans", displayItems);
+		} else {
+			model.addAttribute("orderItemBeans", null);
+		}
+
+		//各種情報をリクエストスコープ（Model）に設定
+		model.addAttribute("total", totalAmount); // 合計金額
+		model.addAttribute("orderForm", form); // 注文入力フォーム情報
+
+		return "client/order/check";
 	}
 
 }
