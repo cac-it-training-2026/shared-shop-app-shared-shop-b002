@@ -63,11 +63,11 @@ public class ClientOrderShowController {
 		//ログインユーザー取得
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 		if (loginUser == null) {
-			return "redirect:/syserror";
+			return "redirect:/client/login";
 		}
 		// すべての注文情報を取得(注文日降順)
 		//表示画面でページングが必要なため、ページ情報付きの検索を行う
-		Page<Order> orderList = orderRepository.findAllOrderByInsertdateDescIdDesc(pageable);
+		Page<Order> orderList = orderRepository.findByUserIdOrderByInsertDateDescIdDesc(loginUser.getId(), pageable);
 
 		// 注文情報リストを生成
 		List<OrderBean> orderBeanList = new ArrayList<>();
