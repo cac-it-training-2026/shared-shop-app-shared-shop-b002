@@ -142,7 +142,7 @@ public class ClientBasketController {
 			//ループ終了後にまとめて削除(安全)
 			basketBeans.removeAll(removeList);
 
-			//買い物かごが空になったらセッションから削除
+			//セッションから削除
 			if (basketBeans.isEmpty()) {
 				session.removeAttribute("basketBeans");
 			} else {
