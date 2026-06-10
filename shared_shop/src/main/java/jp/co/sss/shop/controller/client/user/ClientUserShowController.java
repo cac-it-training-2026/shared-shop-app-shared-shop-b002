@@ -42,7 +42,7 @@ public class ClientUserShowController {
 		return "client/user/detail";
 	}
 
-	@RequestMapping(path = "/client/user/update/input", method = RequestMethod.POST)
+	@RequestMapping(path = "/client/user/update/input") //method = RequestMethod.GET//
 	public String updateUserInput(HttpSession session, Model model) {
 
 		UserBean loginUser = (UserBean) session.getAttribute("user");
