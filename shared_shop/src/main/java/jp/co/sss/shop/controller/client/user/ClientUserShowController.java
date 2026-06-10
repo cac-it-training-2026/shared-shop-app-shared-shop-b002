@@ -24,11 +24,18 @@ public class ClientUserShowController {
 
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 
-		User user = userRepository.findByEmail(loginUser.getEmail());
+		if (loginUser == null) {
+
+			return "redirect:/";
+		}
+
+		User user = userRepository.findById(loginUser.getId()).orElse(null);
 
 		UserBean userBean = new UserBean();
+		if (user != null) {
+			BeanUtils.copyProperties(user, userBean);
 
-		BeanUtils.copyProperties(user, userBean);
+		}
 
 		model.addAttribute("userBean", userBean);
 
@@ -40,11 +47,12 @@ public class ClientUserShowController {
 
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 
-		User user = userRepository.findByEmail(loginUser.getEmail());
+		User user = userRepository.findById(loginUser.getId()).orElse(null);
 
 		UserForm userForm = new UserForm();
-
-		BeanUtils.copyProperties(user, userForm);
+		if (user != null) {
+			BeanUtils.copyProperties(user, userForm);
+		}
 
 		model.addAttribute("userForm", userForm);
 
