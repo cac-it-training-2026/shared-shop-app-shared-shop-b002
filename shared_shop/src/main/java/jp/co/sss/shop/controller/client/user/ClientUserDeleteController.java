@@ -68,6 +68,17 @@ public class ClientUserDeleteController {
 		return "client/user/delete_check";
 	}
 
+	@RequestMapping(path = "/client/user/detail", method = RequestMethod.POST)
+	public String backToUserDetailPost() {
+	    // そのまま詳細画面へ戻す（必要ならセッションチェック）
+	    UserBean loginUser = (UserBean) session.getAttribute("user");
+
+	    if (loginUser == null) {
+	        return "redirect:/syserror";
+	    }
+
+	    return "redirect:/client/user/detail";
+	}
 	//退会実行
 	@RequestMapping(path = "/client/user/delete/complete", method = RequestMethod.POST)
 	public String deleteUsercomplete() {
