@@ -18,9 +18,13 @@ import jakarta.validation.Valid;
 import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.Item;
+import jp.co.sss.shop.entity.Order;
+import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.OrderForm;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.OrderItemRepository;
+import jp.co.sss.shop.repository.OrderRepository;
 import jp.co.sss.shop.repository.UserRepository;
 
 @Controller
@@ -30,7 +34,13 @@ public class ClientOrderRegistController {
 	UserRepository userRepository;
 
 	@Autowired
-	private ItemRepository itemRepository;
+	ItemRepository itemRepository;
+
+	@Autowired
+	OrderRepository orderRepository;
+
+	@Autowired
+	OrderItemRepository orderItemRepository;
 
 	@Autowired
 	HttpSession session;
@@ -99,6 +109,10 @@ public class ClientOrderRegistController {
 		OrderForm form = (OrderForm) session.getAttribute("orderForm");
 
 		model.addAttribute("orderForm", form);
+		//初期値をクレジットカードに設定
+		if (form != null) {
+			model.addAttribute("payMethod", form.getPayMethod());
+		}
 
 		return "client/order/payment_input";
 	}
@@ -194,6 +208,84 @@ public class ClientOrderRegistController {
 	public String backPayment() {
 
 		return "redirect:/client/order/address/input";
+	}
+
+	//ご注文の確定ボタン 押下時処理
+	@RequestMapping(path = "/client/order/complete", method = RequestMethod.POST)
+	public String pushFinal() {
+		//セッションスコープから注文情報を取得
+		OrderForm form = (OrderForm) session.getAttribute("orderForm");
+
+		//セッションスコープから買い物かご情報を取得
+		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
+
+		//ログインユーザー情報取得
+		UserBean userBean = (UserBean) session.getAttribute("user");
+
+		//注文の在庫チェック
+		for (BasketBean basket : basketBeans) {
+			//注文商品の最新情報をDBから取得し、商品の在庫チェックを行う
+			Item dbItem = itemRepository.findByIdAndDeleteFlag(basket.getId(), 0);
+
+			//①商品が存在しない、または在庫切れの場合
+			if (dbItem == null || dbItem.getStock() == 0 || basket.getOrderNum() > dbItem.getStock()) {
+				//注文確認画面へリダイレクト
+				return "redirect:/client/order/check";
+
+			}
+		}
+		//注文情報情報を元にDB登録用エンティティオブジェクトを生成
+		Order order = new Order();
+
+		// グインしているユーザーのエンティティを生成してセット
+		User user = userRepository.findById(userBean.getId()).orElse(null);
+		order.setUser(user);
+
+		//フォームから住所などの情報を移し替える
+		order.setPostalCode(form.getPostalCode());
+		order.setAddress(form.getAddress());
+		order.setName(form.getName());
+		order.setPhoneNumber(form.getPhoneNumber());
+		order.setPayMethod(form.getPayMethod());
+
+		//注文テーブルのDB登録実施
+		Order savedOrder = orderRepository.save(order);
+
+		//注文商品テーブルのDB登録実施
+		for (BasketBean basket : basketBeans) {
+			//DBから最新の商品情報を再度取得
+			Item dbItem = itemRepository.findByIdAndDeleteFlag(basket.getId(), 0);
+
+			//注文商品（明細）エンティティの生成
+			OrderItem orderItem = new OrderItem();
+			orderItem.setOrder(savedOrder);
+			orderItem.setItem(dbItem);
+
+			orderItem.setQuantity(basket.getOrderNum());
+
+			orderItem.setPrice(dbItem.getPrice());
+
+			//注文商品テーブルのDB登録実施
+			orderItemRepository.save(orderItem);
+
+			//在庫数の引き算処理（DBの在庫を実際に減らす）
+			int newStock = dbItem.getStock() - basket.getOrderNum();
+			dbItem.setStock(newStock);
+			itemRepository.save(dbItem);
+		}
+
+		//セッションスコープの注文入力フォーム情報と買い物かご情報を削除
+		session.removeAttribute("orderForm");
+		session.removeAttribute("basketBeans");
+
+		return "redirect:/client/order/complete";
+	}
+
+	//注文完了画面表示処理
+	@RequestMapping(path = "/client/order/complete", method = RequestMethod.GET)
+	public String completeOrder() {
+
+		return "client/order/complete";
 	}
 
 }
