@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jp.co.sss.shop.form.UserForm;
 
@@ -23,6 +24,13 @@ public class ClientUserUpdateController {
 		}
 
 		return "client/user/update_check";
+
+	}
+
+	@RequestMapping(path = "/client/user/update/complete", method = RequestMethod.POST)
+	public String updateUserComplete(@ModelAttribute UserForm form, HttpSession session) {
+
+		return "client/user/update_complete";
 
 	}
 
