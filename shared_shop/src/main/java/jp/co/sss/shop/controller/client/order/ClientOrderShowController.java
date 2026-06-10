@@ -26,7 +26,7 @@ import jp.co.sss.shop.service.PriceCalc;
 public class ClientOrderShowController {
 
 	/**
-	 * 注文情報 あああ
+	 * 注文情報 aiueo
 	 */
 	@Autowired
 	OrderRepository orderRepository;
