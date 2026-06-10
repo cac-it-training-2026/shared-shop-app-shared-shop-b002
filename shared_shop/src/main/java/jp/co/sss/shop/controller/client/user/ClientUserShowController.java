@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
+import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
 
 @Controller
@@ -34,4 +35,19 @@ public class ClientUserShowController {
 		return "client/user/detail";
 	}
 
+	@RequestMapping(path = "/client/user/update/input", method = RequestMethod.POST)
+	public String updateInput(HttpSession session, Model model) {
+
+		UserBean loginUser = (UserBean) session.getAttribute("user");
+
+		User user = userRepository.findByEmail(loginUser.getEmail());
+
+		UserForm userForm = new UserForm();
+
+		BeanUtils.copyProperties(user, userForm);
+
+		model.addAttribute("userForm", userForm);
+
+		return "client/user/update_input";
+	}
 }
