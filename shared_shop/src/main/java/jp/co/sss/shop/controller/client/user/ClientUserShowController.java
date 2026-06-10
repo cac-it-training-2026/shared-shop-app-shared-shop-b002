@@ -29,6 +29,8 @@ public class ClientUserShowController {
 			return "redirect:/";
 		}
 
+		session.removeAttribute("userForm");
+
 		User user = userRepository.findById(loginUser.getId()).orElse(null);
 
 		UserBean userBean = new UserBean();
@@ -42,19 +44,32 @@ public class ClientUserShowController {
 		return "client/user/detail";
 	}
 
-	@RequestMapping(path = "/client/user/update/input") //method = RequestMethod.GET//
+	@RequestMapping(path = "/client/user/update/input")
 	public String updateUserInput(HttpSession session, Model model) {
 
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 
-		User user = userRepository.findById(loginUser.getId()).orElse(null);
+		if (loginUser == null) {
+			return "redirect:/";
+		}
 
-		UserForm userForm = new UserForm();
-		if (user != null) {
-			BeanUtils.copyProperties(user, userForm);
+		UserForm userForm = (UserForm) session.getAttribute("userForm");
+
+		if (userForm == null) {
+			User user = userRepository.findById(loginUser.getId()).orElse(null);
+			userForm = new UserForm();
+			if (user != null) {
+				BeanUtils.copyProperties(user, userForm);
+			}
 		}
 
 		model.addAttribute("userForm", userForm);
+
+		String errorKey = "org.springframework.validation.BindingResult.userForm";
+		if (session.getAttribute(errorKey) != null) {
+			model.addAttribute(errorKey, session.getAttribute(errorKey));
+			session.removeAttribute(errorKey);
+		}
 
 		return "client/user/update_input";
 	}

@@ -29,6 +29,8 @@ public class ClientUserUpdateController {
 
 		if (result.hasErrors()) {
 
+			session.setAttribute("org.springframework.validation.BindingResult.userForm", result);
+
 			return "redirect:/client/user/update/input";
 		}
 
