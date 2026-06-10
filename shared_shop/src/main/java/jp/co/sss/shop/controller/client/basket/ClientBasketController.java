@@ -162,6 +162,7 @@ public class ClientBasketController {
 	 */
 	@RequestMapping(path = "/client/basket/allDelete", method = RequestMethod.POST)
 	public String alldeleteBasket(HttpSession session) {
+		//セッションから削除
 		session.removeAttribute("basketBeans");
 		return "redirect:/client/basket/list";
 	}
