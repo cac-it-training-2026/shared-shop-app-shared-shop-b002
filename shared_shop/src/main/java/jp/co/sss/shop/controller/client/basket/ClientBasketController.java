@@ -25,6 +25,8 @@ public class ClientBasketController {
 	 * 買い物かご一覧画面を表示する。
 	 * セッションから買い物かご情報を取得し、
 	 * リクエストスコープへ登録する。
+	 * 在庫切れの場合は
+	 * エラーメッセージを表示する。
 	 *
 	 * @param session セッション
 	 * @param model モデル
@@ -34,7 +36,27 @@ public class ClientBasketController {
 	public String showBasketlist(HttpSession session, Model model) {
 		//セッションから買い物かごを取得
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
+		//在庫切れメッセージ表示用
+		List<String> itemNameListZero = new ArrayList<>();
+		//買い物かごがあるか確認
+		if (basketBeans != null) {
+			//拡張for文でかご内の商品を1つずつ確認
+			for (BasketBean basket : basketBeans) {
+				//商品IDでDBから最新の情報を取得
+				Item item = itemRepository.findByIdAndDeleteFlag(basket.getId(), 0);
+				//商品が見つからなかった場合
+				if (item == null) {
+					continue;
+				}
+				//在庫切れ
+				if (item.getStock().equals(0)) {
+					itemNameListZero.add(item.getName());
+				}
+			}
+		}
+
 		//リクエストスコープへ登録
+		model.addAttribute("itemNameListZero", itemNameListZero);
 		model.addAttribute("basketBeans", basketBeans);
 
 		return "client/basket/list";
@@ -45,7 +67,8 @@ public class ClientBasketController {
 	 * 未ログイン時はログイン画面へ遷移する。
 	 * 同一商品が既に存在する場合は数量を増やし、
 	 * 存在しない場合は新たに追加する。
-	 * 在庫不足・在庫切れの場合はエラーメッセージを表示する。
+	 * 在庫不足の場合は
+	 * エラーメッセージを表示する。
 	 *
 	 * @param form 注文情報
 	 * @param session セッション
@@ -65,41 +88,28 @@ public class ClientBasketController {
 		if (basketBeans == null) {
 			basketBeans = new ArrayList<>();
 		}
-		//メッセージの表示用
-		List<String> itemNameListZero = new ArrayList<>(); //在庫切れ
-		List<String> itemNameListLessThan = new ArrayList<>(); //在庫不足
-
+		//在庫不足メッセージ表示用
+		List<String> itemNameListLessThan = new ArrayList<>();
 		//同じ商品があるか確認(拡張for文)
 		for (BasketBean basket : basketBeans) {
 			if (basket.getId().equals(form.getId())) {
-				//在庫切れ
-				if (basket.getStock().equals(0)) {
-					itemNameListZero.add(basket.getName());
-					model.addAttribute("itemNameListZero", itemNameListZero);
-					return "client/basket/list";
-				}
 				//在庫不足
-				if (basket.getStock().equals(basket.getOrderNum())) {
+				if (basket.getStock() <= (basket.getOrderNum())) {
 					itemNameListLessThan.add(basket.getName());
+					model.addAttribute("basketBeans", basketBeans);
 					model.addAttribute("itemNameListLessThan", itemNameListLessThan);
 					return "client/basket/list";
 				}
-
 				//同じ商品は個数を増加
 				basket.setOrderNum(basket.getOrderNum() + 1);
 				session.setAttribute("basketBeans", basketBeans);
 				return "redirect:/client/basket/list";
 			}
 		}
+		//主キー検索で商品を取得
+		Item item = itemRepository.findByIdAndDeleteFlag(form.getId(), 0);
 		//BasketBeanオブジェクト生成
 		BasketBean basketBean = new BasketBean();
-
-		//主キー検索
-		Item item = itemRepository.findByIdAndDeleteFlag(form.getId(), 0);
-		if (item == null) {
-			return "redirect:/client/item/list/newest";
-		}
-
 		//Item→BasketBean
 		basketBean.setId(item.getId());
 		basketBean.setName(item.getName());
