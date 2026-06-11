@@ -30,18 +30,34 @@ import jp.co.sss.shop.repository.UserRepository;
 @Controller
 public class ClientOrderRegistController {
 
+	/**
+	 * ユーザー情報を操作するリポジトリ
+	 */
 	@Autowired
 	UserRepository userRepository;
 
+	/**
+	 * 商品情報を操作するリポジトリ
+	 */
 	@Autowired
 	ItemRepository itemRepository;
 
+	/**
+	 * 注文情報を操作するリポジトリ
+	 */
 	@Autowired
 	OrderRepository orderRepository;
 
+	/**
+	 * 注文商品の明細情報を操作するリポジトリ
+	 */
 	@Autowired
 	OrderItemRepository orderItemRepository;
 
+	/**
+	 * セッション情報を管理するオブジェクト
+	 * ログインユーザー情報などの保持に使用する
+	 */
 	@Autowired
 	HttpSession session;
 
@@ -101,6 +117,14 @@ public class ClientOrderRegistController {
 		}
 		//支払方法選択画面表示処理にリダイレクト
 		return "redirect:/client/order/payment/input";
+	}
+
+	//届け先入力画面 戻るボタン 押下時処理
+	@RequestMapping(path = "/client/basket/list", method = RequestMethod.POST)
+	public String backToBasket() {
+
+		// 買い物かご画面（表示処理）へリダイレクトする
+		return "redirect:/client/basket/list";
 	}
 
 	//支払方法選択画面表示処理
