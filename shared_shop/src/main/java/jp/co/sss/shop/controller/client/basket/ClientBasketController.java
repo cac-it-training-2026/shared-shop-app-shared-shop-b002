@@ -137,20 +137,28 @@ public class ClientBasketController {
 
 		//セッションから買い物かごを取得
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
-		//削除候補リストの作成
-		List<BasketBean> removeList = new ArrayList<>();
+		boolean deleteFlag = false;
 		//拡張for文で買い物かごの中身を１つずつチェック
 		if (basketBeans != null) {
 			//拡張for文で買い物かごの中身を１つずつチェック
 			for (BasketBean basket : basketBeans) {
 				//削除したい商品IDと一致した商品を削除候補リストに追加
 				if (basket.getId().equals(form.getId())) {
-					removeList.add(basket);
+					// 数量が2以上なら1減らす
+					if (basket.getOrderNum() > 1) {
+						basket.setOrderNum(basket.getOrderNum() - 1);
+						// 数量が1なら削除
+					} else {
+						deleteFlag = true;
+					}
 					break;
 				}
 			}
-			//ループ終了後にまとめて削除(安全)
-			basketBeans.removeAll(removeList);
+			//for文の外で削除
+			if (deleteFlag) {
+				basketBeans.removeIf(
+						b -> b.getId().equals(form.getId()));
+			}
 
 			//セッションから削除
 			if (basketBeans.isEmpty()) {
