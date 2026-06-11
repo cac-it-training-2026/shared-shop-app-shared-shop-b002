@@ -16,6 +16,9 @@ import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
 
+/**
+ * 
+ */
 @Controller
 public class ClientUserRegistController {
 
@@ -35,7 +38,6 @@ public class ClientUserRegistController {
 		return "redirect:/client/user/regist/input";
 	}
 
-	//aaaaaa
 	// 処理2：新規登録ボタン 押下時処理、確認画面-戻るボタン 押下時処理
 	@RequestMapping(path = "/client/user/regist/input", method = RequestMethod.POST)
 	public String inputPost(@ModelAttribute UserForm form) {
