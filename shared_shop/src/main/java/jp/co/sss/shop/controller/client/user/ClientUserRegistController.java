@@ -1,5 +1,6 @@
 package jp.co.sss.shop.controller.client.user;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
@@ -113,11 +115,15 @@ public class ClientUserRegistController {
 
 		repository.save(user); // リポジトリを使って保存
 
+		//userBeanに保存
+		UserBean userBean = new UserBean();
+		BeanUtils.copyProperties(user, userBean);
+
 		//セッションスコープの入力フォーム情報削除
 		session.removeAttribute("userForm");
 
 		//未ログインでの会員登録の場合、セッションに会員（ログイン情報）をセット
-		session.setAttribute("user", user);
+		session.setAttribute("user", userBean);
 
 		//登録完了画面表示処理にリダイレクト
 		return "redirect:/client/user/regist/complete";
