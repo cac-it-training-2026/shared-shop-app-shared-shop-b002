@@ -14,6 +14,12 @@ import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
 import jp.co.sss.shop.util.Constant;
 
+/**
+ * 会員削除(退会)機能のコントローラクラス
+ *
+ *  
+ */
+
 @Controller
 public class ClientUserDeleteController {
 
@@ -29,6 +35,12 @@ public class ClientUserDeleteController {
 	@Autowired
 	HttpSession session;
 
+	/**
+	 * 会員情報削除確認処理
+	 *
+	 * @param id 削除対象ID
+	 * @return "redirect:/client/user/delete/check" 削除確認画面 表示
+	 */
 	@RequestMapping(path = "/client/user/delete/check", method = RequestMethod.POST)
 
 	public String deleteUsercheck() {
@@ -37,6 +49,7 @@ public class ClientUserDeleteController {
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 
 		if (loginUser == null) {
+			// 対象が無い場合、エラー
 			return "redirect:/syserror";
 		}
 		//DBから最新情報取得
@@ -45,41 +58,60 @@ public class ClientUserDeleteController {
 		if (user == null) {
 			return "redirect:/syserror";
 		}
+		// 取得情報から表示フォーム情報を生成
 		UserForm form = new UserForm();
 		BeanUtils.copyProperties(user, form);
 
-		//セッションに保存
+		//情報フォームをセッションに保持
 		session.setAttribute("userForm", form);
-
+		// 削除確認画面　表示
 		return "redirect:/client/user/delete/check";
 	}
 
-	//退会確認画面表示
+	/**
+	 * 確認画面　表示処理
+	 *
+	 * @param model Viewとの値受渡し
+	 * @return "client/user/delete_check" 確認画面 表示
+	 */
 	@RequestMapping(path = "/client/user/delete/check", method = RequestMethod.GET)
 	public String updatedeleteUser(Model model) {
 
+		//セッションから入力フォーム取得
 		UserForm form = (UserForm) session.getAttribute("userForm");
 
 		if (form == null) {
+			// セッション情報がない場合、エラー
 			return "redirect:/syserror";
 		}
+		// 入力フォーム情報を画面表示設定
 		model.addAttribute("userForm", form);
 
 		return "client/user/delete_check";
 	}
 
+	/**
+	 * 会員情報削除完了処理
+	 *
+	 * @return "redirect:/client/user/delete/complete" 会員情報 削除完了画面へ
+	 */
 	@RequestMapping(path = "/client/user/detail", method = RequestMethod.POST)
 	public String backToUserDetailPost() {
-	    // そのまま詳細画面へ戻す（必要ならセッションチェック）
-	    UserBean loginUser = (UserBean) session.getAttribute("user");
+		// そのまま詳細画面へ戻す（必要ならセッションチェック）
+		UserBean loginUser = (UserBean) session.getAttribute("user");
 
-	    if (loginUser == null) {
-	        return "redirect:/syserror";
-	    }
-
-	    return "redirect:/client/user/detail";
+		if (loginUser == null) {
+			return "redirect:/syserror";
+		}
+		// 削除確認画面　表示
+		return "redirect:/client/user/detail";
 	}
-	//退会実行
+
+	/**
+	 * 会員情報削除完了処理
+	 *
+	 * @return "redirect:/client/user/delete/complete" 会員情報 削除完了画面へ
+	 */
 	@RequestMapping(path = "/client/user/delete/complete", method = RequestMethod.POST)
 	public String deleteUsercomplete() {
 		UserForm form = (UserForm) session.getAttribute("userForm");
@@ -93,18 +125,23 @@ public class ClientUserDeleteController {
 			return "redirect:/syserror";
 		}
 
-		//論理削除
+		//論理削除。削除フラグを立てる
 		user.setDeleteFlag(Constant.DELETED);
 
-		//DB更新
+		//DB更新。会員情報を保存
 		userRepository.save(user);
-
+		// セッションの削除対象情報を削除
 		session.invalidate();
+		// 削除完了画面　表示処理
 		return "redirect:/client/user/delete/complete";
 
 	}
 
-	//退会完了画面
+	/**
+	 * 会員情報削除完了処理
+	 *
+	 * @return "client/user/delete_complete" 会員情報 削除完了画面へ
+	 */
 	@RequestMapping(path = "/client/user/delete/complete", method = RequestMethod.GET)
 	public String deleteUsercomplet() {
 		return "client/user/delete_complete";

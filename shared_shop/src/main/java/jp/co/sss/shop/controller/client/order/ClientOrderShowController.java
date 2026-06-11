@@ -22,6 +22,12 @@ import jp.co.sss.shop.repository.OrderRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.PriceCalc;
 
+/**
+ * 注文管理 一覧表示機能(運用管理者用)のコントローラクラス
+ * 
+ * TIPS: 一般会員向けの注文一覧と注文詳細に類似した処理です。
+ */
+
 @Controller
 public class ClientOrderShowController {
 
@@ -54,7 +60,7 @@ public class ClientOrderShowController {
 	 *
 	 * @param model Viewとの値受渡し
 	 * @param pageable ページング情報
-	 * @return "/order/list" 注文情報 一覧画面へ
+	 * @return "client/order/list" 注文情報 一覧画面へ
 	 */
 
 	//注文一覧
@@ -90,22 +96,29 @@ public class ClientOrderShowController {
 
 	}
 
-	//注文詳細
+	/**
+	 * 詳細表示処理
+	 *
+	 * @param id 詳細表示対象ID
+	 * @param model Viewとの値受渡し
+	 * @return "client/order/detail" 詳細画面　表示
+	 */
 	@RequestMapping(path = "/client/order/detail/{id}")
 
 	public String showDetailOrder(@PathVariable Integer id, Model model) {
+		// 指定された注文IDとログインユーザーに紐づく注文情報を取得
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 		if (loginUser == null) {
 			return "redirect:/syserror";
 		}
-		// 指定された注文IDとログインユーザーに紐づく注文情報を取得
+		// 表示する注文情報を生成
 		Order order = orderRepository.getReferenceById(id);
 
 		if (order == null) {
 			return "redirect:/syserror";
 		}
 		OrderBean orderBean = beanTools.copyEntityToOrderBean(order);
-
+		// 注文商品情報を取得
 		List<OrderItemBean> itemBeans = beanTools.generateOrderItemBeanList(order.getOrderItemsList());
 		//合計金額を算出
 		int total = priceCalc.orderItemBeanPriceTotalUseSubtotal(itemBeans);
