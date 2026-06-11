@@ -65,6 +65,7 @@ public class ClientOrderShowController {
 		if (loginUser == null) {
 			return "redirect:/client/login";
 		}
+
 		// すべての注文情報を取得(注文日降順)
 		//表示画面でページングが必要なため、ページ情報付きの検索を行う
 		Page<Order> orderList = orderRepository.findByUserIdOrderByInsertDateDescIdDesc(loginUser.getId(), pageable);
