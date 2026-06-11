@@ -1,5 +1,6 @@
 package jp.co.sss.shop.controller.client.user;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,36 @@ public class ClientUserUpdateController {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@RequestMapping(path = "/client/user/update/input")
+	public String updateUserInput(HttpSession session, Model model) {
+
+		UserBean loginUser = (UserBean) session.getAttribute("user");
+
+		if (loginUser == null) {
+			return "redirect:/";
+		}
+
+		UserForm userForm = (UserForm) session.getAttribute("userForm");
+
+		if (userForm == null) {
+			User user = userRepository.findById(loginUser.getId()).orElse(null);
+			userForm = new UserForm();
+			if (user != null) {
+				BeanUtils.copyProperties(user, userForm);
+			}
+		}
+
+		model.addAttribute("userForm", userForm);
+
+		String errorKey = "org.springframework.validation.BindingResult.userForm";
+		if (session.getAttribute(errorKey) != null) {
+			model.addAttribute(errorKey, session.getAttribute(errorKey));
+			session.removeAttribute(errorKey);
+		}
+
+		return "client/user/update_input";
+	}
 
 	@RequestMapping(path = "/client/user/update/check", method = RequestMethod.POST)
 	public String updateUserCheck(@Valid @ModelAttribute UserForm form, BindingResult result, Model model,
@@ -65,6 +96,14 @@ public class ClientUserUpdateController {
 			}
 		}
 
+		return "client/user/update_complete";//リダイレクトにするとメンテ表示
+	}
+
+	//新しく追加 6/11 完了画面表示用のGETメソッド
+	@RequestMapping(path = "/client/user/update/complete", method = RequestMethod.GET)
+	public String updateUserCompleteView() {
+
 		return "client/user/update_complete";
 	}
+
 }
