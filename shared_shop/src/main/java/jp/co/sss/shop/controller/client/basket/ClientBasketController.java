@@ -38,6 +38,8 @@ public class ClientBasketController {
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
 		//在庫切れメッセージ表示用
 		List<String> itemNameListZero = new ArrayList<>();
+		//在庫不足メッセージ表示用
+		List<String> itemNameListLessThan = new ArrayList<>();
 		//買い物かごがあるか確認
 		if (basketBeans != null) {
 			//拡張for文でかご内の商品を1つずつ確認
@@ -48,15 +50,22 @@ public class ClientBasketController {
 				if (item == null) {
 					continue;
 				}
+				//BasketBeanの在庫を更新
+				basket.setStock(item.getStock());
 				//在庫切れ
 				if (item.getStock().equals(0)) {
 					itemNameListZero.add(item.getName());
+				}
+				// 在庫不足
+				else if (item.getStock() < basket.getOrderNum()) {
+					itemNameListLessThan.add(item.getName());
 				}
 			}
 		}
 
 		//リクエストスコープへ登録
 		model.addAttribute("itemNameListZero", itemNameListZero);
+		model.addAttribute("itemNameListLessThan", itemNameListLessThan);
 		model.addAttribute("basketBeans", basketBeans);
 
 		return "client/basket/list";
@@ -93,9 +102,14 @@ public class ClientBasketController {
 		//同じ商品があるか確認(拡張for文)
 		for (BasketBean basket : basketBeans) {
 			if (basket.getId().equals(form.getId())) {
+				//DBから最新在庫取得
+				Item item = itemRepository.findByIdAndDeleteFlag(basket.getId(), 0);
+				//BasketBeanの在庫を更新
+				basket.setStock(item.getStock());
 				//在庫不足
 				if (basket.getStock() <= (basket.getOrderNum())) {
 					itemNameListLessThan.add(basket.getName());
+
 					model.addAttribute("basketBeans", basketBeans);
 					model.addAttribute("itemNameListLessThan", itemNameListLessThan);
 					return "client/basket/list";
@@ -106,7 +120,7 @@ public class ClientBasketController {
 				return "redirect:/client/basket/list";
 			}
 		}
-		//主キー検索で商品を取得
+		//DBから最新在庫取得
 		Item item = itemRepository.findByIdAndDeleteFlag(form.getId(), 0);
 		//BasketBeanオブジェクト生成
 		BasketBean basketBean = new BasketBean();
