@@ -129,4 +129,5 @@ public class ClientUserDeleteController {
 	public String deleteUsercomplet() {
 		return "client/user/delete_complete";
 	}
+
 }
