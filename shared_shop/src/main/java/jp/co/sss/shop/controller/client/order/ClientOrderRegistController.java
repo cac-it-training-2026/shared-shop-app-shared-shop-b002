@@ -145,6 +145,9 @@ public class ClientOrderRegistController {
 	@RequestMapping(path = "/client/order/check", method = RequestMethod.POST)
 	public String pushNext(@ModelAttribute OrderForm form) {
 		OrderForm sessionform = (OrderForm) session.getAttribute("orderForm");
+		if (sessionform == null) {
+			return "redirect:/client/order/address/input";
+		}
 
 		sessionform.setPayMethod(form.getPayMethod());
 		session.setAttribute("orderForm", sessionform);
@@ -158,6 +161,9 @@ public class ClientOrderRegistController {
 
 		//セッションスコープから注文情報を取得
 		OrderForm form = (OrderForm) session.getAttribute("orderForm");
+		if (form == null) {
+			return "redirect:/client/order/address/input";
+		}
 
 		//セッションスコープから買い物かご情報を取得
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
@@ -237,14 +243,21 @@ public class ClientOrderRegistController {
 	//ご注文の確定ボタン 押下時処理
 	@RequestMapping(path = "/client/order/complete", method = RequestMethod.POST)
 	public String pushFinal() {
+		//ログインユーザー情報取得
+		UserBean userBean = (UserBean) session.getAttribute("user");
+		if (userBean == null) {
+			return "redirect:/login";
+		}
+
 		//セッションスコープから注文情報を取得
 		OrderForm form = (OrderForm) session.getAttribute("orderForm");
 
 		//セッションスコープから買い物かご情報を取得
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
 
-		//ログインユーザー情報取得
-		UserBean userBean = (UserBean) session.getAttribute("user");
+		if (form == null || basketBeans == null || basketBeans.isEmpty()) {
+			return "redirect:/client/basket/list";
+		}
 
 		//注文の在庫チェック
 		for (BasketBean basket : basketBeans) {
@@ -263,6 +276,9 @@ public class ClientOrderRegistController {
 
 		// グインしているユーザーのエンティティを生成してセット
 		User user = userRepository.findById(userBean.getId()).orElse(null);
+		if (user == null) {
+			return "redirect:/login";
+		}
 		order.setUser(user);
 
 		//フォームから住所などの情報を移し替える
