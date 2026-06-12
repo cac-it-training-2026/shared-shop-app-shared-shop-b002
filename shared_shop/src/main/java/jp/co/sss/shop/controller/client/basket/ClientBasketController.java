@@ -34,6 +34,10 @@ public class ClientBasketController {
 	 */
 	@RequestMapping(path = "/client/basket/list", method = RequestMethod.GET)
 	public String showBasketlist(HttpSession session, Model model) {
+		// ログインしていない場合（nullチェック）
+		if (session.getAttribute("user") == null) {
+			return "redirect:/login";
+		}
 		//セッションから買い物かごを取得
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
 		//在庫切れメッセージ表示用
