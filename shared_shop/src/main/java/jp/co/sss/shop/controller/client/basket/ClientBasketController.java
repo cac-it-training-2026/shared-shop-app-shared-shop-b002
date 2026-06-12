@@ -25,7 +25,7 @@ public class ClientBasketController {
 	 * 買い物かご一覧画面を表示する。
 	 * セッションから買い物かご情報を取得し、
 	 * リクエストスコープへ登録する。
-	 * 在庫切れの場合は
+	 * 在庫切れ・不足の場合は
 	 * エラーメッセージを表示する。
 	 *
 	 * @param session セッション
@@ -87,7 +87,7 @@ public class ClientBasketController {
 	@RequestMapping(path = "/client/basket/add", method = RequestMethod.POST)
 	public String addBasket(@ModelAttribute OrderForm form, HttpSession session, Model model) {
 
-		// ログインしていない場合
+		// ログインしていない場合（nullチェック）
 		if (session.getAttribute("user") == null) {
 			return "redirect:/login";
 		}
@@ -171,12 +171,14 @@ public class ClientBasketController {
 			//for文の外で削除
 			if (deleteFlag) {
 				basketBeans.removeIf(
-						b -> b.getId().equals(form.getId()));
+						basketBean -> basketBean.getId().equals(form.getId()));
 			}
 
-			//セッションから削除
+			//かごが空の場合セッションから削除
 			if (basketBeans.isEmpty()) {
 				session.removeAttribute("basketBeans");
+				//かごに他の商品が残っている場合
+				//最新の買い物かご情報をセッションに保存
 			} else {
 				session.setAttribute("basketBeans", basketBeans);
 			}
