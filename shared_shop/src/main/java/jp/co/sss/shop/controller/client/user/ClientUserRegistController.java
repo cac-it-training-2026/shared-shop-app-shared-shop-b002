@@ -43,11 +43,14 @@ public class ClientUserRegistController {
 	public String inputPost(@ModelAttribute UserForm form) {
 		//セッションスコープに入力フォーム情報があるかを確認
 		UserForm sessionForm = (UserForm) session.getAttribute("userForm");
+
+		//nullチェック
 		if (sessionForm == null) {
 			//なければ入力フォーム情報を新規生成してセッションに保存
 			sessionForm = new UserForm();
 			session.setAttribute("userForm", sessionForm);
 		}
+
 		//登録入力画面表示処理にリダイレクト
 		return "redirect:/client/user/regist/input";
 	}
@@ -60,9 +63,11 @@ public class ClientUserRegistController {
 		// 入力フォーム情報をリクエストスコープに設定
 		model.addAttribute("userForm", form);
 
-		// ※セッションにエラー情報がある場合の処理（処理4でエラーがあった時用）
+		// セッションにエラー情報がある場合の処理（処理4でエラーがあった時用）
 		BindingResult result = (BindingResult) session.getAttribute("errors");
 		if (result != null) {
+			//リダイレクトを挟むと画面に渡すデータ（リクエストスコープ）は一回全部消えてしまうため
+			//Spring Bootが本来自動的につけるはずだった、正式な型にはめなおしている（org.springframework.validation.BindingResult.userForm）
 			model.addAttribute("org.springframework.validation.BindingResult.userForm", result);
 			session.removeAttribute("errors");
 		}
@@ -91,6 +96,12 @@ public class ClientUserRegistController {
 	public String checkGet(Model model) {
 		//セッションスコープから入力フォーム情報を取得
 		UserForm form = (UserForm) session.getAttribute("userForm");
+
+		//nullチェック
+		if (form == null) {
+			return "client/user/regist_input";
+		}
+
 		//入力フォーム情報をリクエストスコープに設定
 		model.addAttribute("userForm", form);
 
