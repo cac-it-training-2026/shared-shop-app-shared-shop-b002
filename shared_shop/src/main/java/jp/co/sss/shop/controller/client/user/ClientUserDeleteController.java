@@ -75,11 +75,10 @@ public class ClientUserDeleteController {
 	 * @return "client/user/delete_check" 確認画面 表示
 	 */
 	@RequestMapping(path = "/client/user/delete/check", method = RequestMethod.GET)
-	public String updatedeleteUser(Model model) {
+	public String updateInput(Model model) {
 
 		//セッションから入力フォーム取得
 		UserForm form = (UserForm) session.getAttribute("userForm");
-
 		if (form == null) {
 			// セッション情報がない場合、エラー
 			return "redirect:/syserror";
@@ -87,24 +86,8 @@ public class ClientUserDeleteController {
 		// 入力フォーム情報を画面表示設定
 		model.addAttribute("userForm", form);
 
-		return "client/user/delete_check";
-	}
-
-	/**
-	 * 会員情報削除完了処理
-	 *
-	 * @return "redirect:/client/user/delete/complete" 会員情報 削除完了画面へ
-	 */
-	@RequestMapping(path = "/client/user/detail", method = RequestMethod.POST)
-	public String backToUserDetailPost() {
-		// そのまま詳細画面へ戻す（必要ならセッションチェック）
-		UserBean loginUser = (UserBean) session.getAttribute("user");
-
-		if (loginUser == null) {
-			return "redirect:/syserror";
-		}
 		// 削除確認画面　表示
-		return "redirect:/client/user/detail";
+		return "client/user/delete_check";
 	}
 
 	/**
