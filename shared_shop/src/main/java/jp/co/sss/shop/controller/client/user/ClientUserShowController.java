@@ -24,7 +24,11 @@ public class ClientUserShowController {
 	 * @return
 	 * ユーザーの詳細情報を表示するメソッド
 	 */
-	@RequestMapping(path = "/client/user/detail", method = RequestMethod.GET)
+
+	//POSTで実装したがエラーだったのでGETで実装していたが、木村さんのメソッドと競合していた可能性あり。
+	//11日に本来のPOSTに変更。現在は変わらずエラーだが、木村さんにメソッドを削除してもらったので、明日確認作業をする。
+
+	@RequestMapping(path = "/client/user/detail", method = RequestMethod.POST)
 	//セッションスコープに情報を保存。ModelでHTMLへデータを渡す。
 	public String showDetailUser(HttpSession session, Model model) {
 

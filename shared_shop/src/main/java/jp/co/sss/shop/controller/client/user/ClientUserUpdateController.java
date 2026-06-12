@@ -22,7 +22,7 @@ public class ClientUserUpdateController {
 	@Autowired
 	private UserRepository userRepository;
 
-	@RequestMapping(path = "/client/user/update/input")
+	@RequestMapping(path = "/client/user/update/input", method = RequestMethod.POST)
 	public String updateUserInput(HttpSession session, Model model) {
 
 		UserBean loginUser = (UserBean) session.getAttribute("user");
@@ -49,7 +49,7 @@ public class ClientUserUpdateController {
 			session.removeAttribute(errorKey);
 		}
 
-		return "client/user/update_input";
+		return "client/user/update_input";//ここを詳細設計通り、リダイレクトにするとエラーになる//
 	}
 
 	@RequestMapping(path = "/client/user/update/check", method = RequestMethod.POST)
