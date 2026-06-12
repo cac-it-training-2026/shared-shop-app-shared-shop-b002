@@ -1,13 +1,12 @@
 package jp.co.sss.shop.validator;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import jp.co.sss.shop.annotation.LoginCheck;
 import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
@@ -50,6 +49,7 @@ public class LoginValidator implements ConstraintValidator<LoginCheck, Object> {
 			userBean.setId(user.getId());
 			userBean.setName(user.getName());
 			userBean.setAuthority(user.getAuthority());
+			userBean.setEmail(user.getEmail());
 
 			// セッションスコープにログインしたユーザの情報を登録
 			session.setAttribute("user", userBean);
