@@ -109,7 +109,7 @@ public class ClientOrderShowController {
 		// 指定された注文IDとログインユーザーに紐づく注文情報を取得
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 		if (loginUser == null) {
-			return "redirect:/syserror";
+			return "redirect:/login";
 		}
 		// 表示する注文情報を生成
 		Order order = orderRepository.getReferenceById(id);

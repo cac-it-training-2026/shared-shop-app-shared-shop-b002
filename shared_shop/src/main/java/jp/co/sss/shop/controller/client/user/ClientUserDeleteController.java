@@ -50,13 +50,13 @@ public class ClientUserDeleteController {
 
 		if (loginUser == null) {
 			// 対象が無い場合、エラー
-			return "redirect:/syserror";
+			return "redirect:/login";
 		}
 		//DBから最新情報取得
 		User user = userRepository.findByIdAndDeleteFlag(loginUser.getId(), Constant.NOT_DELETED);
 
 		if (user == null) {
-			return "redirect:/syserror";
+			return "redirect:/login";
 		}
 		// 取得情報から表示フォーム情報を生成
 		UserForm form = new UserForm();
@@ -81,7 +81,7 @@ public class ClientUserDeleteController {
 		UserForm form = (UserForm) session.getAttribute("userForm");
 		if (form == null) {
 			// セッション情報がない場合、エラー
-			return "redirect:/syserror";
+			return "redirect:/login";
 		}
 		// 入力フォーム情報を画面表示設定
 		model.addAttribute("userForm", form);
@@ -100,7 +100,7 @@ public class ClientUserDeleteController {
 		UserForm form = (UserForm) session.getAttribute("userForm");
 		if (form == null) {
 
-			return "redirect:/syserror";
+			return "redirect:/login";
 		}
 		//DBから取得
 		User user = userRepository.findByIdAndDeleteFlag(form.getId(), Constant.NOT_DELETED);
