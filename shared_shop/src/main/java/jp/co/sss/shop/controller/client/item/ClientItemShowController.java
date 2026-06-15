@@ -76,7 +76,9 @@ public class ClientItemShowController {
 	public String sort(@PathVariable Integer sortType,
 			@RequestParam(required = false) Integer categoryId, // 画面からのカテゴリID受け取り
 			Model model) {
-
+		if (sortType != 1 && sortType != 2) {
+			return "redirect:/syserror";
+		}
 		List<Item> itemList;
 
 		// 【条件分岐】カテゴリ検索（指定あり）の場合
