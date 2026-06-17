@@ -26,7 +26,7 @@ public class ClientUserShowController {
 	 * 会員詳細画面を表示するメソッド
 	 *
 	 * @param model 画面へデータを渡すためのモデル
-	 * @return 遷移先画面のパス
+	 * @return 詳細画面の表示
 	 */
 	@RequestMapping(path = "/client/user/detail", method = RequestMethod.GET)
 	public String showDetailUser(Model model) {
