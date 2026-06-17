@@ -16,6 +16,9 @@ import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
 
+/**
+ * 会員情報更新用コントローラー
+ */
 @Controller
 public class ClientUserUpdateController {
 
@@ -23,86 +26,83 @@ public class ClientUserUpdateController {
 	private UserRepository userRepository;
 
 	/**
-	 * 処理1
-	 * (変更ボタン 押下時処理) 、(確認画面-戻るボタン 押下時処理)
+	 * 変更ボタン押下時、および確認画面からの戻り時の処理
+	 *
+	 * @param session HTTPセッション
+	 * @return 遷移先URL
 	 */
-
 	@RequestMapping(path = "/client/user/update/input", method = RequestMethod.POST)
 	public String updateUserInputPost(HttpSession session) {
 
-		// 安全のためのログインチェック（セッションからユーザー情報を取得）
+		// ログインチェック（セッションからユーザー情報を取得）
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 		if (loginUser == null) {
 			return "redirect:/";
 		}
 
-		// ・セッションスコープに入力フォーム情報があるかを確認
+		// セッションスコープから入力フォーム情報を取得
 		UserForm userForm = (UserForm) session.getAttribute("userForm");
 
-		// 、なければ下記の処理を実施
+		// 入力フォーム情報がない場合、DBからデータを取得して初期化
 		if (userForm == null) {
-			// ・セッションに保存されたIDを使用し、変更対象のデータをDBから取得
 			User user = userRepository.findById(loginUser.getId()).orElse(null);
 
-			// ・取得データを元に入力画面初期表示用の入力フォーム情報を新規生成
 			userForm = new UserForm();
 			if (user != null) {
 				BeanUtils.copyProperties(user, userForm);
 			}
 		}
 
-		// ・入力フォーム情報をセッションスコープに保存
+		// 入力フォーム情報をセッションスコープに保存
 		session.setAttribute("userForm", userForm);
 
-		// ・変更入力画面表示処理へリダイレクト
-		// リダイレクト: "/～/update/input"
+		// 入力画面表示処理へリダイレクト
 		return "redirect:/client/user/update/input";
 	}
 
 	/**
-	 * 処理2
-	 * (変更入力画面表示処理)
+	 * 変更入力画面の表示処理
+	 *
+	 * @param session HTTPセッション
+	 * @param model モデル
+	 * @return 遷移先パス
 	 */
-
 	@RequestMapping(path = "/client/user/update/input", method = RequestMethod.GET)
 	public String updateUserInputGet(HttpSession session, Model model) {
 
-		// ・セッションスコープから入力フォーム情報を取得
+		// セッションから入力フォーム情報を取得
 		UserForm userForm = (UserForm) session.getAttribute("userForm");
 
-		// ・入力フォーム情報をリクエストスコープに設定
+		// 入力フォーム情報をリクエストスコープに設定
 		model.addAttribute("userForm", userForm);
 
-		// ・セッションスコープに入力エラー情報がある場合
+		// 入力エラー情報がある場合はリクエストスコープに設定してセッションから削除
 		String errorKey = "org.springframework.validation.BindingResult.userForm";
 		if (session.getAttribute(errorKey) != null) {
-
-			// - 取得した入力エラー情報をリクエストスコープに設定
 			model.addAttribute(errorKey, session.getAttribute(errorKey));
-
-			// - セッションスコープから、入力エラー情報を削除
 			session.removeAttribute(errorKey);
 		}
 
-		// ・変更入力画面表示
-		// フォワード : “～/update_input”
+		// 変更入力画面を表示
 		return "client/user/update_input";
 	}
 
 	/**
-	 * 処理3
-	 * (確認ボタン 押下時処理)
+	 * 確認ボタン押下時の処理
+	 *
+	 * @param form 入力フォーム
+	 * @param result バリデーション結果
+	 * @param session HTTPセッション
+	 * @return 遷移先URL
 	 */
-	// path = "/～/update/check", method = RequestMethod.POST
 	@RequestMapping(path = "/client/user/update/check", method = RequestMethod.POST)
 	public String updateUserCheck(
 			@Valid @ModelAttribute UserForm form, BindingResult result, HttpSession session) {
 
-		// ・セッションスコープからフォーム情報を取得
+		// セッションからフォーム情報を取得
 		UserForm sessionForm = (UserForm) session.getAttribute("userForm");
 
-		// ・入力フォーム情報に不足がある場合、セッションスコープから取得した値をセット
-		// （画面から送られてきたformにIDや権限がなければ、セッションの元の値で補う）
+		// フォームに欠損しているIDや権限情報を補完
 		if (form.getId() == null && sessionForm != null) {
 			form.setId(sessionForm.getId());
 		}
@@ -110,94 +110,89 @@ public class ClientUserUpdateController {
 			form.setAuthority(sessionForm.getAuthority());
 		}
 
-		// ・画面から入力された入力フォームを、セッションスコープに入力フォーム情報として保存
+		// 入力フォームをセッションに保存
 		session.setAttribute("userForm", form);
 
-		// ・BindingResultオブジェクトに入力エラー情報がある場合
+		// 入力エラーがある場合は入力画面へリダイレクト
 		if (result.hasErrors()) {
-			// - 入力エラー情報をセッションスコープに設定
 			String errorKey = "org.springframework.validation.BindingResult.userForm";
 			session.setAttribute(errorKey, result);
-
-			// - 変更入力画面表示処理にリダイレクト（リダイレクト: “～/update/input”）
 			return "redirect:/client/user/update/input";
 		}
 
-		// ・入力エラーがない場合
-		// - 変更確認画面表示処理にリダイレクト（リダイレクト: “/～/update/check”）
+		// 入力エラーがない場合は確認画面へリダイレクト
 		return "redirect:/client/user/update/check";
 	}
 
 	/**
-	 * 処理4
-	 * (変更確認画面表示処理)
+	 * 変更確認画面の表示処理
+	 *
+	 * @param session HTTPセッション
+	 * @param model モデル
+	 * @return 遷移先パス
 	 */
-	// path = "/～/update/check", method = RequestMethod.GET
 	@RequestMapping(path = "/client/user/update/check", method = RequestMethod.GET)
 	public String updateUserCheckGet(HttpSession session, Model model) {
 
-		// ・セッションスコープから入力フォーム情報を取得
+		// セッションから入力フォーム情報を取得
 		UserForm userForm = (UserForm) session.getAttribute("userForm");
 
-		// ・入力フォーム情報をリクエストスコープに設定
+		// フォーム情報をリクエストスコープに設定
 		model.addAttribute("userForm", userForm);
 
-		// ・登録確認画面表示（フォワード : “～/update_check”）
+		// 確認画面を表示
 		return "client/user/update_check";
 	}
 
 	/**
-	 * 処理5
-	 * (登録ボタン 押下時処理)
+	 * 登録ボタン押下時の処理
+	 *
+	 * @param session HTTPセッション
+	 * @return 遷移先URL
 	 */
-	// path = "/～/update/complete", method = RequestMethod.POST
 	@RequestMapping(path = "/client/user/update/complete", method = RequestMethod.POST)
 	public String updateUserComplete(HttpSession session) {
 
-		// 安全チェックのためにセッションからログインユーザー情報を取得
+		// セッションからログインユーザー情報を取得
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 
-		// ・セッションスコープから入力フォーム情報を取得
+		// セッションからフォーム情報を取得
 		UserForm form = (UserForm) session.getAttribute("userForm");
 
+		// ログイン済みかつフォーム情報がある場合に更新を実行
 		if (loginUser != null && form != null) {
-			// ・入力フォーム情報を元にDB登録用エンティティオブジェクトを生成
-			// （まずは現在のユーザー情報をDBから取得）
 			User user = userRepository.findById(loginUser.getId()).orElse(null);
 
 			if (user != null) {
-				// フォームからエンティティへデータを詰め替える
+				// エンティティへ値をコピー
 				BeanUtils.copyProperties(form, user);
 
-				// ・DB更新実施
+				// DBを更新
 				userRepository.save(user);
 
-				// ・処理内容に応じて、セッションスコープの内容を書き換える
-				// - ログインユーザの会員変更の場合、セッションスコープの会員情報を更新
+				// セッションのログイン情報を最新化
 				loginUser.setName(user.getName());
 				loginUser.setEmail(user.getEmail());
 				session.setAttribute("user", loginUser);
 
-				// ・セッションスコープの入力フォーム情報削除
+				// 不要になったフォーム情報を削除
 				session.removeAttribute("userForm");
 			}
 		}
 
-		// ・変更完了画面表示処理にリダイレクト
-		// リダイレクト : "/～/update/complete"
+		// 完了画面へリダイレクト
 		return "redirect:/client/user/update/complete";
 	}
 
 	/**
-	 * 処理6
-	 * (変更完了画面表示処理)
+	 * 変更完了画面の表示処理
+	 *
+	 * @return 遷移先パス
 	 */
-	// path = "/～/update/complete", method = RequestMethod.GET
 	@RequestMapping(path = "/client/user/update/complete", method = RequestMethod.GET)
 	public String updateUserCompleteView() {
 
-		// ・登録完了画面表示
-		// フォワード : “client/user/update_complete”
+		// 完了画面を表示
 		return "client/user/update_complete";
 	}
 }

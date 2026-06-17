@@ -4,11 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.repository.UserRepository;
 
+/**
+ * 会員詳細表示用コントローラー
+ */
 @Controller
 public class ClientUserShowController {
 
@@ -19,40 +23,39 @@ public class ClientUserShowController {
 	HttpSession session;
 
 	/**
-	 * @param session
-	 * @param model
-	 * @return
-	 * ユーザーの詳細情報を表示するメソッド
+	 * 会員詳細画面を表示するメソッド
+	 *
+	 * @param model 画面へデータを渡すためのモデル
+	 * @return 遷移先画面のパス
 	 */
-
-	//POSTで実装したがエラーだったのでGETで実装していたが、木村さんのメソッドと競合していた可能性あり。
-	//11日に本来のPOSTに変更。現在は変わらずエラーだが、木村さんにメソッドを削除してもらったので、明日確認作業をする。
-
-	@RequestMapping(path = "/client/user/detail")
-
+	@RequestMapping(path = "/client/user/detail", method = RequestMethod.GET)
 	public String showDetailUser(Model model) {
 
-		// セッションからログインしている会員の情報を取り出す
+		// ログイン中の会員情報をセッションから取得
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 
+		// ログイン情報がない場合はシステムエラーへリダイレクト
 		if (loginUser == null) {
 			return "redirect:/syserror";
 		}
 
+		// 論理削除されていないユーザーをDBから取得
 		jp.co.sss.shop.entity.User user = userRepository.findByIdAndDeleteFlag(loginUser.getId(),
 				jp.co.sss.shop.util.Constant.NOT_DELETED);
 
+		// ユーザーが存在しない場合はシステムエラーへリダイレクト
 		if (user == null) {
 			return "redirect:/syserror";
 		}
 
-		// 3. 画面に渡すために、Entity(User) から Bean(UserBean) へデータを詰め替える
+		// EntityからBeanへデータをコピー
 		UserBean userBean = new UserBean();
 		org.springframework.beans.BeanUtils.copyProperties(user, userBean);
 
-		// 4. 【重要】DBから取ってきた「全部入りのuserBean」をリクエストスコープに登録する！
+		// 画面へ表示用データを渡すためにモデルに登録
 		model.addAttribute("userBean", userBean);
 
+		// 会員詳細画面へ遷移
 		return "client/user/detail";
 	}
 }
