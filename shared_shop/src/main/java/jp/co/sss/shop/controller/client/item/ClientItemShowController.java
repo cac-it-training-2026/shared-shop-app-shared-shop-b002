@@ -24,6 +24,12 @@ import jp.co.sss.shop.util.Constant;
  *
  * @author SystemShared
  */
+/**
+ * 
+ */
+/**
+ * 
+ */
 @Controller
 public class ClientItemShowController {
 	/**
@@ -38,6 +44,9 @@ public class ClientItemShowController {
 	@Autowired
 	BeanTools beanTools;
 
+	/**
+	 * リポジトリ
+	 */
 	@Autowired
 	CategoryRepository categoryRepository;
 
@@ -71,6 +80,12 @@ public class ClientItemShowController {
 
 		return "index";
 	}
+
+	/**
+	 * @param sortType 表示対象sort
+	 * @param model Viewとの値受渡し
+	 * @return "client/item/list" リスト表示
+	 */
 
 	@RequestMapping(path = "/client/item/list/{sortType}", method = { RequestMethod.GET, RequestMethod.POST })
 	public String sort(@PathVariable Integer sortType,

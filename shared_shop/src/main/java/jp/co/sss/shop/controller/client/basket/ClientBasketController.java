@@ -16,6 +16,10 @@ import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.form.OrderForm;
 import jp.co.sss.shop.repository.ItemRepository;
 
+/**
+ * 買い物かごの基本クラス
+ * @author miyuta
+ */
 @Controller
 public class ClientBasketController {
 	@Autowired
@@ -45,7 +49,7 @@ public class ClientBasketController {
 		List<String> itemNameListZero = new ArrayList<>();
 		// 在庫不足メッセージ表示用
 		List<String> itemNameListLessThan = new ArrayList<>();
-		// 買い物かごがあるか確認
+		// 買い物かごに商品があるか確認
 		if (basketBeans != null) {
 			// 拡張for文でかご内の商品を1つずつ確認
 			for (BasketBean basket : basketBeans) {
