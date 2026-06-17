@@ -29,7 +29,7 @@ public class ClientUserUpdateController {
 	 * 変更ボタン押下時、および確認画面からの戻り時の処理
 	 *
 	 * @param session HTTPセッション
-	 * @return 遷移先URL
+	 * @return 入力画面リダイレクト
 	 */
 	@RequestMapping(path = "/client/user/update/input", method = RequestMethod.POST)
 	public String updateUserInputPost(HttpSession session) {
@@ -65,7 +65,7 @@ public class ClientUserUpdateController {
 	 *
 	 * @param session HTTPセッション
 	 * @param model モデル
-	 * @return 遷移先パス
+	 * @return 入力画面表示
 	 */
 	@RequestMapping(path = "/client/user/update/input", method = RequestMethod.GET)
 	public String updateUserInputGet(HttpSession session, Model model) {
@@ -93,7 +93,7 @@ public class ClientUserUpdateController {
 	 * @param form 入力フォーム
 	 * @param result バリデーション結果
 	 * @param session HTTPセッション
-	 * @return 遷移先URL
+	 * @return 確認画面リダイレクト
 	 */
 	@RequestMapping(path = "/client/user/update/check", method = RequestMethod.POST)
 	public String updateUserCheck(
@@ -129,7 +129,7 @@ public class ClientUserUpdateController {
 	 *
 	 * @param session HTTPセッション
 	 * @param model モデル
-	 * @return 遷移先パス
+	 * @return 確認画面表示
 	 */
 	@RequestMapping(path = "/client/user/update/check", method = RequestMethod.GET)
 	public String updateUserCheckGet(HttpSession session, Model model) {
@@ -148,7 +148,7 @@ public class ClientUserUpdateController {
 	 * 登録ボタン押下時の処理
 	 *
 	 * @param session HTTPセッション
-	 * @return 遷移先URL
+	 * @return 完了画面リダイレクト
 	 */
 	@RequestMapping(path = "/client/user/update/complete", method = RequestMethod.POST)
 	public String updateUserComplete(HttpSession session) {
@@ -187,7 +187,7 @@ public class ClientUserUpdateController {
 	/**
 	 * 変更完了画面の表示処理
 	 *
-	 * @return 遷移先パス
+	 * @return 完了画面表示
 	 */
 	@RequestMapping(path = "/client/user/update/complete", method = RequestMethod.GET)
 	public String updateUserCompleteView() {
