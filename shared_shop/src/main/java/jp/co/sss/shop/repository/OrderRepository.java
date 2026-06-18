@@ -25,4 +25,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	@Query("SELECT o FROM Order o ORDER BY o.insertDate DESC,o.id DESC")
 	Page<Order> findAllOrderByInsertdateDescIdDesc(Pageable pageable);
 
+	// ログインユーザーの注文のみ取得
+	Page<Order> findByUserIdOrderByInsertDateDescIdDesc(
+			Integer userId,
+			Pageable pageable);
+
 }

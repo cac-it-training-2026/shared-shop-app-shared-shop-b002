@@ -1,5 +1,7 @@
 package jp.co.sss.shop.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,4 +44,20 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 * @return 商品エンティティ
 	 */
 	public Item findByNameAndDeleteFlag(String name, int notDeleted);
+
+	//ClientItemShowController  売れ筋用
+	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.deleteFlag=0 GROUP BY i ORDER BY COUNT(oi) DESC")
+	List<Item> findPopularItems();
+
+	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.deleteFlag=0 GROUP BY i ORDER BY i.insertDate DESC, i.id DESC")
+	List<Item> findByDeleteFlagOrderByInsertDateDesc(@Param("deleteFlag") int deleteFlag);
+
+	//	追加
+
+	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.deleteFlag = 0 ORDER BY i.insertDate DESC, i.id DESC")
+	List<Item> findByCategoryIdContainingOrderByInsertDateDesc(@Param("categoryId") Integer categoryId);
+
+	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.category.id = :categoryId AND i.deleteFlag = 0 GROUP BY i ORDER BY COUNT(oi) DESC")
+	List<Item> findPopularItemsByCategoryId(@Param("categoryId") Integer categoryId);
+
 }
