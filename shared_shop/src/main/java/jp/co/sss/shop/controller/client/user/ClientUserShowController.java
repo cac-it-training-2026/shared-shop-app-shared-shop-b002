@@ -1,14 +1,16 @@
 package jp.co.sss.shop.controller.client.user;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.UserBean;
+import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.util.Constant;
 
 /**
  * 会員詳細表示用コントローラー
@@ -28,29 +30,28 @@ public class ClientUserShowController {
 	 * @param model 画面へデータを渡すためのモデル
 	 * @return 詳細画面の表示
 	 */
-	@RequestMapping(path = "/client/user/detail", method = RequestMethod.GET)
+	@RequestMapping(path = "/client/user/detail")
 	public String showDetailUser(Model model) {
 
 		// ログイン中の会員情報をセッションから取得
 		UserBean loginUser = (UserBean) session.getAttribute("user");
 
-		// ログイン情報がない場合はシステムエラーへリダイレクト
+		// ログイン情報がない場合はシステムエラーへリダイレクト。nullチェック
 		if (loginUser == null) {
 			return "redirect:/syserror";
 		}
 
-		// 論理削除されていないユーザーをDBから取得
-		jp.co.sss.shop.entity.User user = userRepository.findByIdAndDeleteFlag(loginUser.getId(),
-				jp.co.sss.shop.util.Constant.NOT_DELETED);
+		// 論理削除されていないユーザーをDBから取得。
+		User user = userRepository.findByIdAndDeleteFlag(loginUser.getId(), Constant.NOT_DELETED);
 
 		// ユーザーが存在しない場合はシステムエラーへリダイレクト
 		if (user == null) {
 			return "redirect:/syserror";
 		}
 
-		// EntityからBeanへデータをコピー
+		// DBから取得したデータをuserBeanへコピー
 		UserBean userBean = new UserBean();
-		org.springframework.beans.BeanUtils.copyProperties(user, userBean);
+		BeanUtils.copyProperties(user, userBean);
 
 		// 画面へ表示用データを渡すためにモデルに登録
 		model.addAttribute("userBean", userBean);
