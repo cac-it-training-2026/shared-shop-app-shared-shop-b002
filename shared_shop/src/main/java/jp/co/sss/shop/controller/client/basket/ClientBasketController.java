@@ -77,7 +77,9 @@ public class ClientBasketController {
 					itemNameListLessThan.add(item.getName());
 				}
 				// 合計金額の加算
-				total += item.getPrice() * basket.getOrderNum();
+				if (item != null) {
+					total += item.getPrice() * basket.getOrderNum();
+				}
 			}
 		}
 
