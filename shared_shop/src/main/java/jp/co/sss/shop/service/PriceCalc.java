@@ -39,9 +39,11 @@ public class PriceCalc {
 		double stockRate;
 		if (stock < 10) {
 			stockRate = 1.20;
-		} else if (stock <= 30) {
+		} else if (stock <= 20) {
+			stockRate = 1.10;
+		} else if (stock <= 25) {
 			stockRate = 1.00;
-		} else if (stock <= 100) {
+		} else if (stock <= 50) {
 			stockRate = 0.90;
 		} else {
 			stockRate = 0.80;
@@ -77,14 +79,7 @@ public class PriceCalc {
 	 * @param itemBean 商品情報Bean
 	 */
 	public void setDynamicPriceInfo(Item item, ItemBean itemBean) {
-		// 過去30日間の注文数量を取得
-		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
-		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
-		if (itemsSold == null) {
-			itemsSold = 0L;
-		}
-
-		int dynamicPrice = calculateDynamicPrice(item, itemsSold);
+		int dynamicPrice = getDynamicPrice(item);
 		itemBean.setPrice(dynamicPrice);
 
 		// 基本価格と割引率をセット
@@ -95,6 +90,22 @@ public class PriceCalc {
 		} else {
 			itemBean.setDiscountRate(null);
 		}
+	}
+
+	/**
+	 * 動的価格のみを取得
+	 * @param item 商品エンティティ
+	 * @return 動的価格
+	 */
+	public int getDynamicPrice(Item item) {
+		// 過去30日間の注文数量を取得
+		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+		if (itemsSold == null) {
+			itemsSold = 0L;
+		}
+
+		return calculateDynamicPrice(item, itemsSold);
 	}
 
 	/**

@@ -73,12 +73,7 @@ public class ClientBasketController {
 				basket.setStock(item.getStock());
 
 				// ダイナミックプライシングの計算
-				java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
-				Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
-				if (itemsSold == null) {
-					itemsSold = 0L;
-				}
-				basket.setPrice(priceCalc.calculateDynamicPrice(item, itemsSold));
+				basket.setPrice(priceCalc.getDynamicPrice(item));
 
 				// 在庫切れ
 				if (item.getStock().equals(0)) {
@@ -168,12 +163,7 @@ public class ClientBasketController {
 		basketBean.setStock(item.getStock());
 
 		// ダイナミックプライシングの計算
-		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
-		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
-		if (itemsSold == null) {
-			itemsSold = 0L;
-		}
-		basketBean.setPrice(priceCalc.calculateDynamicPrice(item, itemsSold));
+		basketBean.setPrice(priceCalc.getDynamicPrice(item));
 
 		// リストへ追加
 		basketBeans.add(basketBean);
