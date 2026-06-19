@@ -35,7 +35,7 @@
 						<input type="submit" value="買い物かごに入れる" class="send_button" />
 					</form>
 					<form th:action="@{/client/favorite/delete/{id}(id=${favorite.id})}" method="post">
-						<input type="submit" th:value="#{delete}" class="delete_button" />
+						<input type="submit" th:value="#{favorite.delete}" class="delete_button" />
 					</form>
 				</td>
 			</tr>
