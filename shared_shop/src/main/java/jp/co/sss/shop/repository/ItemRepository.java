@@ -46,18 +46,20 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	public Item findByNameAndDeleteFlag(String name, int notDeleted);
 
 	//ClientItemShowController  売れ筋用
-	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.deleteFlag=0 GROUP BY i ORDER BY COUNT(oi) DESC")
-	List<Item> findPopularItems();
+	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.deleteFlag = :deleteFlag GROUP BY i ORDER BY COUNT(oi) DESC, i.id DESC")
+	List<Item> findPopularItems(@Param("deleteFlag") int deleteFlag);
 
-	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.deleteFlag=0 GROUP BY i ORDER BY i.insertDate DESC, i.id DESC")
+	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.deleteFlag = :deleteFlag GROUP BY i ORDER BY i.insertDate DESC, i.id DESC")
 	List<Item> findByDeleteFlagOrderByInsertDateDesc(@Param("deleteFlag") int deleteFlag);
 
 	//	追加
 
-	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.deleteFlag = 0 ORDER BY i.insertDate DESC, i.id DESC")
-	List<Item> findByCategoryIdContainingOrderByInsertDateDesc(@Param("categoryId") Integer categoryId);
+	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.deleteFlag = :deleteFlag ORDER BY i.insertDate DESC, i.id DESC")
+	List<Item> findByCategoryIdOrderByInsertDateDesc(@Param("categoryId") Integer categoryId,
+			@Param("deleteFlag") int deleteFlag);
 
-	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.category.id = :categoryId AND i.deleteFlag = 0 GROUP BY i ORDER BY COUNT(oi) DESC")
-	List<Item> findPopularItemsByCategoryId(@Param("categoryId") Integer categoryId);
+	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.category.id = :categoryId AND i.deleteFlag = :deleteFlag GROUP BY i ORDER BY COUNT(oi) DESC, i.id DESC")
+	List<Item> findPopularItemsByCategoryId(@Param("categoryId") Integer categoryId,
+			@Param("deleteFlag") int deleteFlag);
 
 }

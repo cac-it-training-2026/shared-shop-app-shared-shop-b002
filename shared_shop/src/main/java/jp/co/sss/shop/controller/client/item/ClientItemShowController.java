@@ -66,11 +66,8 @@ public class ClientItemShowController {
 	@RequestMapping(path = "/", method = { RequestMethod.GET, RequestMethod.POST })
 	public String index(Model model) {
 
-		/*TODO 現在は全件表示を行っている
-		 * これを売れ筋（注文回数が多い順）に改修する*/
-
-		// 注文情報の商品情報を全件表示
-		List<Item> itemList = itemRepository.findPopularItems();
+		// 売れ筋の商品情報を取得
+		List<Item> itemList = itemRepository.findPopularItems(Constant.NOT_DELETED);
 
 		// エンティティ内の検索結果をJavaBeansにコピー
 		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
@@ -100,10 +97,10 @@ public class ClientItemShowController {
 		if (categoryId != null && categoryId != 0) {
 			if (sortType == 1) {
 				// カテゴリ内：新着順
-				itemList = itemRepository.findByCategoryIdContainingOrderByInsertDateDesc(categoryId);
+				itemList = itemRepository.findByCategoryIdOrderByInsertDateDesc(categoryId, Constant.NOT_DELETED);
 			} else {
 				// カテゴリ内：売れ筋順
-				itemList = itemRepository.findPopularItemsByCategoryId(categoryId);
+				itemList = itemRepository.findPopularItemsByCategoryId(categoryId, Constant.NOT_DELETED);
 			}
 		}
 		// カテゴリ指定なし（全件表示）の場合
@@ -113,7 +110,7 @@ public class ClientItemShowController {
 				itemList = itemRepository.findByDeleteFlagOrderByInsertDateDesc(Constant.NOT_DELETED);
 			} else {
 				// 全件：売れ筋順
-				itemList = itemRepository.findPopularItems();
+				itemList = itemRepository.findPopularItems(Constant.NOT_DELETED);
 			}
 		}
 
