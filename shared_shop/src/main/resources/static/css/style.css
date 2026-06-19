@@ -45,7 +45,9 @@ header {
   color: var(--text-color) !important;
   border: none !important;
   border-radius: 12px !important;
-  padding: 10px 20px !important;
+  padding: 5px 15px !important;
+  font-size: 1.2em !important;
+  line-height: 2em !important;
   font-weight: bold;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
