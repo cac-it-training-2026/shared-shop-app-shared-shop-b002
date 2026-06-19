@@ -197,6 +197,7 @@ public class AdminUserUpdateController {
 
 		Integer deleteFlag = user.getDeleteFlag();
 		Date insertDate = user.getInsertDate();
+		Integer previousIsLocked = user.getIsLocked();
 
 		// 入力フォーム情報を変更用エンティティに設定
 		BeanUtils.copyProperties(userForm, user);
@@ -204,6 +205,12 @@ public class AdminUserUpdateController {
 		// 入力値以外の項目を設定
 		user.setDeleteFlag(deleteFlag);
 		user.setInsertDate(insertDate);
+
+		// アンロックされた場合、失敗回数をリセット
+		if (previousIsLocked != null && previousIsLocked == Constant.LOCKED
+				&& user.getIsLocked() != null && user.getIsLocked() == Constant.UNLOCKED) {
+			user.setLoginAttemptCount(0);
+		}
 
 		// 情報を保存
 		userRepository.save(user);

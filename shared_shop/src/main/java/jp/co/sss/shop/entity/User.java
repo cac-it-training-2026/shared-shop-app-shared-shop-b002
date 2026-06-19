@@ -82,6 +82,18 @@ public class User {
 	private Date insertDate;
 
 	/**
+	 * ログイン失敗回数
+	 */
+	@Column(insertable = false)
+	private Integer loginAttemptCount;
+
+	/**
+	 * ロック状態フラグ 0:未ロック、1:ロック中
+	 */
+	@Column(insertable = false)
+	private Integer isLocked;
+
+	/**
 	 * 会員IDの取得
 	 * @return 会員ID
 	 */
@@ -239,5 +251,37 @@ public class User {
 	 */
 	public void setInsertDate(Date insertDate) {
 		this.insertDate = insertDate;
+	}
+
+	/**
+	 * ログイン失敗回数の取得
+	 * @return ログイン失敗回数
+	 */
+	public Integer getLoginAttemptCount() {
+		return loginAttemptCount;
+	}
+
+	/**
+	 * ログイン失敗回数のセット
+	 * @param loginAttemptCount ログイン失敗回数
+	 */
+	public void setLoginAttemptCount(Integer loginAttemptCount) {
+		this.loginAttemptCount = loginAttemptCount;
+	}
+
+	/**
+	 * ロック状態フラグの取得
+	 * @return ロック状態フラグ
+	 */
+	public Integer getIsLocked() {
+		return isLocked;
+	}
+
+	/**
+	 * ロック状態フラグのセット
+	 * @param isLocked ロック状態フラグ
+	 */
+	public void setIsLocked(Integer isLocked) {
+		this.isLocked = isLocked;
 	}
 }
