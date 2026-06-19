@@ -40,11 +40,11 @@ public class PriceCalc {
 		if (stock < 10) {
 			stockRate = 1.20;
 		} else if (stock <= 30) {
-			stockRate = 1.10;
-		} else if (stock <= 100) {
 			stockRate = 1.00;
-		} else {
+		} else if (stock <= 100) {
 			stockRate = 0.90;
+		} else {
+			stockRate = 0.80;
 		}
 
 		// 注文補正率の決定
