@@ -20,6 +20,16 @@
 		<!--/* 1件分の商品情報 */-->
 		<div class="item">
 			<div class="item_name" th:text="${item.name}"></div>
+			<div class="item_price">
+				<th:block th:if="${item.discountRate != null}">
+					<del th:text="${item.basePrice}"></del>
+					<span th:text="${item.price}"></span>
+					<span style="color: red; font-weight: bold;" th:text="${item.discountRate} + '%OFF'"></span>
+				</th:block>
+				<th:block th:if="${item.discountRate == null}">
+					<span th:text="${item.price}"></span>
+				</th:block>
+			</div>
 			<a th:href="@{/client/item/detail/}+${item.id}">
 			    <img th:src="@{/images/{image}(image=${item.image})}" th:if="${item.image != null}" />
 			    <img th:src="@{/images/common/no_image.jpg}" th:if="${item.image == null}" />

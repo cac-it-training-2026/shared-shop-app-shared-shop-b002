@@ -87,19 +87,7 @@ public class AdminItemShowController {
 
 		for (Item item : itemList) {
 			ItemBean itemBean = beanTools.copyEntityToItemBean(item);
-
-			// ダイナミックプライシングの計算
-			java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
-			Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
-			if (itemsSold == null) {
-				itemsSold = 0L;
-			}
-			int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
-			itemBean.setPrice(dynamicPrice);
-
-			// 基本価格をセット（ItemBeanのpriceを動的価格にしたので、別途保持が必要かもしれないが、
-			// 既存のテンプレートでどう表示するかによる。ここではitemBean.setPriceは動的価格とする）
-			// テンプレート側でitem.price (Entity) と itemBean.price (Dynamic) を使い分ける
+			priceCalc.setDynamicPriceInfo(item, itemBean);
 			itemBeanList.add(itemBean);
 		}
 
@@ -139,13 +127,7 @@ public class AdminItemShowController {
 		ItemBean itemBean = beanTools.copyEntityToItemBean(item);
 
 		// ダイナミックプライシングの計算
-		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
-		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
-		if (itemsSold == null) {
-			itemsSold = 0L;
-		}
-		int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
-		itemBean.setPrice(dynamicPrice);
+		priceCalc.setDynamicPriceInfo(item, itemBean);
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("item", item); // Entity (Base Price)

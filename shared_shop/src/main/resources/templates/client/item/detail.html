@@ -21,7 +21,16 @@
 				<dt>[[#{data.item.name}]]</dt>
 				<dd th:text="*{name}"></dd>
 				<dt>[[#{data.item.price}]]</dt>
-				<dd th:text="*{price}"></dd>
+				<dd>
+					<th:block th:if="*{discountRate != null}">
+						<del th:text="*{basePrice}"></del>
+						<span th:text="*{price}"></span>
+						<span style="color: red; font-weight: bold;" th:text="*{discountRate} + '%OFF'"></span>
+					</th:block>
+					<th:block th:if="*{discountRate == null}">
+						<span th:text="*{price}"></span>
+					</th:block>
+				</dd>
 				<dt>[[#{data.item.stock}]]</dt>
 				<dd th:if="*{stock > 5}" th:text="#{data.in.stock}"></dd>
 				<dd th:if="*{stock >= 1 and 5 >= stock }" th:text="*{stock}"></dd>

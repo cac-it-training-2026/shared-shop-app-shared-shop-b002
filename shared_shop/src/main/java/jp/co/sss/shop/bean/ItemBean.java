@@ -48,6 +48,16 @@ public class ItemBean {
 	private String categoryName;
 
 	/**
+	 * 基本価格
+	 */
+	private Integer basePrice;
+
+	/**
+	 * 割引率
+	 */
+	private Integer discountRate;
+
+	/**
 	 * 商品ID取得
 	 * @return 商品ID
 	 */
@@ -173,6 +183,38 @@ public class ItemBean {
 	 */
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
+	}
+
+	/**
+	 * 基本価格の取得
+	 * @return 基本価格
+	 */
+	public Integer getBasePrice() {
+		return basePrice;
+	}
+
+	/**
+	 * 基本価格のセット
+	 * @param basePrice 基本価格
+	 */
+	public void setBasePrice(Integer basePrice) {
+		this.basePrice = basePrice;
+	}
+
+	/**
+	 * 割引率の取得
+	 * @return 割引率
+	 */
+	public Integer getDiscountRate() {
+		return discountRate;
+	}
+
+	/**
+	 * 割引率のセット
+	 * @param discountRate 割引率
+	 */
+	public void setDiscountRate(Integer discountRate) {
+		this.discountRate = discountRate;
 	}
 
 }

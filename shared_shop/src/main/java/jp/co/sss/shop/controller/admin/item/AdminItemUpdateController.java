@@ -14,12 +14,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.entity.Category;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.form.ItemForm;
+import java.time.LocalDate;
+
 import jp.co.sss.shop.repository.CategoryRepository;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.service.BeanTools;
+import jp.co.sss.shop.service.PriceCalc;
 import jp.co.sss.shop.service.UploadFileService;
 import jp.co.sss.shop.util.Constant;
 
@@ -60,6 +65,18 @@ public class AdminItemUpdateController {
 	 */
 	@Autowired
 	BeanTools beanTools;
+
+	/**
+	 * 注文商品情報
+	 */
+	@Autowired
+	OrderItemRepository orderItemRepository;
+
+	/**
+	 * 料金計算サービス
+	 */
+	@Autowired
+	PriceCalc priceCalc;
 
 	/**
 	 * 変更入力画面　初期表示処理(POST)
@@ -120,6 +137,14 @@ public class AdminItemUpdateController {
 		}
 
 		model.addAttribute("itemForm", itemForm);
+
+		// 現在価格の計算（参考表示用）
+		Item item = itemRepository.findByIdAndDeleteFlag(itemForm.getId(), Constant.NOT_DELETED);
+		if (item != null) {
+			ItemBean tempBean = new ItemBean();
+			priceCalc.setDynamicPriceInfo(item, tempBean);
+			model.addAttribute("dynamicPrice", tempBean.getPrice());
+		}
 
 		// 変更入力画面　表示
 		return "admin/item/update_input";

@@ -239,10 +239,7 @@ public class ClientOrderRegistController {
 				// ダイナミックプライシングの計算
 				java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
 				Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(dbItem.getId(), date);
-				if (itemsSold == null) {
-					itemsSold = 0L;
-				}
-				int dynamicPrice = priceCalc.calculateDynamicPrice(dbItem, itemsSold);
+				int dynamicPrice = priceCalc.calculateDynamicPrice(dbItem, itemsSold != null ? itemsSold : 0L);
 				basket.setPrice(dynamicPrice);
 
 				updatedBasketBeans.add(basket);

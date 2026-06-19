@@ -40,7 +40,16 @@
 
 				</td>
 				<td><a th:href="@{/client/item/detail/{id}(id=${item.id})}" th:text="${item.name}"></a></td>
-				<td th:text="${item.price}"></td>
+				<td>
+					<th:block th:if="${item.discountRate != null}">
+						<del th:text="${item.basePrice}"></del>
+						<span th:text="${item.price}"></span>
+						<span style="color: red; font-weight: bold;" th:text="${item.discountRate} + '%OFF'"></span>
+					</th:block>
+					<th:block th:if="${item.discountRate == null}">
+						<span th:text="${item.price}"></span>
+					</th:block>
+				</td>
 				<td th:text="${item.categoryName}"></td>
 			</tr>
 		</table>

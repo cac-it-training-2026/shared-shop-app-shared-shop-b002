@@ -1,12 +1,16 @@
 package jp.co.sss.shop.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.bean.OrderItemBean;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.entity.OrderItem;
+import jp.co.sss.shop.repository.OrderItemRepository;
 
 /**
  * 料金計算用クラス
@@ -15,6 +19,12 @@ import jp.co.sss.shop.entity.OrderItem;
  */
 @Service
 public class PriceCalc {
+	/**
+	 * 注文商品情報
+	 */
+	@Autowired
+	OrderItemRepository orderItemRepository;
+
 	/**
 	 * ダイナミックプライシングに基づいた販売価格を計算
 	 * @param item 商品エンティティ
@@ -59,6 +69,32 @@ public class PriceCalc {
 		}
 
 		return (int) Math.round(calculatedPrice);
+	}
+
+	/**
+	 * 商品情報にダイナミックプライシングに関連する情報を設定
+	 * @param item 商品エンティティ
+	 * @param itemBean 商品情報Bean
+	 */
+	public void setDynamicPriceInfo(Item item, ItemBean itemBean) {
+		// 過去30日間の注文数量を取得
+		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+		if (itemsSold == null) {
+			itemsSold = 0L;
+		}
+
+		int dynamicPrice = calculateDynamicPrice(item, itemsSold);
+		itemBean.setPrice(dynamicPrice);
+
+		// 基本価格と割引率をセット
+		itemBean.setBasePrice(item.getPrice());
+		if (dynamicPrice < item.getPrice()) {
+			int discountRate = (int) Math.round((1.0 - (double) dynamicPrice / item.getPrice()) * 100);
+			itemBean.setDiscountRate(discountRate);
+		} else {
+			itemBean.setDiscountRate(null);
+		}
 	}
 
 	/**

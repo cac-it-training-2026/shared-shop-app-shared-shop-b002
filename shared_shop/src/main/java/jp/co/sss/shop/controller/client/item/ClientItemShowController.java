@@ -93,19 +93,7 @@ public class ClientItemShowController {
 
 		// ダイナミックプライシングの計算
 		for (int i = 0; i < itemList.size(); i++) {
-			Item item = itemList.get(i);
-			ItemBean itemBean = itemBeanList.get(i);
-
-			// 過去30日間の注文数量を取得
-			java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
-			Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
-			if (itemsSold == null) {
-				itemsSold = 0L;
-			}
-
-			// 動的な価格を計算してセット
-			int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
-			itemBean.setPrice(dynamicPrice);
+			priceCalc.setDynamicPriceInfo(itemList.get(i), itemBeanList.get(i));
 		}
 
 		// 商品情報をViewへ渡す
@@ -155,17 +143,7 @@ public class ClientItemShowController {
 
 		// ダイナミックプライシングの計算
 		for (int i = 0; i < itemList.size(); i++) {
-			Item item = itemList.get(i);
-			ItemBean itemBean = itemBeanList.get(i);
-
-			java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
-			Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
-			if (itemsSold == null) {
-				itemsSold = 0L;
-			}
-
-			int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
-			itemBean.setPrice(dynamicPrice);
+			priceCalc.setDynamicPriceInfo(itemList.get(i), itemBeanList.get(i));
 		}
 
 		model.addAttribute("items", itemBeanList);
@@ -197,13 +175,7 @@ public class ClientItemShowController {
 		ItemBean itemBean = beanTools.copyEntityToItemBean(item);
 
 		// ダイナミックプライシングの計算
-		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
-		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
-		if (itemsSold == null) {
-			itemsSold = 0L;
-		}
-		int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
-		itemBean.setPrice(dynamicPrice);
+		priceCalc.setDynamicPriceInfo(item, itemBean);
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("item", itemBean);

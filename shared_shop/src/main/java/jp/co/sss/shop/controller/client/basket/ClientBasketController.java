@@ -78,8 +78,7 @@ public class ClientBasketController {
 				if (itemsSold == null) {
 					itemsSold = 0L;
 				}
-				int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
-				basket.setPrice(dynamicPrice);
+				basket.setPrice(priceCalc.calculateDynamicPrice(item, itemsSold));
 
 				// 在庫切れ
 				if (item.getStock().equals(0)) {
@@ -143,8 +142,7 @@ public class ClientBasketController {
 				if (itemsSold == null) {
 					itemsSold = 0L;
 				}
-				int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
-				basket.setPrice(dynamicPrice);
+				basket.setPrice(priceCalc.calculateDynamicPrice(item, itemsSold));
 
 				// 在庫不足
 				if (basket.getStock() <= (basket.getOrderNum())) {
@@ -175,8 +173,7 @@ public class ClientBasketController {
 		if (itemsSold == null) {
 			itemsSold = 0L;
 		}
-		int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
-		basketBean.setPrice(dynamicPrice);
+		basketBean.setPrice(priceCalc.calculateDynamicPrice(item, itemsSold));
 
 		// リストへ追加
 		basketBeans.add(basketBean);
