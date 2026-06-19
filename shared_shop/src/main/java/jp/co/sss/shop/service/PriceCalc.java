@@ -15,6 +15,10 @@ import jp.co.sss.shop.entity.OrderItem;
 @Service
 public class PriceCalc {
 	/**
+	 * TODO: feat#06 ダイナミックプライシング機能の実装
+	 */
+
+	/**
 	 * 小計から注文した商品の合計金額を計算
 	 *
 	 * @param list
