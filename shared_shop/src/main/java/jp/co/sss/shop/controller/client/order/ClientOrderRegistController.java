@@ -17,7 +17,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.bean.UserBean;
+import jp.co.sss.shop.entity.Coupon;
 import jp.co.sss.shop.entity.Item;
+import jp.co.sss.shop.service.CouponService;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.entity.User;
@@ -58,6 +60,12 @@ public class ClientOrderRegistController {
 	 */
 	@Autowired
 	OrderItemRepository orderItemRepository;
+
+	/**
+	 * クーポン関連の処理を行うサービス
+	 */
+	@Autowired
+	CouponService couponService;
 
 	/**
 	 * セッション情報を管理するオブジェクト
@@ -260,8 +268,14 @@ public class ClientOrderRegistController {
 			model.addAttribute("orderItemBeans", null);
 		}
 
+		// 割引計算
+		Coupon appliedCoupon = (Coupon) session.getAttribute("appliedCoupon");
+		Integer discountAmount = couponService.calculateDiscount(appliedCoupon, totalAmount);
+
 		// 各種情報をリクエストスコープ（Model）に設定
 		model.addAttribute("total", totalAmount); //合計金額
+		model.addAttribute("discountAmount", discountAmount); //割引額
+		model.addAttribute("finalTotal", totalAmount - discountAmount); //最終合計
 		model.addAttribute("orderForm", form); //注文入力フォーム情報
 
 		return "client/order/check";
@@ -354,9 +368,11 @@ public class ClientOrderRegistController {
 			itemRepository.save(dbItem);
 		}
 
-		// セッションスコープの注文入力フォーム情報と買い物かご情報を削除
+		// セッションスコープの注文入力フォーム情報、買い物かご情報、クーポン情報を削除
 		session.removeAttribute("orderForm");
 		session.removeAttribute("basketBeans");
+		session.removeAttribute("appliedCoupon");
+		session.removeAttribute("discountAmount");
 
 		return "redirect:/client/order/complete";
 	}

@@ -9,12 +9,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.BasketBean;
+import jp.co.sss.shop.entity.Coupon;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.form.OrderForm;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.service.CouponService;
 
 /**
  * 買い物かごの基本クラス
@@ -24,6 +27,9 @@ import jp.co.sss.shop.repository.ItemRepository;
 public class ClientBasketController {
 	@Autowired
 	private ItemRepository itemRepository;
+
+	@Autowired
+	private CouponService couponService;
 
 	/**
 	 * 買い物かご一覧画面を表示する。
@@ -50,6 +56,7 @@ public class ClientBasketController {
 		// 在庫不足メッセージ表示用
 		List<String> itemNameListLessThan = new ArrayList<>();
 		// 買い物かごに商品があるか確認
+		Integer total = 0;
 		if (basketBeans != null) {
 			// 拡張for文でかご内の商品を1つずつ確認
 			for (BasketBean basket : basketBeans) {
@@ -69,15 +76,41 @@ public class ClientBasketController {
 				else if (item.getStock() < basket.getOrderNum()) {
 					itemNameListLessThan.add(item.getName());
 				}
+				// 合計金額の加算
+				total += item.getPrice() * basket.getOrderNum();
 			}
 		}
+
+		Coupon appliedCoupon = (Coupon) session.getAttribute("appliedCoupon");
+		Integer discountAmount = couponService.calculateDiscount(appliedCoupon, total);
+		session.setAttribute("discountAmount", discountAmount);
 
 		// リクエストスコープへ登録
 		model.addAttribute("itemNameListZero", itemNameListZero);
 		model.addAttribute("itemNameListLessThan", itemNameListLessThan);
 		model.addAttribute("basketBeans", basketBeans);
+		model.addAttribute("total", total);
 
 		return "client/basket/list";
+	}
+
+	/**
+	 * クーポンを適用する。
+	 * @param couponCode クーポンコード
+	 * @param session セッション
+	 * @param model モデル
+	 * @return 買い物かご一覧画面
+	 */
+	@RequestMapping(path = "/client/basket/coupon/apply", method = RequestMethod.POST)
+	public String applyCoupon(@RequestParam String couponCode, HttpSession session, Model model) {
+		Coupon coupon = couponService.validateCoupon(couponCode);
+		if (coupon == null) {
+			session.removeAttribute("appliedCoupon");
+			model.addAttribute("couponError", "入力されたクーポンコードは利用できません。");
+		} else {
+			session.setAttribute("appliedCoupon", coupon);
+		}
+		return showBasketlist(session, model);
 	}
 
 	/**

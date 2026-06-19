@@ -1,7 +1,5 @@
 package jp.co.sss.shop.bean;
 
-import jp.co.sss.shop.entity.Coupon;
-
 /**
  * 買い物かご内の商品情報クラス
  *
@@ -121,53 +119,11 @@ public class BasketBean {
 	}
 
 	/**
-	 * 適用されたクーポン
-	 */
-	private Coupon appliedCoupon;
-
-	/**
-	 * 割引額
-	 */
-	private Integer discountAmount;
-
-	/**
 	 * 買い物かごに入れる商品個数のセット
 	 * @param orderNum 注文個数
 	 */
 	public void setOrderNum(Integer orderNum) {
 		this.orderNum = orderNum;
-	}
-
-	/**
-	 * 適用されたクーポンの取得
-	 * @return 適用されたクーポン
-	 */
-	public Coupon getAppliedCoupon() {
-		return appliedCoupon;
-	}
-
-	/**
-	 * 適用されたクーポンのセット
-	 * @param appliedCoupon 適用されたクーポン
-	 */
-	public void setAppliedCoupon(Coupon appliedCoupon) {
-		this.appliedCoupon = appliedCoupon;
-	}
-
-	/**
-	 * 割引額の取得
-	 * @return 割引額
-	 */
-	public Integer getDiscountAmount() {
-		return discountAmount;
-	}
-
-	/**
-	 * 割引額のセット
-	 * @param discountAmount 割引額
-	 */
-	public void setDiscountAmount(Integer discountAmount) {
-		this.discountAmount = discountAmount;
 	}
 
 }
