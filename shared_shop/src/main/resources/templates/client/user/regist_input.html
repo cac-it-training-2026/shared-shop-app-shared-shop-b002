@@ -50,6 +50,7 @@
 				</li>
 			</ul>
 			<input type="hidden" name="authority" value="2" />
+			<input type="hidden" th:field="*{reRegist}" />
 			<input type="submit" value="確認" th:class="send_button" />
 		</form>
 		<form th:action="@{/}" method="post">
