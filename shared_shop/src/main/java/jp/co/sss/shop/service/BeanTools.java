@@ -233,10 +233,14 @@ public class BeanTools {
 
 		BeanUtils.copyProperties(entity, bean);
 
-		bean.setInsertDate(entity.getInsertDate().toString());
+		if (entity.getInsertDate() != null) {
+			bean.setInsertDate(entity.getInsertDate().toString());
+		}
 
 		// 会員名をレビュー情報に設定
-		bean.setUserName(entity.getUser().getName());
+		if (entity.getUser() != null) {
+			bean.setUserName(entity.getUser().getName());
+		}
 
 		return bean;
 	}
