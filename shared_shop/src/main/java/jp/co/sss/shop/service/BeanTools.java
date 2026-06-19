@@ -11,10 +11,12 @@ import jp.co.sss.shop.bean.CategoryBean;
 import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.bean.OrderBean;
 import jp.co.sss.shop.bean.OrderItemBean;
+import jp.co.sss.shop.bean.ReviewBean;
 import jp.co.sss.shop.entity.Category;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
+import jp.co.sss.shop.entity.Review;
 import jp.co.sss.shop.form.ItemForm;
 
 /**
@@ -218,5 +220,41 @@ public class BeanTools {
 			orderItemBeanList.add(orderItemBean);
 		}
 		return orderItemBeanList;
+	}
+
+	/**
+	 * Reviewエンティティの各フィールドの値をReviewBeanクラスにコピー
+	 *
+	 * @param entity  コピー元のエンティティ
+	 * @return コピー先のオブジェクト
+	 */
+	public ReviewBean copyEntityToReviewBean(Review entity) {
+		ReviewBean bean = new ReviewBean();
+
+		BeanUtils.copyProperties(entity, bean);
+
+		bean.setInsertDate(entity.getInsertDate().toString());
+
+		// 会員名をレビュー情報に設定
+		bean.setUserName(entity.getUser().getName());
+
+		return bean;
+	}
+
+	/**
+	 * Reviewエンティティの各フィールドの値をReviewBeanクラスにコピー(リスト形式)
+	 *
+	 * @param entityList コピー元のエンティティ(リスト形式)
+	 * @return コピー先のオブジェクト(リスト形式)
+	 */
+	public List<ReviewBean> copyEntityListToReviewBeanList(List<Review> entityList) {
+		List<ReviewBean> beanList = new ArrayList<ReviewBean>();
+
+		for (Review entity : entityList) {
+			ReviewBean bean = copyEntityToReviewBean(entity);
+			beanList.add(bean);
+		}
+
+		return beanList;
 	}
 }

@@ -30,6 +30,8 @@
 				<dd th:text="*{categoryName}"></dd>
 				<dt>[[#{data.description}]]</dt>
 				<dd th:text="*{description}"></dd>
+				<dt>平均評価</dt>
+				<dd th:text="${#numbers.formatDecimal(averageRating, 1, 1)}"></dd>
 			</dl>
 		</div>
 		<div class="detail_button_area">
@@ -41,6 +43,61 @@
 				<input type="submit" value="戻る" class="back_button" />
 			</form>
 		</div>
+	</div>
+
+	<!-- レビュー表示エリア -->
+	<div class="review_area">
+		<h3 class="title">レビュー一覧</h3>
+		<div th:if="${#lists.isEmpty(reviews)}">
+			<p>まだレビューはありません。</p>
+		</div>
+		<div th:if="!${#lists.isEmpty(reviews)}" th:each="review : ${reviews}" class="review_item">
+			<div class="review_header">
+				<span class="review_rating" th:text="'評価: ' + ${review.rating}"></span>
+				<span class="review_title" th:text="${review.title}"></span>
+			</div>
+			<div class="review_info">
+				<span class="review_user" th:text="'投稿者: ' + ${review.userName}"></span>
+				<span class="review_date" th:text="'投稿日: ' + ${review.insertDate}"></span>
+			</div>
+			<div class="review_content">
+				<p th:text="${review.content}"></p>
+			</div>
+		</div>
+	</div>
+
+	<!-- レビュー投稿フォーム（ログイン済みの一般会員のみ表示） -->
+	<div class="review_form_area" th:if="${session.user != null and session.user.authority == 2}">
+		<h3 class="title">レビューを投稿する</h3>
+		<form th:action="@{/client/review/regist}" th:object="${reviewForm}" method="post" class="user_info_form">
+			<ul th:if="${#fields.hasErrors('*')}" class="error_list">
+				<li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+			</ul>
+			<input type="hidden" th:field="*{itemId}" />
+			<dl class="info_list">
+				<dt>評価</dt>
+				<dd>
+					<select th:field="*{rating}">
+						<option value="5">5</option>
+						<option value="4">4</option>
+						<option value="3">3</option>
+						<option value="2">2</option>
+						<option value="1">1</option>
+					</select>
+				</dd>
+				<dt>タイトル</dt>
+				<dd>
+					<input type="text" th:field="*{title}" />
+				</dd>
+				<dt>内容</dt>
+				<dd>
+					<textarea th:field="*{content}" rows="4" cols="50"></textarea>
+				</dd>
+			</dl>
+			<div class="detail_button_area">
+				<input type="submit" value="レビューを投稿する" class="send_button" />
+			</div>
+		</form>
 	</div>
 
 </body>
