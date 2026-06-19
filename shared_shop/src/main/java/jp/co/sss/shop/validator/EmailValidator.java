@@ -46,7 +46,7 @@ public class EmailValidator implements ConstraintValidator<EmailCheck, Object> {
 		User user = userRepository.findByEmail(emailProp);
 
 		if (user == null) {
-			if (reRegistProp != null && reRegistProp) {
+			if (Boolean.TRUE.equals(reRegistProp)) {
 				// 再登録モードなのにユーザーが見つからない
 				context.disableDefaultConstraintViolation();
 				context.buildConstraintViolationWithTemplate("{userRegist.notFound.reRegist.message}")
@@ -57,32 +57,33 @@ public class EmailValidator implements ConstraintValidator<EmailCheck, Object> {
 		}
 
 		if (user.getId().equals(idProp)) {
-			// 本人ならOK
+			// プロフィール更新時は、自分自身のメールアドレスならOK
 			return true;
 		}
 
-		if (user.getDeleteFlag() == Constant.DELETED) {
-			if (reRegistProp != null && reRegistProp) {
-				// 再登録モードで、削除済みユーザーが見つかった -> OK
+		Integer deleteFlag = user.getDeleteFlag();
+		if (deleteFlag != null && deleteFlag == Constant.DELETED) {
+			if (Boolean.TRUE.equals(reRegistProp)) {
+				// 再登録モードで、削除済みユーザーが見つかった -> 許可
 				return true;
 			} else {
-				// 新規登録モードで、削除済みユーザーが見つかった -> 再登録へ誘導
+				// 新規登録モードで、削除済みユーザーが見つかった -> 再登録リンクへ誘導
 				context.disableDefaultConstraintViolation();
 				context.buildConstraintViolationWithTemplate("{userRegist.deleted.regist.message}")
 						.addConstraintViolation();
 				return false;
 			}
 		} else {
-			// 生存ユーザーが見つかった
-			if (reRegistProp != null && reRegistProp) {
-				// 再登録モードなのに生存ユーザーがいる
+			// 生存ユーザー（deleteFlag=0 または null）が見つかった
+			if (Boolean.TRUE.equals(reRegistProp)) {
+				// 再登録モードなのに生存ユーザーがいる -> ログインを促すメッセージなど
 				context.disableDefaultConstraintViolation();
 				context.buildConstraintViolationWithTemplate("{userRegist.notDeleted.reRegist.message}")
 						.addConstraintViolation();
 				return false;
 			} else {
-				// 新規登録モードで生存ユーザーがいる
-				return false; // デフォルトメッセージを使用
+				// 新規登録モードで生存ユーザーがいる -> 重複エラー
+				return false; // デフォルトメッセージ（userRegist.duplicate.message）を使用
 			}
 		}
 	}
