@@ -19,12 +19,15 @@ import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.entity.Order;
+import java.time.LocalDate;
+
 import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.OrderForm;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.repository.OrderRepository;
+import jp.co.sss.shop.service.PriceCalc;
 import jp.co.sss.shop.repository.UserRepository;
 
 /**
@@ -58,6 +61,12 @@ public class ClientOrderRegistController {
 	 */
 	@Autowired
 	OrderItemRepository orderItemRepository;
+
+	/**
+	 * 料金計算サービス
+	 */
+	@Autowired
+	PriceCalc priceCalc;
 
 	/**
 	 * セッション情報を管理するオブジェクト
@@ -226,16 +235,26 @@ public class ClientOrderRegistController {
 
 				// 在庫数を最新の状態に更新
 				basket.setStock(dbItem.getStock());
+
+				// ダイナミックプライシングの計算
+				java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+				Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(dbItem.getId(), date);
+				if (itemsSold == null) {
+					itemsSold = 0L;
+				}
+				int dynamicPrice = priceCalc.calculateDynamicPrice(dbItem, itemsSold);
+				basket.setPrice(dynamicPrice);
+
 				updatedBasketBeans.add(basket);
 				// 買い物かご情報から、商品ごとの金額小計を算出し、注文商品情報リストに保存
-				int subTotal = dbItem.getPrice() * basket.getOrderNum();
+				int subTotal = dynamicPrice * basket.getOrderNum();
 				totalAmount += subTotal;
 
 				// 注文商品情報リスト（Mapのリスト）にデータを格納
 				Map<String, Object> orderItemMap = new HashMap<>();
 				orderItemMap.put("name", dbItem.getName());
 				orderItemMap.put("image", dbItem.getImage());
-				orderItemMap.put("price", dbItem.getPrice());
+				orderItemMap.put("price", dynamicPrice);
 				orderItemMap.put("orderNum", basket.getOrderNum());
 				orderItemMap.put("subtotal", subTotal);
 
@@ -343,7 +362,8 @@ public class ClientOrderRegistController {
 
 			orderItem.setQuantity(basket.getOrderNum());
 
-			orderItem.setPrice(dbItem.getPrice());
+			// 買い物かご（または最新）の動的価格を保存
+			orderItem.setPrice(basket.getPrice());
 
 			// 注文商品テーブルのDB登録実施
 			orderItemRepository.save(orderItem);

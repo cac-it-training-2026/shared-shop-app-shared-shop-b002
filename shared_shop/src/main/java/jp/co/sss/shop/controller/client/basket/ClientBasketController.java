@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import java.time.LocalDate;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -15,6 +17,8 @@ import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.form.OrderForm;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.OrderItemRepository;
+import jp.co.sss.shop.service.PriceCalc;
 
 /**
  * 買い物かごの基本クラス
@@ -24,6 +28,12 @@ import jp.co.sss.shop.repository.ItemRepository;
 public class ClientBasketController {
 	@Autowired
 	private ItemRepository itemRepository;
+
+	@Autowired
+	private OrderItemRepository orderItemRepository;
+
+	@Autowired
+	private PriceCalc priceCalc;
 
 	/**
 	 * 買い物かご一覧画面を表示する。
@@ -61,6 +71,16 @@ public class ClientBasketController {
 				}
 				// BasketBeanの在庫を更新
 				basket.setStock(item.getStock());
+
+				// ダイナミックプライシングの計算
+				java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+				Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+				if (itemsSold == null) {
+					itemsSold = 0L;
+				}
+				int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
+				basket.setPrice(dynamicPrice);
+
 				// 在庫切れ
 				if (item.getStock().equals(0)) {
 					itemNameListZero.add(item.getName());
@@ -116,6 +136,16 @@ public class ClientBasketController {
 				Item item = itemRepository.findByIdAndDeleteFlag(basket.getId(), 0);
 				// BasketBeanの在庫を更新
 				basket.setStock(item.getStock());
+
+				// ダイナミックプライシングの計算
+				java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+				Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+				if (itemsSold == null) {
+					itemsSold = 0L;
+				}
+				int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
+				basket.setPrice(dynamicPrice);
+
 				// 在庫不足
 				if (basket.getStock() <= (basket.getOrderNum())) {
 					itemNameListLessThan.add(basket.getName());
@@ -138,6 +168,15 @@ public class ClientBasketController {
 		basketBean.setId(item.getId());
 		basketBean.setName(item.getName());
 		basketBean.setStock(item.getStock());
+
+		// ダイナミックプライシングの計算
+		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+		if (itemsSold == null) {
+			itemsSold = 0L;
+		}
+		int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
+		basketBean.setPrice(dynamicPrice);
 
 		// リストへ追加
 		basketBeans.add(basketBean);

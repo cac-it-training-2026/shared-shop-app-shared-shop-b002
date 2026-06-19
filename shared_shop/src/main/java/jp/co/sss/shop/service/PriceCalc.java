@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import jp.co.sss.shop.bean.OrderItemBean;
+import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.entity.OrderItem;
 
 /**
@@ -15,8 +16,50 @@ import jp.co.sss.shop.entity.OrderItem;
 @Service
 public class PriceCalc {
 	/**
-	 * TODO: feat#06 ダイナミックプライシング機能の実装
+	 * ダイナミックプライシングに基づいた販売価格を計算
+	 * @param item 商品エンティティ
+	 * @param itemsSold 直近の注文数（数量合計）
+	 * @return 計算後の販売価格
 	 */
+	public int calculateDynamicPrice(Item item, long itemsSold) {
+		int basePrice = item.getPrice();
+		int stock = item.getStock();
+
+		// 在庫補正率の決定
+		double stockRate;
+		if (stock < 10) {
+			stockRate = 1.20;
+		} else if (stock <= 30) {
+			stockRate = 1.10;
+		} else if (stock <= 100) {
+			stockRate = 1.00;
+		} else {
+			stockRate = 0.90;
+		}
+
+		// 注文補正率の決定
+		double orderRate;
+		if (itemsSold <= 20) {
+			orderRate = 1.00;
+		} else if (itemsSold <= 50) {
+			orderRate = 1.10;
+		} else {
+			orderRate = 1.15;
+		}
+
+		// 販売価格の算出
+		double calculatedPrice = basePrice * stockRate * orderRate;
+
+		// 制約：0円以上、基本価格の200%以下
+		double maxPrice = basePrice * 2.0;
+		if (calculatedPrice < 0) {
+			calculatedPrice = 0;
+		} else if (calculatedPrice > maxPrice) {
+			calculatedPrice = maxPrice;
+		}
+
+		return (int) Math.round(calculatedPrice);
+	}
 
 	/**
 	 * 小計から注文した商品の合計金額を計算

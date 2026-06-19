@@ -23,8 +23,10 @@
 			<dl class="item_detail_list">
 				<dt>[[#{itemForm.name}]]</dt>
 				<dd th:text="*{name}"></dd>
-				<dt>[[#{itemForm.price}]]</dt>
-				<dd th:text="*{price}"></dd>
+				<dt>基本価格</dt>
+				<dd th:text="${item.price}"></dd>
+				<dt>現在価格</dt>
+				<dd th:text="${itemBean.price}"></dd>
 				<dt>[[#{itemForm.stock}]]</dt>
 				<dd th:text="*{stock}"></dd>
 				<dt>[[#{data.category}]]</dt>

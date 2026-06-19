@@ -1,5 +1,7 @@
 package jp.co.sss.shop.controller.admin.item;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.service.BeanTools;
+import jp.co.sss.shop.service.PriceCalc;
 import jp.co.sss.shop.util.Constant;
 
 /**
@@ -44,6 +48,18 @@ public class AdminItemShowController {
 	BeanTools beanTools;
 
 	/**
+	 * 注文商品情報
+	 */
+	@Autowired
+	OrderItemRepository orderItemRepository;
+
+	/**
+	 * 料金計算サービス
+	 */
+	@Autowired
+	PriceCalc priceCalc;
+
+	/**
 	 * 一覧データ取得、一覧表示　処理
 	 *
 	 * @param model Viewとの値受渡し
@@ -67,11 +83,31 @@ public class AdminItemShowController {
 
 		// エンティティ内のページ情報付きの検索結果からレコードの情報だけをJavaBeansに保存
 		List<Item> itemList = itemsPage.getContent();
+		List<ItemBean> itemBeanList = new ArrayList<>();
+
+		for (Item item : itemList) {
+			ItemBean itemBean = beanTools.copyEntityToItemBean(item);
+
+			// ダイナミックプライシングの計算
+			java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+			Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+			if (itemsSold == null) {
+				itemsSold = 0L;
+			}
+			int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
+			itemBean.setPrice(dynamicPrice);
+
+			// 基本価格をセット（ItemBeanのpriceを動的価格にしたので、別途保持が必要かもしれないが、
+			// 既存のテンプレートでどう表示するかによる。ここではitemBean.setPriceは動的価格とする）
+			// テンプレート側でitem.price (Entity) と itemBean.price (Dynamic) を使い分ける
+			itemBeanList.add(itemBean);
+		}
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("registrable", registrable);
 		model.addAttribute("pages", itemsPage);
-		model.addAttribute("items", itemList);
+		model.addAttribute("items", itemList); // Entity（基本価格保持）
+		model.addAttribute("itemBeans", itemBeanList); // Bean（動的価格保持）
 
 		//商品登録・変更・削除用のセッションスコープを初期化
 		session.removeAttribute("itemForm");
@@ -102,8 +138,18 @@ public class AdminItemShowController {
 		//Itemエンティティの各フィールドの値をItemBeanにコピー
 		ItemBean itemBean = beanTools.copyEntityToItemBean(item);
 
+		// ダイナミックプライシングの計算
+		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+		if (itemsSold == null) {
+			itemsSold = 0L;
+		}
+		int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
+		itemBean.setPrice(dynamicPrice);
+
 		// 商品情報をViewへ渡す
-		model.addAttribute("item", itemBean);
+		model.addAttribute("item", item); // Entity (Base Price)
+		model.addAttribute("itemBean", itemBean); // Bean (Dynamic Price)
 		//商品登録・変更・削除用のセッションスコープを初期化
 		session.removeAttribute("itemForm");
 

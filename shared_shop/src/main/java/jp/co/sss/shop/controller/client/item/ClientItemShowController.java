@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import java.time.LocalDate;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.sss.shop.bean.ItemBean;
@@ -16,7 +18,9 @@ import jp.co.sss.shop.entity.Category;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.CategoryRepository;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.service.BeanTools;
+import jp.co.sss.shop.service.PriceCalc;
 import jp.co.sss.shop.util.Constant;
 
 /**
@@ -50,6 +54,18 @@ public class ClientItemShowController {
 	@Autowired
 	CategoryRepository categoryRepository;
 
+	/**
+	 * 注文商品情報
+	 */
+	@Autowired
+	OrderItemRepository orderItemRepository;
+
+	/**
+	 * 料金計算サービス
+	 */
+	@Autowired
+	PriceCalc priceCalc;
+
 	@ModelAttribute("categories")
 	public List<Category> getCategories() {
 		List<Category> list = categoryRepository.findByDeleteFlagOrderByInsertDateDescIdDesc(Constant.NOT_DELETED);
@@ -74,6 +90,23 @@ public class ClientItemShowController {
 
 		// エンティティ内の検索結果をJavaBeansにコピー
 		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
+
+		// ダイナミックプライシングの計算
+		for (int i = 0; i < itemList.size(); i++) {
+			Item item = itemList.get(i);
+			ItemBean itemBean = itemBeanList.get(i);
+
+			// 過去30日間の注文数量を取得
+			java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+			Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+			if (itemsSold == null) {
+				itemsSold = 0L;
+			}
+
+			// 動的な価格を計算してセット
+			int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
+			itemBean.setPrice(dynamicPrice);
+		}
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("items", itemBeanList);
@@ -119,6 +152,22 @@ public class ClientItemShowController {
 
 		// JavaBeansへのコピーと画面への引き渡し
 		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
+
+		// ダイナミックプライシングの計算
+		for (int i = 0; i < itemList.size(); i++) {
+			Item item = itemList.get(i);
+			ItemBean itemBean = itemBeanList.get(i);
+
+			java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+			Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+			if (itemsSold == null) {
+				itemsSold = 0L;
+			}
+
+			int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
+			itemBean.setPrice(dynamicPrice);
+		}
+
 		model.addAttribute("items", itemBeanList);
 		model.addAttribute("sortType", sortType);
 
@@ -146,6 +195,15 @@ public class ClientItemShowController {
 
 		// Itemエンティティの各フィールドの値をItemBeanにコピー
 		ItemBean itemBean = beanTools.copyEntityToItemBean(item);
+
+		// ダイナミックプライシングの計算
+		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+		if (itemsSold == null) {
+			itemsSold = 0L;
+		}
+		int dynamicPrice = priceCalc.calculateDynamicPrice(item, itemsSold);
+		itemBean.setPrice(dynamicPrice);
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("item", itemBean);
