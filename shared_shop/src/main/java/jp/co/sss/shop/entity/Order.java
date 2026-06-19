@@ -69,7 +69,7 @@ public class Order {
 	/**
 	 * 削除フラグ
 	 */
-	@Column
+	@Column(insertable = false)
 	private Integer deleteFlag;
 
 	/**

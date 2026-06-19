@@ -328,9 +328,6 @@ public class ClientOrderRegistController {
 		order.setPhoneNumber(form.getPhoneNumber());
 		order.setPayMethod(form.getPayMethod());
 
-		// 削除フラグの初期値を設定
-		order.setDeleteFlag(0);
-
 		// 注文テーブルのDB登録実施
 		Order savedOrder = orderRepository.save(order);
 
