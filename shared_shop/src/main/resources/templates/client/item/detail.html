@@ -37,6 +37,9 @@
 				<input type="hidden" th:field="*{id}" />
 				<input type="submit" value="買い物かごに入れる" class="send_button" />
 			</form>
+			<form th:action="@{/client/favorite/add/{itemId}(itemId=*{id})}" method="post" class="user_info_form" th:if="${session.user != null}">
+				<input type="submit" th:value="#{favorite.add}" class="send_button" />
+			</form>
 			<form th:action="@{/client/item/list/1}" method="post">
 				<input type="submit" value="戻る" class="back_button" />
 			</form>
