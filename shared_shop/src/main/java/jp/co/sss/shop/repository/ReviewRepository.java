@@ -19,4 +19,11 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 	 * @return レビューエンティティのリスト
 	 */
 	List<Review> findByItemIdOrderByInsertDateDesc(Integer itemId);
+
+	/**
+	 * 注文明細IDに基づきレビューを取得
+	 * @param orderItemId 注文明細ID
+	 * @return レビューエンティティ
+	 */
+	Review findByOrderItemId(Integer orderItemId);
 }

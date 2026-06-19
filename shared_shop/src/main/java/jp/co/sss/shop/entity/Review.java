@@ -65,6 +65,13 @@ public class Review {
 	private User user;
 
 	/**
+	 * 注文商品情報
+	 */
+	@ManyToOne
+	@JoinColumn(name = "order_item_id", referencedColumnName = "id")
+	private OrderItem orderItem;
+
+	/**
 	 * レビューIDの取得
 	 * @return レビューID
 	 */
@@ -174,5 +181,21 @@ public class Review {
 	 */
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	/**
+	 * 注文商品情報の取得
+	 * @return 注文商品情報
+	 */
+	public OrderItem getOrderItem() {
+		return orderItem;
+	}
+
+	/**
+	 * 注文商品情報のセット
+	 * @param orderItem 注文商品情報
+	 */
+	public void setOrderItem(OrderItem orderItem) {
+		this.orderItem = orderItem;
 	}
 }

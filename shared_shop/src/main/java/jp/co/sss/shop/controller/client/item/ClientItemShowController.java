@@ -167,17 +167,13 @@ public class ClientItemShowController {
 
 		// 平均評価の算出
 		Double averageRating = 0.0;
+		String averageStar = "☆☆☆☆☆";
 		if (!reviewList.isEmpty()) {
 			averageRating = reviewList.stream().mapToInt(Review::getRating).average().orElse(0.0);
+			averageStar = beanTools.convertRatingToStar((int) Math.round(averageRating));
 		}
 		model.addAttribute("averageRating", averageRating);
-
-		// レビュー投稿用フォームの追加（もしモデルに既になければ）
-		if (!model.containsAttribute("reviewForm")) {
-			ReviewForm reviewForm = new ReviewForm();
-			reviewForm.setItemId(id);
-			model.addAttribute("reviewForm", reviewForm);
-		}
+		model.addAttribute("averageStar", averageStar);
 
 		return "client/item/detail";
 	}

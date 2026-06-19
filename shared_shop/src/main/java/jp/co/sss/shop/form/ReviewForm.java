@@ -19,6 +19,11 @@ public class ReviewForm implements Serializable {
 	private Integer itemId;
 
 	/**
+	 * 注文明細ID
+	 */
+	private Integer orderItemId;
+
+	/**
 	 * 評価 (1-5)
 	 */
 	@NotNull
@@ -46,6 +51,22 @@ public class ReviewForm implements Serializable {
 	 */
 	public Integer getItemId() {
 		return itemId;
+	}
+
+	/**
+	 * 注文明細ID取得
+	 * @return 注文明細ID
+	 */
+	public Integer getOrderItemId() {
+		return orderItemId;
+	}
+
+	/**
+	 * 注文明細IDセット
+	 * @param orderItemId 注文明細ID
+	 */
+	public void setOrderItemId(Integer orderItemId) {
+		this.orderItemId = orderItemId;
 	}
 
 	/**

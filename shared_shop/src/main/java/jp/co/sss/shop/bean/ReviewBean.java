@@ -36,6 +36,11 @@ public class ReviewBean {
 	private String userName;
 
 	/**
+	 * 星記号
+	 */
+	private String star;
+
+	/**
 	 * レビューID取得
 	 * @return レビューID
 	 */
@@ -129,5 +134,21 @@ public class ReviewBean {
 	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	/**
+	 * 星記号取得
+	 * @return 星記号
+	 */
+	public String getStar() {
+		return star;
+	}
+
+	/**
+	 * 星記号セット
+	 * @param star 星記号
+	 */
+	public void setStar(String star) {
+		this.star = star;
 	}
 }

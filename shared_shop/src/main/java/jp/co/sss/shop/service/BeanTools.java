@@ -207,6 +207,7 @@ public class BeanTools {
 		for (OrderItem orderItem : orderItemList) {
 			OrderItemBean orderItemBean = new OrderItemBean();
 
+			orderItemBean.setOrderItemId(orderItem.getId());
 			orderItemBean.setName(orderItem.getItem().getName());
 			orderItemBean.setPrice(orderItem.getPrice());
 			orderItemBean.setOrderNum(orderItem.getQuantity());
@@ -242,7 +243,30 @@ public class BeanTools {
 			bean.setUserName(entity.getUser().getName());
 		}
 
+		// 星記号の設定
+		if (entity.getRating() != null) {
+			bean.setStar(convertRatingToStar(entity.getRating()));
+		}
+
 		return bean;
+	}
+
+	/**
+	 * 評価数値を星記号文字列に変換
+	 *
+	 * @param rating 評価
+	 * @return 星記号文字列
+	 */
+	public String convertRatingToStar(Integer rating) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 5; i++) {
+			if (i < rating) {
+				sb.append("★");
+			} else {
+				sb.append("☆");
+			}
+		}
+		return sb.toString();
 	}
 
 	/**
