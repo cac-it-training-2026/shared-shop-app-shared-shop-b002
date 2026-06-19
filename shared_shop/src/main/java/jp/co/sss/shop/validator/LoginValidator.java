@@ -4,6 +4,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.sql.Timestamp;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -45,10 +47,34 @@ public class LoginValidator implements ConstraintValidator<LoginCheck, Object> {
 
 		if (user != null && user.getIsLocked() != null && user.getIsLocked() == Constant.LOCKED) {
 			// アカウントロック中の場合
-			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("{msg.login.account.locked}")
-					.addConstraintViolation();
-			return false;
+
+			// ロック解除判定
+			Timestamp lockedTime = user.getLockedTime();
+			if (lockedTime != null) {
+				long currentTimeMillis = System.currentTimeMillis();
+				long lockedTimeMillis = lockedTime.getTime();
+				long durationMillis = (long) Constant.LOCK_DURATION_MINUTES * 60 * 1000;
+
+				if (currentTimeMillis - lockedTimeMillis >= durationMillis) {
+					// 30分経過していればロック解除
+					user.setIsLocked(Constant.UNLOCKED);
+					user.setLoginAttemptCount(0);
+					user.setLockedTime(null);
+					userRepository.save(user);
+				} else {
+					// 30分未経過
+					context.disableDefaultConstraintViolation();
+					context.buildConstraintViolationWithTemplate("{msg.login.account.locked}")
+							.addConstraintViolation();
+					return false;
+				}
+			} else {
+				// 時刻が記録されていない場合は念のためロック継続
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate("{msg.login.account.locked}")
+						.addConstraintViolation();
+				return false;
+			}
 		}
 
 		if (user != null && passwordProp.equals(user.getPassword())) {
@@ -80,6 +106,8 @@ public class LoginValidator implements ConstraintValidator<LoginCheck, Object> {
 				if (attemptCount >= Constant.MAX_LOGIN_ATTEMPTS) {
 					// ロック状態にする
 					user.setIsLocked(Constant.LOCKED);
+					// ロック時刻を記録
+					user.setLockedTime(new Timestamp(System.currentTimeMillis()));
 				}
 				userRepository.save(user);
 			}

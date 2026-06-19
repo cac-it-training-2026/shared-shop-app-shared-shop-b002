@@ -11,6 +11,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
+import java.sql.Timestamp;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintValidatorContext;
 import jp.co.sss.shop.annotation.LoginCheck;
@@ -91,7 +93,7 @@ public class AccountLockTest {
     }
 
     @Test
-    public void testLockedAccountCannotLogin() {
+    public void testLockedAccountCannotLoginWithin30Min() {
         String email = "locked@example.com";
         String password = "correctpassword";
 
@@ -99,6 +101,8 @@ public class AccountLockTest {
         user.setEmail(email);
         user.setPassword(password);
         user.setIsLocked(Constant.LOCKED);
+        // 現在時刻から10分前をロック時刻に設定
+        user.setLockedTime(new Timestamp(System.currentTimeMillis() - 10 * 60 * 1000));
 
         when(userRepository.findByEmailAndDeleteFlag(email, Constant.NOT_DELETED)).thenReturn(user);
         when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
@@ -109,6 +113,32 @@ public class AccountLockTest {
 
         assertFalse(result);
         verify(context).disableDefaultConstraintViolation();
+    }
+
+    @Test
+    public void testLockedAccountCanLoginAfter30Min() {
+        String email = "locked@example.com";
+        String password = "correctpassword";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setIsLocked(Constant.LOCKED);
+        // 現在時刻から31分前をロック時刻に設定
+        user.setLockedTime(new Timestamp(System.currentTimeMillis() - 31 * 60 * 1000));
+
+        when(userRepository.findByEmailAndDeleteFlag(email, Constant.NOT_DELETED)).thenReturn(user);
+
+        LoginFormStub form = new LoginFormStub(email, password);
+
+        boolean result = loginValidator.isValid(form, context);
+
+        // 31分経過しているのでロック解除されてログイン成功
+        assertTrue(result);
+        assertEquals(Constant.UNLOCKED, user.getIsLocked());
+        assertEquals(0, user.getLoginAttemptCount());
+        assertNull(user.getLockedTime());
+        verify(userRepository).save(user);
     }
 
     @Test

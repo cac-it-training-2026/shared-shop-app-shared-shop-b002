@@ -1,6 +1,7 @@
 package jp.co.sss.shop.entity;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -92,6 +93,12 @@ public class User {
 	 */
 	@Column(insertable = false)
 	private Integer isLocked;
+
+	/**
+	 * ロック時刻
+	 */
+	@Column(insertable = false)
+	private Timestamp lockedTime;
 
 	/**
 	 * 会員IDの取得
@@ -283,5 +290,21 @@ public class User {
 	 */
 	public void setIsLocked(Integer isLocked) {
 		this.isLocked = isLocked;
+	}
+
+	/**
+	 * ロック時刻の取得
+	 * @return ロック時刻
+	 */
+	public Timestamp getLockedTime() {
+		return lockedTime;
+	}
+
+	/**
+	 * ロック時刻のセット
+	 * @param lockedTime ロック時刻
+	 */
+	public void setLockedTime(Timestamp lockedTime) {
+		this.lockedTime = lockedTime;
 	}
 }

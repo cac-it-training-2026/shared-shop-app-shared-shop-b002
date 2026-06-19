@@ -63,4 +63,7 @@ public class Constant {
 	/** アカウントロック状態(未ロック) */
 	public static final int UNLOCKED = 0;
 
+	/** ロック時間(分) */
+	public static final int LOCK_DURATION_MINUTES = 30;
+
 }
