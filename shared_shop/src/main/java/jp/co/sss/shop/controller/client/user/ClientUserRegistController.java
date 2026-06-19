@@ -15,6 +15,7 @@ import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.util.Constant;
 
 /**
  * 会員登録機能を制御するコントローラー
@@ -148,16 +149,23 @@ public class ClientUserRegistController {
 		// セッションスコープから入力フォーム情報を取得
 		UserForm form = (UserForm) session.getAttribute("userForm");
 
-		// 入力フォーム情報を元にDB登録用エンティティオブジェクトを生成
-		User user = new User();
-		user.setId(form.getId()); // フォームの値をエンティティに移す
+		// メールアドレスに該当する会員情報を取得
+		User user = repository.findByEmail(form.getEmail());
+
+		if (user == null) {
+			// 新規会員の場合
+			user = new User();
+		}
+
+		// 入力フォーム情報をエンティティに移す
 		user.setEmail(form.getEmail());
 		user.setPassword(form.getPassword());
 		user.setName(form.getName());
 		user.setPostalCode(form.getPostalCode());
 		user.setAddress(form.getAddress());
 		user.setPhoneNumber(form.getPhoneNumber());
-		user.setAuthority(2);// DB登録
+		user.setAuthority(Constant.AUTH_CLIENT);
+		user.setDeleteFlag(Constant.NOT_DELETED);
 
 		repository.save(user); // リポジトリを使って保存
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import jp.co.sss.shop.annotation.EmailCheck;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.util.Constant;
 
 /**
  * メールアドレス重複チェックの独自検証クラス
@@ -42,8 +43,8 @@ public class EmailValidator implements ConstraintValidator<EmailCheck, Object> {
 		Integer idProp = (Integer) beanWrapper.getPropertyValue(this.id);
 		User user = userRepository.findByEmail(emailProp);
 
-		if (user == null || user.getId() == idProp) {
-			//会員が存在していないもしくは、メールアドレス利用者と会員IDが一致の場合 有効
+		if (user == null || user.getId() == idProp || user.getDeleteFlag() == Constant.DELETED) {
+			// 会員が存在していない、メールアドレス利用者と会員IDが一致、もしくは論理削除済みの場合 有効
 			isValidFlg = true;
 		} else {
 			//会員が存在している、
