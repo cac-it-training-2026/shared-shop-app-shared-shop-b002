@@ -113,8 +113,8 @@ public class ClientOrderShowController {
 		if (loginUser == null) {
 			return "redirect:/login";
 		}
-		// 表示する注文情報を生成
-		Order order = orderRepository.getReferenceById(id);
+		// 指定された注文IDとログインユーザーに紐づく注文情報を取得し、認可制御を行う
+		Order order = orderRepository.findByIdAndUserId(id, loginUser.getId());
 
 		if (order == null) {
 			return "redirect:/syserror";

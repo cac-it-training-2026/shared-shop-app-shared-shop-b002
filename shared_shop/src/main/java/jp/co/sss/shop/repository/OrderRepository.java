@@ -30,4 +30,12 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 			Integer userId,
 			Pageable pageable);
 
+	/**
+	 * 注文IDとユーザーIDに合致する注文情報を取得
+	 * @param id 注文ID
+	 * @param userId ユーザーID
+	 * @return 注文エンティティ
+	 */
+	Order findByIdAndUserId(Integer id, Integer userId);
+
 }
