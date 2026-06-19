@@ -67,6 +67,12 @@ public class Order {
 	private Date insertDate;
 
 	/**
+	 * 削除フラグ
+	 */
+	@Column
+	private Integer deleteFlag;
+
+	/**
 	 * 会員情報
 	 */
 	@ManyToOne
@@ -221,6 +227,22 @@ public class Order {
 	 */
 	public void setOrderItemsList(List<OrderItem> orderItemsList) {
 		this.orderItemsList = orderItemsList;
+	}
+
+	/**
+	 * 削除フラグの取得
+	 * @return 削除フラグ
+	 */
+	public Integer getDeleteFlag() {
+		return deleteFlag;
+	}
+
+	/**
+	 * 削除フラグのセット
+	 * @param deleteFlag 削除フラグ
+	 */
+	public void setDeleteFlag(Integer deleteFlag) {
+		this.deleteFlag = deleteFlag;
 	}
 
 }

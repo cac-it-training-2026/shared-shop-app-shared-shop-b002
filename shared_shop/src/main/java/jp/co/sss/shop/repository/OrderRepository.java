@@ -25,9 +25,30 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	@Query("SELECT o FROM Order o ORDER BY o.insertDate DESC,o.id DESC")
 	Page<Order> findAllOrderByInsertdateDescIdDesc(Pageable pageable);
 
+	/**
+	 * 削除フラグを条件に、注文日付降順で注文情報すべてを検索(管理者機能で利用)
+	 * @param deleteFlag 削除フラグ
+	 * @param pageable ページング情報
+	 * @return 注文エンティティのページオブジェクト
+	 */
+	@Query("SELECT o FROM Order o WHERE o.deleteFlag = :deleteFlag ORDER BY o.insertDate DESC, o.id DESC")
+	Page<Order> findAllByDeleteFlagOrderByInsertDateDescIdDesc(Integer deleteFlag, Pageable pageable);
+
 	// ログインユーザーの注文のみ取得
 	Page<Order> findByUserIdOrderByInsertDateDescIdDesc(
 			Integer userId,
+			Pageable pageable);
+
+	/**
+	 * 削除フラグを条件に、ログインユーザーの注文のみ取得
+	 * @param userId ユーザーID
+	 * @param deleteFlag 削除フラグ
+	 * @param pageable ページング情報
+	 * @return 注文エンティティのページオブジェクト
+	 */
+	Page<Order> findByUserIdAndDeleteFlagOrderByInsertDateDescIdDesc(
+			Integer userId,
+			Integer deleteFlag,
 			Pageable pageable);
 
 	/**
@@ -37,5 +58,14 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	 * @return 注文エンティティ
 	 */
 	Order findByIdAndUserId(Integer id, Integer userId);
+
+	/**
+	 * 注文IDとユーザーID、および削除フラグに合致する注文情報を取得
+	 * @param id 注文ID
+	 * @param userId ユーザーID
+	 * @param deleteFlag 削除フラグ
+	 * @return 注文エンティティ
+	 */
+	Order findByIdAndUserIdAndDeleteFlag(Integer id, Integer userId, Integer deleteFlag);
 
 }

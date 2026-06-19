@@ -68,7 +68,7 @@ public class AdminOrderShowController {
 
 		// すべての注文情報を取得(注文日降順)
 		//表示画面でページングが必要なため、ページ情報付きの検索を行う
-		Page<Order> orderList = orderRepository.findAllOrderByInsertdateDescIdDesc(pageable);
+		Page<Order> orderList = orderRepository.findAllByDeleteFlagOrderByInsertDateDescIdDesc(0, pageable);
 
 		// 注文情報リストを生成
 		List<OrderBean> orderBeanList = new ArrayList<OrderBean>();
