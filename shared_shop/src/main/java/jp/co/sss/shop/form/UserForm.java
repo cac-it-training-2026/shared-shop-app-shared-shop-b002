@@ -73,7 +73,11 @@ public class UserForm implements Serializable {
 	 */
 	private Integer authority;
 
-	
+	/**
+	 * 再登録フラグ
+	 */
+	private boolean reRegist;
+
 	/**
 	 * 会員IDの取得
 	 * @return 会員ID
@@ -201,5 +205,20 @@ public class UserForm implements Serializable {
 		this.authority = authority;
 	}
 
+	/**
+	 * 再登録フラグの取得
+	 * @return 再登録フラグ
+	 */
+	public boolean isReRegist() {
+		return reRegist;
+	}
+
+	/**
+	 * 再登録フラグのセット
+	 * @param reRegist 再登録フラグ
+	 */
+	public void setReRegist(boolean reRegist) {
+		this.reRegist = reRegist;
+	}
 
 }

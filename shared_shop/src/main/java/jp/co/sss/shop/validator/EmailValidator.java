@@ -21,6 +21,7 @@ import jp.co.sss.shop.util.Constant;
 public class EmailValidator implements ConstraintValidator<EmailCheck, Object> {
 	private String email;
 	private String id;
+	private String reRegist;
 
 	@Autowired
 	UserRepository userRepository;
@@ -32,25 +33,58 @@ public class EmailValidator implements ConstraintValidator<EmailCheck, Object> {
 	public void initialize(EmailCheck annotation) {
 		this.email = annotation.fieldEmail();
 		this.id = annotation.fieldId();
+		this.reRegist = "reRegist"; // UserFormのフィールド名
 	}
 
 	@Override
 	public boolean isValid(Object value, ConstraintValidatorContext context) {
 		BeanWrapper beanWrapper = new BeanWrapperImpl(value);
-		boolean isValidFlg = false;
 
 		String emailProp = (String) beanWrapper.getPropertyValue(this.email);
 		Integer idProp = (Integer) beanWrapper.getPropertyValue(this.id);
+		Boolean reRegistProp = (Boolean) beanWrapper.getPropertyValue(this.reRegist);
 		User user = userRepository.findByEmail(emailProp);
 
-		if (user == null || user.getId() == idProp || user.getDeleteFlag() == Constant.DELETED) {
-			// 会員が存在していない、メールアドレス利用者と会員IDが一致、もしくは論理削除済みの場合 有効
-			isValidFlg = true;
-		} else {
-			//会員が存在している、
-			isValidFlg = false;
+		if (user == null) {
+			if (reRegistProp != null && reRegistProp) {
+				// 再登録モードなのにユーザーが見つからない
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate("{userRegist.notFound.reRegist.message}")
+						.addConstraintViolation();
+				return false;
+			}
+			return true;
 		}
-		return isValidFlg;
+
+		if (user.getId().equals(idProp)) {
+			// 本人ならOK
+			return true;
+		}
+
+		if (user.getDeleteFlag() == Constant.DELETED) {
+			if (reRegistProp != null && reRegistProp) {
+				// 再登録モードで、削除済みユーザーが見つかった -> OK
+				return true;
+			} else {
+				// 新規登録モードで、削除済みユーザーが見つかった -> 再登録へ誘導
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate("{userRegist.deleted.regist.message}")
+						.addConstraintViolation();
+				return false;
+			}
+		} else {
+			// 生存ユーザーが見つかった
+			if (reRegistProp != null && reRegistProp) {
+				// 再登録モードなのに生存ユーザーがいる
+				context.disableDefaultConstraintViolation();
+				context.buildConstraintViolationWithTemplate("{userRegist.notDeleted.reRegist.message}")
+						.addConstraintViolation();
+				return false;
+			} else {
+				// 新規登録モードで生存ユーザーがいる
+				return false; // デフォルトメッセージを使用
+			}
+		}
 	}
 
 }
