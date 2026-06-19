@@ -506,6 +506,11 @@ select {
     top: 5%;
 }
 
+.list_table td form {
+	display: inline-block;
+	margin: 0 5px;
+}
+
 /* ---- 詳細テーブル ---- */
 .detail_table {
 	width: 80%;
