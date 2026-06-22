@@ -26,9 +26,8 @@
 					<input type="text" th:field="*{name}" />
 				</li>
 				<li>
-					<label><span class="input_title">基本価格</span></label>
+					<label><span class="input_title">[[#{itemForm.price}]] (基準価格)</span></label>
 					<input type="text" th:field="*{price}" />
-					<span class="input_value" th:if="${dynamicPrice != null}"> (現在価格: <span th:text="${dynamicPrice}"></span>)</span>
 				</li>
 				<li>
 					<label><span class="input_title">[[#{itemForm.stock}]]</span></label>

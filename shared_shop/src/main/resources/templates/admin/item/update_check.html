@@ -18,8 +18,12 @@
 				<span class="input_value" th:text="*{name}"></span>
 			</li>
 			<li>
-				<span class="input_title">基本価格</span>
+				<span class="input_title">[[#{itemForm.price}]] (基準価格)</span>
 				<span class="input_value" th:text="*{price}"></span>
+			</li>
+			<li>
+				<span class="input_title">現在の価格 (参考値)</span>
+				<span class="input_value" th:text="${currentPrice}"></span>
 			</li>
 			<li>
 				<span class="input_title">[[#{data.category}]]</span>

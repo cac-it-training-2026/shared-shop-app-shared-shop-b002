@@ -20,7 +20,7 @@ import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.repository.OrderRepository;
 import jp.co.sss.shop.service.BeanTools;
-import jp.co.sss.shop.service.PriceCalc;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 注文管理 一覧表示機能(運用管理者用)のコントローラクラス
@@ -44,11 +44,6 @@ public class AdminOrderShowController {
 	@Autowired
 	HttpSession session;
 
-	/**
-	 * 合計金額計算サービス
-	 */
-	@Autowired
-	PriceCalc priceCalc;
 
 	/**
 	 * Entity、Form、Bean間のデータ生成、コピーサービス
@@ -78,7 +73,7 @@ public class AdminOrderShowController {
 			//orderレコードから紐づくOrderItemのListを取り出す
 			List<OrderItem> orderItemList = order.getOrderItemsList();
 			//PriceCalcクラスのorderItemPriceTotalメソッドを使用して合計金額を算出
-			int total = priceCalc.orderItemPriceTotal(orderItemList);
+			int total = PriceCalc.orderItemPriceTotal(orderItemList);
 
 			//合計金額のセット
 			orderBean.setTotal(total);
@@ -114,7 +109,7 @@ public class AdminOrderShowController {
 		List<OrderItemBean> orderItemBeanList = beanTools.generateOrderItemBeanList(order.getOrderItemsList());
 
 		// 合計金額を算出
-		int total = priceCalc.orderItemBeanPriceTotalUseSubtotal(orderItemBeanList);
+		int total = PriceCalc.orderItemBeanPriceTotalUseSubtotal(orderItemBeanList);
 
 		// 注文情報をViewへ渡す
 		model.addAttribute("order", orderBean);

@@ -14,19 +14,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.entity.Category;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.form.ItemForm;
-import java.time.LocalDate;
-
 import jp.co.sss.shop.repository.CategoryRepository;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.service.BeanTools;
-import jp.co.sss.shop.service.PriceCalc;
 import jp.co.sss.shop.service.UploadFileService;
 import jp.co.sss.shop.util.Constant;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 商品管理 変更機能のコントローラクラス
@@ -41,6 +38,12 @@ public class AdminItemUpdateController {
 	 */
 	@Autowired
 	ItemRepository itemRepository;
+
+	/**
+	 * 注文商品情報
+	 */
+	@Autowired
+	OrderItemRepository orderItemRepository;
 
 	/**
 	 * カテゴリ情報
@@ -65,18 +68,6 @@ public class AdminItemUpdateController {
 	 */
 	@Autowired
 	BeanTools beanTools;
-
-	/**
-	 * 注文商品情報
-	 */
-	@Autowired
-	OrderItemRepository orderItemRepository;
-
-	/**
-	 * 料金計算サービス
-	 */
-	@Autowired
-	PriceCalc priceCalc;
 
 	/**
 	 * 変更入力画面　初期表示処理(POST)
@@ -137,14 +128,6 @@ public class AdminItemUpdateController {
 		}
 
 		model.addAttribute("itemForm", itemForm);
-
-		// 現在価格の計算（参考表示用）
-		Item item = itemRepository.findByIdAndDeleteFlag(itemForm.getId(), Constant.NOT_DELETED);
-		if (item != null) {
-			ItemBean tempBean = new ItemBean();
-			priceCalc.setDynamicPriceInfo(item, tempBean);
-			model.addAttribute("dynamicPrice", tempBean.getPrice());
-		}
 
 		// 変更入力画面　表示
 		return "admin/item/update_input";
@@ -214,6 +197,14 @@ public class AdminItemUpdateController {
 			// セッション情報が無い場合、エラー
 			return "redirect:/syserror";
 		}
+
+		//直近30日の注文数を取得
+		java.sql.Date date = java.sql.Date.valueOf(java.time.LocalDate.now().minusDays(30));
+		Long orderQuantity = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(itemForm.getId(), date);
+
+		//現在の価格を算出
+		int currentPrice = PriceCalc.calculateDynamicPrice(itemForm.getPrice(), itemForm.getStock(), orderQuantity != null ? orderQuantity : 0L);
+		model.addAttribute("currentPrice", currentPrice);
 
 		model.addAttribute("itemForm", itemForm);
 

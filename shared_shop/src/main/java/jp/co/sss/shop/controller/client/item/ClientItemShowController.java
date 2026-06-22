@@ -9,19 +9,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import java.time.LocalDate;
-
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.entity.Category;
 import jp.co.sss.shop.entity.Item;
+import java.time.LocalDate;
+
 import jp.co.sss.shop.repository.CategoryRepository;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.service.BeanTools;
-import jp.co.sss.shop.service.PriceCalc;
 import jp.co.sss.shop.util.Constant;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 商品管理 一覧表示機能(一般会員用)のコントローラクラス
@@ -60,12 +60,6 @@ public class ClientItemShowController {
 	@Autowired
 	OrderItemRepository orderItemRepository;
 
-	/**
-	 * 料金計算サービス
-	 */
-	@Autowired
-	PriceCalc priceCalc;
-
 	@ModelAttribute("categories")
 	public List<Category> getCategories() {
 		List<Category> list = categoryRepository.findByDeleteFlagOrderByInsertDateDescIdDesc(Constant.NOT_DELETED);
@@ -92,9 +86,7 @@ public class ClientItemShowController {
 		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
 
 		// ダイナミックプライシングの計算
-		for (int i = 0; i < itemList.size(); i++) {
-			priceCalc.setDynamicPriceInfo(itemList.get(i), itemBeanList.get(i));
-		}
+		PriceCalc.setDynamicPriceInfoList(itemList, itemBeanList, orderItemRepository);
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("items", itemBeanList);
@@ -142,9 +134,7 @@ public class ClientItemShowController {
 		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
 
 		// ダイナミックプライシングの計算
-		for (int i = 0; i < itemList.size(); i++) {
-			priceCalc.setDynamicPriceInfo(itemList.get(i), itemBeanList.get(i));
-		}
+		PriceCalc.setDynamicPriceInfoList(itemList, itemBeanList, orderItemRepository);
 
 		model.addAttribute("items", itemBeanList);
 		model.addAttribute("sortType", sortType);
@@ -175,7 +165,9 @@ public class ClientItemShowController {
 		ItemBean itemBean = beanTools.copyEntityToItemBean(item);
 
 		// ダイナミックプライシングの計算
-		priceCalc.setDynamicPriceInfo(item, itemBean);
+		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+		PriceCalc.setDynamicPriceInfo(item, itemBean, itemsSold != null ? itemsSold : 0L);
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("item", itemBean);

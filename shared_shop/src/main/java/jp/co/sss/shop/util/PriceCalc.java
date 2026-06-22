@@ -1,10 +1,10 @@
-package jp.co.sss.shop.service;
+package jp.co.sss.shop.util;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.bean.OrderItemBean;
@@ -13,28 +13,17 @@ import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.repository.OrderItemRepository;
 
 /**
- * 料金計算用クラス
- *
- * @author System Shared
+ * 料金計算用ユーティリティクラス
  */
-@Service
 public class PriceCalc {
 	/**
-	 * 注文商品情報
-	 */
-	@Autowired
-	OrderItemRepository orderItemRepository;
-
-	/**
 	 * ダイナミックプライシングに基づいた販売価格を計算
-	 * @param item 商品エンティティ
+	 * @param basePrice 基準価格
+	 * @param stock 在庫数
 	 * @param itemsSold 直近の注文数（数量合計）
 	 * @return 計算後の販売価格
 	 */
-	public int calculateDynamicPrice(Item item, long itemsSold) {
-		int basePrice = item.getPrice();
-		int stock = item.getStock();
-
+	public static int calculateDynamicPrice(int basePrice, int stock, long itemsSold) {
 		// 在庫補正率の決定
 		double stockRate;
 		if (stock < 10) {
@@ -77,9 +66,10 @@ public class PriceCalc {
 	 * 商品情報にダイナミックプライシングに関連する情報を設定
 	 * @param item 商品エンティティ
 	 * @param itemBean 商品情報Bean
+	 * @param itemsSold 直近の注文数（数量合計）
 	 */
-	public void setDynamicPriceInfo(Item item, ItemBean itemBean) {
-		int dynamicPrice = getDynamicPrice(item);
+	public static void setDynamicPriceInfo(Item item, ItemBean itemBean, long itemsSold) {
+		int dynamicPrice = calculateDynamicPrice(item.getPrice(), item.getStock(), itemsSold);
 		itemBean.setPrice(dynamicPrice);
 
 		// 基本価格と割引率をセット
@@ -93,19 +83,31 @@ public class PriceCalc {
 	}
 
 	/**
-	 * 動的価格のみを取得
-	 * @param item 商品エンティティ
-	 * @return 動的価格
+	 * 商品情報リストにダイナミックプライシングに関連する情報を一括設定 (N+1問題対策)
+	 * @param itemList 商品エンティティリスト
+	 * @param itemBeanList 商品情報Beanリスト
+	 * @param orderItemRepository 注文商品リポジトリ
 	 */
-	public int getDynamicPrice(Item item) {
-		// 過去30日間の注文数量を取得
-		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
-		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
-		if (itemsSold == null) {
-			itemsSold = 0L;
+	public static void setDynamicPriceInfoList(List<Item> itemList, List<ItemBean> itemBeanList, OrderItemRepository orderItemRepository) {
+		if (itemList == null || itemList.isEmpty()) {
+			return;
 		}
 
-		return calculateDynamicPrice(item, itemsSold);
+		List<Integer> itemIds = itemList.stream().map(Item::getId).collect(Collectors.toList());
+		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+
+		List<Object[]> results = orderItemRepository.countQuantitiesByItemIdsAndOrderInsertDateAfter(itemIds, date);
+		Map<Integer, Long> itemsSoldMap = new HashMap<>();
+		for (Object[] result : results) {
+			itemsSoldMap.put((Integer) result[0], (Long) result[1]);
+		}
+
+		for (int i = 0; i < itemList.size(); i++) {
+			Item item = itemList.get(i);
+			ItemBean itemBean = itemBeanList.get(i);
+			Long itemsSold = itemsSoldMap.getOrDefault(item.getId(), 0L);
+			setDynamicPriceInfo(item, itemBean, itemsSold);
+		}
 	}
 
 	/**
@@ -115,7 +117,7 @@ public class PriceCalc {
 	 *            注文した商品情報
 	 * @return 合計金額
 	 */
-	public int orderItemBeanPriceTotalUseSubtotal(List<OrderItemBean> list) {
+	public static int orderItemBeanPriceTotalUseSubtotal(List<OrderItemBean> list) {
 		int total = 0;
 
 		for (OrderItemBean bean : list) {
@@ -132,7 +134,7 @@ public class PriceCalc {
 	 *            注文した商品情報
 	 * @return 合計金額
 	 */
-	public int orderItemBeanPriceTotal(List<OrderItemBean> list) {
+	public static int orderItemBeanPriceTotal(List<OrderItemBean> list) {
 		int total = 0;
 
 		for (OrderItemBean orderItemBean : list) {
@@ -149,7 +151,7 @@ public class PriceCalc {
 	 *            注文した商品情報
 	 * @return 合計金額
 	 */
-	public int orderItemPriceTotal(List<OrderItem> list) {
+	public static int orderItemPriceTotal(List<OrderItem> list) {
 		int total = 0;
 
 		for (OrderItem orderItem : list) {

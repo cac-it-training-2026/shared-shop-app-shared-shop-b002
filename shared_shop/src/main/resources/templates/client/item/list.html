@@ -41,14 +41,10 @@
 				</td>
 				<td><a th:href="@{/client/item/detail/{id}(id=${item.id})}" th:text="${item.name}"></a></td>
 				<td>
-					<th:block th:if="${item.discountRate != null}">
-						<del th:text="${item.basePrice}"></del>
-						<span th:text="${item.price}"></span>
-						<span style="color: red; font-weight: bold;" th:text="${item.discountRate} + '%OFF'"></span>
-					</th:block>
-					<th:block th:if="${item.discountRate == null}">
-						<span th:text="${item.price}"></span>
-					</th:block>
+					<del th:if="${item.discountRate != null}" th:text="${item.basePrice}"></del>
+					<span th:text="${item.price}"></span>
+					<span th:if="${item.discountRate != null}" style="color:red; font-weight:bold;" th:text="${item.discountRate} + '%OFF'"></span>
+					<div th:if="${item.price > item.basePrice and item.stock < 10}" style="color:red;">残りわずか</div>
 				</td>
 				<td th:text="${item.categoryName}"></td>
 			</tr>

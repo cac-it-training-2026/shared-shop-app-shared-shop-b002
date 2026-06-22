@@ -1,7 +1,5 @@
 package jp.co.sss.shop.controller.admin.item;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -20,8 +18,8 @@ import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.service.BeanTools;
-import jp.co.sss.shop.service.PriceCalc;
 import jp.co.sss.shop.util.Constant;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 商品管理 一覧表示機能(運用管理者用)のコントローラクラス
@@ -37,6 +35,12 @@ public class AdminItemShowController {
 	ItemRepository itemRepository;
 
 	/**
+	 * 注文商品情報
+	 */
+	@Autowired
+	OrderItemRepository orderItemRepository;
+
+	/**
 	 * セッション
 	 */
 	@Autowired
@@ -46,18 +50,6 @@ public class AdminItemShowController {
 	 */
 	@Autowired
 	BeanTools beanTools;
-
-	/**
-	 * 注文商品情報
-	 */
-	@Autowired
-	OrderItemRepository orderItemRepository;
-
-	/**
-	 * 料金計算サービス
-	 */
-	@Autowired
-	PriceCalc priceCalc;
 
 	/**
 	 * 一覧データ取得、一覧表示　処理
@@ -81,21 +73,14 @@ public class AdminItemShowController {
 		//表示画面でページングが必要なため、ページ情報付きの検索を行う
 		Page<Item> itemsPage = itemRepository.findByDeleteFlagOrderByInsertDateDescPage(Constant.NOT_DELETED, pageable);
 
-		// エンティティ内のページ情報付きの検索結果からレコードの情報だけをJavaBeansに保存
-		List<Item> itemList = itemsPage.getContent();
-		List<ItemBean> itemBeanList = new ArrayList<>();
-
-		for (Item item : itemList) {
-			ItemBean itemBean = beanTools.copyEntityToItemBean(item);
-			priceCalc.setDynamicPriceInfo(item, itemBean);
-			itemBeanList.add(itemBean);
-		}
-
 		// 商品情報をViewへ渡す
+		List<Item> itemList = itemsPage.getContent();
+		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
+		PriceCalc.setDynamicPriceInfoList(itemList, itemBeanList, orderItemRepository);
+
 		model.addAttribute("registrable", registrable);
 		model.addAttribute("pages", itemsPage);
-		model.addAttribute("items", itemList); // Entity（基本価格保持）
-		model.addAttribute("itemBeans", itemBeanList); // Bean（動的価格保持）
+		model.addAttribute("items", itemBeanList);
 
 		//商品登録・変更・削除用のセッションスコープを初期化
 		session.removeAttribute("itemForm");
@@ -126,12 +111,13 @@ public class AdminItemShowController {
 		//Itemエンティティの各フィールドの値をItemBeanにコピー
 		ItemBean itemBean = beanTools.copyEntityToItemBean(item);
 
-		// ダイナミックプライシングの計算
-		priceCalc.setDynamicPriceInfo(item, itemBean);
+		// 動的価格情報を設定
+		java.sql.Date date = java.sql.Date.valueOf(java.time.LocalDate.now().minusDays(30));
+		Long orderQuantity = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+		PriceCalc.setDynamicPriceInfo(item, itemBean, orderQuantity != null ? orderQuantity : 0L);
 
 		// 商品情報をViewへ渡す
-		model.addAttribute("item", item); // Entity (Base Price)
-		model.addAttribute("itemBean", itemBean); // Bean (Dynamic Price)
+		model.addAttribute("item", itemBean);
 		//商品登録・変更・削除用のセッションスコープを初期化
 		session.removeAttribute("itemForm");
 

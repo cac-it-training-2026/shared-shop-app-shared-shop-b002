@@ -12,16 +12,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.entity.Category;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.form.ItemForm;
 import jp.co.sss.shop.repository.CategoryRepository;
-import jp.co.sss.shop.service.PriceCalc;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.UploadFileService;
 import jp.co.sss.shop.util.Constant;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 商品管理 登録機能のコントローラクラス
@@ -66,12 +65,6 @@ public class AdminItemRegistController {
 	 */
 	@Autowired
 	BeanTools beanTools;
-
-	/**
-	 * 料金計算サービス
-	 */
-	@Autowired
-	public PriceCalc priceCalc;
 
 	/**
 	 * 入力画面　表示処理(POST)
@@ -119,16 +112,6 @@ public class AdminItemRegistController {
 		}
 		// 入力フォーム情報をスコープに設定
 		model.addAttribute("itemForm", itemForm);
-
-		// 現在価格の計算（参考表示用、新規登録時は在庫・注文数0と仮定するか、基本価格そのまま）
-		if (itemForm.getPrice() != null) {
-			Item tempItem = new Item();
-			tempItem.setPrice(itemForm.getPrice());
-			tempItem.setStock(itemForm.getStock() != null ? itemForm.getStock() : 0);
-			ItemBean tempBean = new ItemBean();
-			priceCalc.setDynamicPriceInfo(tempItem, tempBean);
-			model.addAttribute("dynamicPrice", tempBean.getPrice());
-		}
 
 		// 入力画面　表示
 		return "admin/item/regist_input";
@@ -199,6 +182,10 @@ public class AdminItemRegistController {
 			// セッション情報がない場合、エラー
 			return "redirect:/syserror";
 		}
+		//現在の価格を算出 (新規登録時は直近30日の注文数は0)
+		int currentPrice = PriceCalc.calculateDynamicPrice(itemForm.getPrice(), itemForm.getStock(), 0L);
+		model.addAttribute("currentPrice", currentPrice);
+
 		//入力フォーム情報をスコープへ設定
 		model.addAttribute("itemForm", itemForm);
 
