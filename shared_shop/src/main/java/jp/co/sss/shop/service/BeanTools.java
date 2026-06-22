@@ -111,6 +111,11 @@ public class BeanTools {
 		// 会員名を注文情報に設定
 		bean.setUserName(entity.getUser().getName());
 
+		// クーポン情報を設定
+		bean.setCouponCode(entity.getCouponCode());
+		bean.setDiscountAmount(entity.getDiscountAmount());
+		bean.setDiscountedTotal(entity.getDiscountedTotal());
+
 		return bean;
 	}
 

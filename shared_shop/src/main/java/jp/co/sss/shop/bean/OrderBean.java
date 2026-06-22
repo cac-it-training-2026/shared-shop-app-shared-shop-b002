@@ -53,6 +53,21 @@ public class OrderBean {
 	private String userName;
 
 	/**
+	 * クーポンコード
+	 */
+	private String couponCode;
+
+	/**
+	 * 割引額
+	 */
+	private Integer discountAmount;
+
+	/**
+	 * 割引後請求額
+	 */
+	private Integer discountedTotal;
+
+	/**
 	 * 注文IDの取得
 	 * @return 注文ID
 	 */
@@ -194,6 +209,54 @@ public class OrderBean {
 	 */
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	/**
+	 * クーポンコードの取得
+	 * @return クーポンコード
+	 */
+	public String getCouponCode() {
+		return couponCode;
+	}
+
+	/**
+	 * クーポンコードのセット
+	 * @param couponCode クーポンコード
+	 */
+	public void setCouponCode(String couponCode) {
+		this.couponCode = couponCode;
+	}
+
+	/**
+	 * 割引額の取得
+	 * @return 割引額
+	 */
+	public Integer getDiscountAmount() {
+		return discountAmount;
+	}
+
+	/**
+	 * 割引額のセット
+	 * @param discountAmount 割引額
+	 */
+	public void setDiscountAmount(Integer discountAmount) {
+		this.discountAmount = discountAmount;
+	}
+
+	/**
+	 * 割引後請求額の取得
+	 * @return 割引後請求額
+	 */
+	public Integer getDiscountedTotal() {
+		return discountedTotal;
+	}
+
+	/**
+	 * 割引後請求額のセット
+	 * @param discountedTotal 割引後請求額
+	 */
+	public void setDiscountedTotal(Integer discountedTotal) {
+		this.discountedTotal = discountedTotal;
 	}
 
 }

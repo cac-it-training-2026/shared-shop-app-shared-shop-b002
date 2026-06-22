@@ -342,6 +342,24 @@ public class ClientOrderRegistController {
 		order.setPhoneNumber(form.getPhoneNumber());
 		order.setPayMethod(form.getPayMethod());
 
+		// クーポン情報の取得
+		Coupon appliedCoupon = (Coupon) session.getAttribute("appliedCoupon");
+		if (appliedCoupon != null) {
+			// 商品の合計金額を再計算
+			int totalAmount = 0;
+			for (BasketBean basket : basketBeans) {
+				Item dbItem = itemRepository.findByIdAndDeleteFlag(basket.getId(), 0);
+				if (dbItem != null) {
+					totalAmount += dbItem.getPrice() * basket.getOrderNum();
+				}
+			}
+			Integer discountAmount = couponService.calculateDiscount(appliedCoupon, totalAmount);
+
+			order.setCouponCode(appliedCoupon.getCouponCode());
+			order.setDiscountAmount(discountAmount);
+			order.setDiscountedTotal(totalAmount - discountAmount);
+		}
+
 		// 注文テーブルのDB登録実施
 		Order savedOrder = orderRepository.save(order);
 

@@ -13,3 +13,10 @@ CREATE TABLE coupon (
 
 -- クーポンID用シーケンスの作成
 CREATE SEQUENCE seq_coupon START WITH 1 INCREMENT BY 1;
+
+-- 注文テーブルへのカラム追加（DB保存用）
+ALTER TABLE orders ADD (
+    coupon_code VARCHAR2(50),
+    discount_amount NUMBER,
+    discounted_total NUMBER
+);
