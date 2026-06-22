@@ -8,7 +8,7 @@
 </head>
 
 <body class="user order_check">
-	<h2 th:class="title">🦆 <span th:text="#{title.order.check}"></span></h2>
+	<h2 th:class="title" th:text="#{title.order.check}"></h2>
 	<p th:class="check_message" th:text="#{msg.order.check}" th:if="${orderItemBeans != null}"></p>
 	<p th:class="check_error_message" th:text="#{msg.order.stop}" th:if="${orderItemBeans == null}"></p>
 

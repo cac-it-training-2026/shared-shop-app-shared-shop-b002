@@ -9,7 +9,7 @@
 
 <body th:object="${loginForm}" class="user item_list">
 
-	<h2 th:class="title">🦆 <span th:text="#{item}+#{title.list}"></span></h2>
+	<h2 th:class="title" th:text="#{item}+#{title.list}"></h2>
 
 	<div class="sorted_by">
 		<span th:if="${sortType==1}" th:text="#{sort.latest.str}"></span>

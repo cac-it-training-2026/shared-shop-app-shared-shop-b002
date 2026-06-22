@@ -5,7 +5,7 @@
 </head>
 <body>
 <div th:fragment="layout-header" class="container">
-	<h1 th:class="site_title">Duckle 🦆 <small style="font-size: 0.5em; vertical-align: middle;">Happy Duck Shop</small></h1>
+	<h1 th:class="site_title" th:text="#{shop.title}"></h1>
 	<div th:if="${session.user != null and session.user.authority == 2}" class="user_info">
 		<a th:href="@{/client/user/detail}" th:text="${session.user.name}"></a>さん | <a th:href="@{/logout}" th:text="#{logout}"></a>
 	</div>
