@@ -120,7 +120,7 @@ public class URLCheck {
 				&& !requestURL.endsWith("/client/user/regist/check")
 				&& !requestURL.endsWith("/client/user/regist/check/back")
 				&& !requestURL.endsWith("/client/user/regist/complete")
-				&& !requestURL.endsWith("/client/coupon/list")) {
+				&& requestURL.indexOf("/client/coupon/list") == -1) {
 			// URLのリクエスト先がフィルタ実行対象である場合
 			isCheckURLOK = true;
 		} else {
