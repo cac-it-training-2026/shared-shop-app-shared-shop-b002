@@ -19,8 +19,9 @@ import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.repository.OrderRepository;
+import jp.co.sss.shop.repository.ReviewRepository;
 import jp.co.sss.shop.service.BeanTools;
-import jp.co.sss.shop.service.PriceCalc;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 注文管理 一覧表示機能(運用管理者用)のコントローラクラス
@@ -43,17 +44,18 @@ public class ClientOrderShowController {
 	@Autowired
 	HttpSession session;
 
-	/**
-	 * 合計金額計算サービス
-	 */
-	@Autowired
-	PriceCalc priceCalc;
 
 	/**
 	 * Entity、Form、Bean間のデータ生成、コピーサービス
 	 */
 	@Autowired
 	BeanTools beanTools;
+
+	/**
+	 * レビューリポジトリ
+	 */
+	@Autowired
+	ReviewRepository reviewRepository;
 
 	/**
 	 * 一覧取得、一覧画面表示　処理
@@ -74,7 +76,7 @@ public class ClientOrderShowController {
 
 		// すべての注文情報を取得(注文日降順)
 		// 表示画面でページングが必要なため、ページ情報付きの検索を行う
-		Page<Order> orderList = orderRepository.findByUserIdOrderByInsertDateDescIdDesc(loginUser.getId(), pageable);
+		Page<Order> orderList = orderRepository.findByUserIdAndDeleteFlagOrderByInsertDateDescIdDesc(loginUser.getId(), 0, pageable);
 
 		// 注文情報リストを生成
 		List<OrderBean> orderBeanList = new ArrayList<>();
@@ -84,7 +86,7 @@ public class ClientOrderShowController {
 			// orderレコードから紐づくOrderItemのListを取り出す
 			List<OrderItem> orderItemList = order.getOrderItemsList();
 			//PriceCalcクラスのorderItemPriceTotalメソッドを使用して合計金額を算出
-			int total = priceCalc.orderItemPriceTotal(orderItemList);
+			int total = PriceCalc.orderItemPriceTotal(orderItemList);
 			// 合計金額のセット
 			orderBean.setTotal(total);
 			orderBeanList.add(orderBean);
@@ -114,7 +116,7 @@ public class ClientOrderShowController {
 			return "redirect:/login";
 		}
 		// 指定された注文IDとログインユーザーに紐づく注文情報を取得し、認可制御を行う
-		Order order = orderRepository.findByIdAndUserId(id, loginUser.getId());
+		Order order = orderRepository.findByIdAndUserIdAndDeleteFlag(id, loginUser.getId(), 0);
 
 		if (order == null) {
 			return "redirect:/syserror";
@@ -124,8 +126,15 @@ public class ClientOrderShowController {
 		OrderBean orderBean = beanTools.copyEntityToOrderBean(order);
 		// 注文商品情報を取得
 		List<OrderItemBean> itemBeans = beanTools.generateOrderItemBeanList(order.getOrderItemsList());
+
+		// レビュー済みチェック
+		for (OrderItemBean itemBean : itemBeans) {
+			if (reviewRepository.findByOrderItemId(itemBean.getOrderItemId()) != null) {
+				itemBean.setReviewed(true);
+			}
+		}
 		// 合計金額を算出
-		int total = priceCalc.orderItemBeanPriceTotalUseSubtotal(itemBeans);
+		int total = PriceCalc.orderItemBeanPriceTotalUseSubtotal(itemBeans);
 
 		// 注文情報をViewへ渡す
 		model.addAttribute("order", orderBean);

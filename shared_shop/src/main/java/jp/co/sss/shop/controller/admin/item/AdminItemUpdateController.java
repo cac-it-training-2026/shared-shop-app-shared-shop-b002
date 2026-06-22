@@ -19,9 +19,11 @@ import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.form.ItemForm;
 import jp.co.sss.shop.repository.CategoryRepository;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.UploadFileService;
 import jp.co.sss.shop.util.Constant;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 商品管理 変更機能のコントローラクラス
@@ -36,6 +38,12 @@ public class AdminItemUpdateController {
 	 */
 	@Autowired
 	ItemRepository itemRepository;
+
+	/**
+	 * 注文商品情報
+	 */
+	@Autowired
+	OrderItemRepository orderItemRepository;
 
 	/**
 	 * カテゴリ情報
@@ -189,6 +197,14 @@ public class AdminItemUpdateController {
 			// セッション情報が無い場合、エラー
 			return "redirect:/syserror";
 		}
+
+		//直近30日の注文数を取得
+		java.sql.Date date = java.sql.Date.valueOf(java.time.LocalDate.now().minusDays(30));
+		Long orderQuantity = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(itemForm.getId(), date);
+
+		//現在の価格を算出
+		int currentPrice = PriceCalc.calculateDynamicPrice(itemForm.getPrice(), itemForm.getStock(), orderQuantity != null ? orderQuantity : 0L);
+		model.addAttribute("currentPrice", currentPrice);
 
 		model.addAttribute("itemForm", itemForm);
 

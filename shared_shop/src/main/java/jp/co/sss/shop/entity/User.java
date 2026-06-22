@@ -1,6 +1,7 @@
 package jp.co.sss.shop.entity;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -70,6 +71,12 @@ public class User {
 	private Integer authority;
 
 	/**
+	 * 権限（ロール）
+	 */
+	@jakarta.persistence.Transient
+	private String role;
+
+	/**
 	 * 削除フラグ 0:未削除、1:削除済み
 	 */
 	@Column(insertable = false)
@@ -80,6 +87,24 @@ public class User {
 	 */
 	@Column(insertable = false)
 	private Date insertDate;
+
+	/**
+	 * ログイン失敗回数
+	 */
+	@Column(insertable = false)
+	private Integer loginAttemptCount;
+
+	/**
+	 * ロック状態フラグ 0:未ロック、1:ロック中
+	 */
+	@Column(insertable = false)
+	private Integer isLocked;
+
+	/**
+	 * ロック時刻
+	 */
+	@Column(insertable = false)
+	private Timestamp lockedTime;
 
 	/**
 	 * 会員IDの取得
@@ -210,6 +235,22 @@ public class User {
 	}
 
 	/**
+	 * 権限（ロール）の取得
+	 * @return 権限（ロール）
+	 */
+	public String getRole() {
+		return role;
+	}
+
+	/**
+	 * 権限（ロール）のセット
+	 * @param role 権限（ロール）
+	 */
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	/**
 	 * 削除フラグの取得
 	 * @return 削除フラグ
 	 */
@@ -239,5 +280,53 @@ public class User {
 	 */
 	public void setInsertDate(Date insertDate) {
 		this.insertDate = insertDate;
+	}
+
+	/**
+	 * ログイン失敗回数の取得
+	 * @return ログイン失敗回数
+	 */
+	public Integer getLoginAttemptCount() {
+		return loginAttemptCount;
+	}
+
+	/**
+	 * ログイン失敗回数のセット
+	 * @param loginAttemptCount ログイン失敗回数
+	 */
+	public void setLoginAttemptCount(Integer loginAttemptCount) {
+		this.loginAttemptCount = loginAttemptCount;
+	}
+
+	/**
+	 * ロック状態フラグの取得
+	 * @return ロック状態フラグ
+	 */
+	public Integer getIsLocked() {
+		return isLocked;
+	}
+
+	/**
+	 * ロック状態フラグのセット
+	 * @param isLocked ロック状態フラグ
+	 */
+	public void setIsLocked(Integer isLocked) {
+		this.isLocked = isLocked;
+	}
+
+	/**
+	 * ロック時刻の取得
+	 * @return ロック時刻
+	 */
+	public Timestamp getLockedTime() {
+		return lockedTime;
+	}
+
+	/**
+	 * ロック時刻のセット
+	 * @param lockedTime ロック時刻
+	 */
+	public void setLockedTime(Timestamp lockedTime) {
+		this.lockedTime = lockedTime;
 	}
 }

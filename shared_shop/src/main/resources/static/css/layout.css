@@ -147,7 +147,7 @@ header {
 }
 .navi_menu li {
 	display: inline-block;
-	width: 24%;
+	width: 19.5%;
 }
 .navi_menu a {
 	display: inline-block;
@@ -357,7 +357,7 @@ aside.admin_menu {
  * 今回は画面いっぱいのhtml要素がそれになります。
  * bottomプロパティは基準からの配置位置を決定し、今回は0px。
  * つまりhtml要素の一番下から0pxの位置に表示されることとなり、
- * footer要素は画面、もしくはページの最下部に表示されるようになります。
+ * footer要素は画面,もしくはページの最下部に表示されるようになります。
  */
 footer {
 	background-color: #87ceeb;

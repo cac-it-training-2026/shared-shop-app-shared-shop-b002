@@ -86,6 +86,12 @@ public class Item {
 	private List<OrderItem> orderItemList;
 
 	/**
+	 * レビュー情報
+	 */
+	@OneToMany(mappedBy = "item")
+	private List<Review> reviewList;
+
+	/**
 	 * コンストラクタ
 	 */
 	public Item() {
@@ -285,6 +291,22 @@ public class Item {
 	 */
 	public void setOrderItemsList(List<OrderItem> orderItemList) {
 		this.orderItemList = orderItemList;
+	}
+
+	/**
+	 * 商品IDに紐づくレビューエンティティのリストを取得
+	 * @return レビューエンティティのリスト
+	 */
+	public List<Review> getReviewList() {
+		return reviewList;
+	}
+
+	/**
+	 * 商品IDに紐づくレビューエンティティのリストをセット
+	 * @param reviewList レビューエンティティのリスト
+	 */
+	public void setReviewList(List<Review> reviewList) {
+		this.reviewList = reviewList;
 	}
 
 }

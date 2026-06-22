@@ -46,6 +46,14 @@
 				</li>
 
 				<li th:if="${session.user.authority == 0 or session.user.authority == 1}">
+					<label><span class="input_title">[[#{data.isLocked}]]</span></label>
+					<div class="radio_label">
+						<input type="radio" th:field="*{isLocked}" value="0" />[[#{data.unlocked.str}]]
+						<input type="radio" th:field="*{isLocked}" value="1" />[[#{data.locked.str}]]
+					</div>
+				</li>
+
+				<li th:if="${session.user.authority == 0 or session.user.authority == 1}">
 					<label><span class="input_title">[[#{data.authority}]]</span></label>
 					<div class="radio_label" th:if="${session.user.authority == 0 and session.user.id!=userForm.id}">
 						<input type="radio" name="authority" value="0"

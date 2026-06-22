@@ -32,7 +32,8 @@
 		<tr>
 			<th>[[#{data.id}]]</th>
 			<th>[[#{itemForm.name}]]</th>
-			<th>[[#{itemForm.price}]]</th>
+			<th>基準価格</th>
+			<th>現在の価格</th>
 			<th>[[#{data.category}]]</th>
 			<th>[[#{data.operate}]]</th>
 		</tr>
@@ -40,8 +41,9 @@
 		<tr th:each="item: ${items}">
 			<td th:text="${item.id}"></td>
 			<td><a th:href="@{/admin/item/detail/{id}(id=${item.id})}" th:text="${item.name}"></a></td>
+			<td th:text="${item.basePrice}"></td>
 			<td th:text="${item.price}"></td>
-			<td th:text="${item.category.name}"></td>
+			<td th:text="${item.categoryName}"></td>
 			<td>
 				<form th:action="@{/admin/item/update/input/{id}(id=${item.id})}" method="post">
 					<input type="submit" value="変更" />

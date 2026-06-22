@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.util.Constant;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 商品管理 一覧表示機能(運用管理者用)のコントローラクラス
@@ -31,6 +33,12 @@ public class AdminItemShowController {
 	 */
 	@Autowired
 	ItemRepository itemRepository;
+
+	/**
+	 * 注文商品情報
+	 */
+	@Autowired
+	OrderItemRepository orderItemRepository;
 
 	/**
 	 * セッション
@@ -65,13 +73,14 @@ public class AdminItemShowController {
 		//表示画面でページングが必要なため、ページ情報付きの検索を行う
 		Page<Item> itemsPage = itemRepository.findByDeleteFlagOrderByInsertDateDescPage(Constant.NOT_DELETED, pageable);
 
-		// エンティティ内のページ情報付きの検索結果からレコードの情報だけをJavaBeansに保存
-		List<Item> itemList = itemsPage.getContent();
-
 		// 商品情報をViewへ渡す
+		List<Item> itemList = itemsPage.getContent();
+		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
+		PriceCalc.setDynamicPriceInfoList(itemList, itemBeanList, orderItemRepository);
+
 		model.addAttribute("registrable", registrable);
 		model.addAttribute("pages", itemsPage);
-		model.addAttribute("items", itemList);
+		model.addAttribute("items", itemBeanList);
 
 		//商品登録・変更・削除用のセッションスコープを初期化
 		session.removeAttribute("itemForm");
@@ -101,6 +110,11 @@ public class AdminItemShowController {
 
 		//Itemエンティティの各フィールドの値をItemBeanにコピー
 		ItemBean itemBean = beanTools.copyEntityToItemBean(item);
+
+		// 動的価格情報を設定
+		java.sql.Date date = java.sql.Date.valueOf(java.time.LocalDate.now().minusDays(30));
+		Long orderQuantity = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+		PriceCalc.setDynamicPriceInfo(item, itemBean, orderQuantity != null ? orderQuantity : 0L);
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("item", itemBean);
