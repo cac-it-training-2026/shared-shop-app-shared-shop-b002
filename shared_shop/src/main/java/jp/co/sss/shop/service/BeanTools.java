@@ -11,10 +11,12 @@ import jp.co.sss.shop.bean.CategoryBean;
 import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.bean.OrderBean;
 import jp.co.sss.shop.bean.OrderItemBean;
+import jp.co.sss.shop.bean.ReviewBean;
 import jp.co.sss.shop.entity.Category;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
+import jp.co.sss.shop.entity.Review;
 import jp.co.sss.shop.form.ItemForm;
 
 /**
@@ -111,6 +113,11 @@ public class BeanTools {
 		// 会員名を注文情報に設定
 		bean.setUserName(entity.getUser().getName());
 
+		// クーポン情報を設定
+		bean.setCouponCode(entity.getCouponCode());
+		bean.setDiscountAmount(entity.getDiscountAmount());
+		bean.setDiscountedTotal(entity.getDiscountedTotal());
+
 		return bean;
 	}
 
@@ -205,6 +212,7 @@ public class BeanTools {
 		for (OrderItem orderItem : orderItemList) {
 			OrderItemBean orderItemBean = new OrderItemBean();
 
+			orderItemBean.setOrderItemId(orderItem.getId());
 			orderItemBean.setName(orderItem.getItem().getName());
 			orderItemBean.setPrice(orderItem.getPrice());
 			orderItemBean.setOrderNum(orderItem.getQuantity());
@@ -218,5 +226,68 @@ public class BeanTools {
 			orderItemBeanList.add(orderItemBean);
 		}
 		return orderItemBeanList;
+	}
+
+	/**
+	 * Reviewエンティティの各フィールドの値をReviewBeanクラスにコピー
+	 *
+	 * @param entity  コピー元のエンティティ
+	 * @return コピー先のオブジェクト
+	 */
+	public ReviewBean copyEntityToReviewBean(Review entity) {
+		ReviewBean bean = new ReviewBean();
+
+		BeanUtils.copyProperties(entity, bean);
+
+		if (entity.getInsertDate() != null) {
+			bean.setInsertDate(entity.getInsertDate().toString());
+		}
+
+		// 会員名をレビュー情報に設定
+		if (entity.getUser() != null) {
+			bean.setUserName(entity.getUser().getName());
+		}
+
+		// 星記号の設定
+		if (entity.getRating() != null) {
+			bean.setStar(convertRatingToStar(entity.getRating()));
+		}
+
+		return bean;
+	}
+
+	/**
+	 * 評価数値を星記号文字列に変換
+	 *
+	 * @param rating 評価
+	 * @return 星記号文字列
+	 */
+	public String convertRatingToStar(Integer rating) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 5; i++) {
+			if (i < rating) {
+				sb.append("★");
+			} else {
+				sb.append("☆");
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Reviewエンティティの各フィールドの値をReviewBeanクラスにコピー(リスト形式)
+	 *
+	 * @param entityList コピー元のエンティティ(リスト形式)
+	 * @return コピー先のオブジェクト(リスト形式)
+	 */
+	public List<ReviewBean> copyEntityListToReviewBeanList(List<Review> entityList) {
+		List<ReviewBean> beanList = new ArrayList<ReviewBean>();
+
+		for (Review entity : entityList) {
+			ReviewBean bean = copyEntityToReviewBean(entity);
+			beanList.add(bean);
+		}
+
+		return beanList;
 	}
 }

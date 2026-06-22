@@ -17,15 +17,21 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.bean.UserBean;
+import jp.co.sss.shop.entity.Coupon;
 import jp.co.sss.shop.entity.Item;
+import jp.co.sss.shop.service.CouponService;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.OrderForm;
 import jp.co.sss.shop.repository.ItemRepository;
+import java.time.LocalDate;
+
 import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.repository.OrderRepository;
 import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.util.Constant;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 注文機能の基本クラス
@@ -58,6 +64,12 @@ public class ClientOrderRegistController {
 	 */
 	@Autowired
 	OrderItemRepository orderItemRepository;
+
+	/**
+	 * クーポン関連の処理を行うサービス
+	 */
+	@Autowired
+	private CouponService couponService;
 
 	/**
 	 * セッション情報を管理するオブジェクト
@@ -226,16 +238,23 @@ public class ClientOrderRegistController {
 
 				// 在庫数を最新の状態に更新
 				basket.setStock(dbItem.getStock());
+
+				// ダイナミックプライシングの計算
+				java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+				Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(dbItem.getId(), date);
+				int dynamicPrice = PriceCalc.calculateDynamicPrice(dbItem.getPrice(), dbItem.getStock(), itemsSold != null ? itemsSold : 0L);
+				basket.setPrice(dynamicPrice);
+
 				updatedBasketBeans.add(basket);
 				// 買い物かご情報から、商品ごとの金額小計を算出し、注文商品情報リストに保存
-				int subTotal = dbItem.getPrice() * basket.getOrderNum();
+				int subTotal = dynamicPrice * basket.getOrderNum();
 				totalAmount += subTotal;
 
 				// 注文商品情報リスト（Mapのリスト）にデータを格納
 				Map<String, Object> orderItemMap = new HashMap<>();
 				orderItemMap.put("name", dbItem.getName());
 				orderItemMap.put("image", dbItem.getImage());
-				orderItemMap.put("price", dbItem.getPrice());
+				orderItemMap.put("price", dynamicPrice);
 				orderItemMap.put("orderNum", basket.getOrderNum());
 				orderItemMap.put("subtotal", subTotal);
 
@@ -260,8 +279,14 @@ public class ClientOrderRegistController {
 			model.addAttribute("orderItemBeans", null);
 		}
 
+		// 割引計算
+		Coupon appliedCoupon = (Coupon) session.getAttribute("appliedCoupon");
+		Integer discountAmount = couponService.calculateDiscount(appliedCoupon, totalAmount);
+
 		// 各種情報をリクエストスコープ（Model）に設定
 		model.addAttribute("total", totalAmount); //合計金額
+		model.addAttribute("discountAmount", discountAmount); //割引額
+		model.addAttribute("finalTotal", totalAmount - discountAmount); //最終合計
 		model.addAttribute("orderForm", form); //注文入力フォーム情報
 
 		return "client/order/check";
@@ -328,13 +353,31 @@ public class ClientOrderRegistController {
 		order.setPhoneNumber(form.getPhoneNumber());
 		order.setPayMethod(form.getPayMethod());
 
+		// クーポン情報の取得
+		Coupon appliedCoupon = (Coupon) session.getAttribute("appliedCoupon");
+		if (appliedCoupon != null) {
+			// 商品の合計金額を再計算
+			int totalAmount = 0;
+			for (BasketBean basket : basketBeans) {
+				Item dbItem = itemRepository.findByIdAndDeleteFlag(basket.getId(), 0);
+				if (dbItem != null) {
+					totalAmount += basket.getPrice() * basket.getOrderNum();
+				}
+			}
+			Integer discountAmount = couponService.calculateDiscount(appliedCoupon, totalAmount);
+
+			order.setCouponCode(appliedCoupon.getCouponCode());
+			order.setDiscountAmount(discountAmount);
+			order.setDiscountedTotal(totalAmount - discountAmount);
+		}
+
 		// 注文テーブルのDB登録実施
 		Order savedOrder = orderRepository.save(order);
 
 		// 注文商品テーブルのDB登録実施
 		for (BasketBean basket : basketBeans) {
 			// DBから最新の商品情報を再度取得
-			Item dbItem = itemRepository.findByIdAndDeleteFlag(basket.getId(), 0);
+			Item dbItem = itemRepository.findByIdAndDeleteFlag(basket.getId(), Constant.NOT_DELETED);
 
 			// 注文商品（明細）エンティティの生成
 			OrderItem orderItem = new OrderItem();
@@ -343,7 +386,8 @@ public class ClientOrderRegistController {
 
 			orderItem.setQuantity(basket.getOrderNum());
 
-			orderItem.setPrice(dbItem.getPrice());
+			// 注文時の動的価格を保存
+			orderItem.setPrice(basket.getPrice());
 
 			// 注文商品テーブルのDB登録実施
 			orderItemRepository.save(orderItem);
@@ -354,9 +398,11 @@ public class ClientOrderRegistController {
 			itemRepository.save(dbItem);
 		}
 
-		// セッションスコープの注文入力フォーム情報と買い物かご情報を削除
+		// セッションスコープの注文入力フォーム情報、買い物かご情報、クーポン情報を削除
 		session.removeAttribute("orderForm");
 		session.removeAttribute("basketBeans");
+		session.removeAttribute("appliedCoupon");
+		session.removeAttribute("discountAmount");
 
 		return "redirect:/client/order/complete";
 	}

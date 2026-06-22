@@ -16,6 +16,7 @@
 		<tr>
 			<th>[[#{data.client.order.date}]]</th>
 			<th>[[#{paymethod.str}]]</th>
+			<th>使用クーポン</th>
 			<th>[[#{data.total.price}]]</th>
 		</tr>
 		<tr th:each="order: ${orders}">
@@ -27,7 +28,11 @@
 				<span th:case="4">[[#{paymethod.emoney.str}]]</span>
 				<span th:case="5">[[#{paymethod.convenience.str}]]</span>
 			</td>
-			<td th:text="${order.total}" class="text"></td>
+			<td th:text="${order.couponCode}"></td>
+			<td>
+				<span th:if="${order.discountedTotal != null}" th:text="${order.discountedTotal}"></span>
+				<span th:if="${order.discountedTotal == null}" th:text="${order.total}"></span>
+			</td>
 		</tr>
 	</table>
 </body>

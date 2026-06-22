@@ -66,6 +66,16 @@
 				<td class="total">[[#{data.total}]]</td>
 				<td th:text="${total}"></td>
 			</tr>
+			<tr th:if="${order.couponCode != null}">
+				<td colspan="2"></td>
+				<td class="total">割引額 (<span th:text="${order.couponCode}"></span>)</td>
+				<td class="total">-¥<span th:text="${order.discountAmount}"></span></td>
+			</tr>
+			<tr th:if="${order.discountedTotal != null}">
+				<td colspan="2"></td>
+				<td class="total">お支払い合計</td>
+				<td class="total">¥<span th:text="${order.discountedTotal}"></span></td>
+			</tr>
 		</table>
 		<form th:action="@{/admin/order/list}" method="post" class="detail_button_area">
 			<input type="submit" value="戻る" class="back_button" />

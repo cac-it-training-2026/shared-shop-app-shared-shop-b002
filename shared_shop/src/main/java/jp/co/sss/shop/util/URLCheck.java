@@ -115,11 +115,13 @@ public class URLCheck {
 				&& requestURL.indexOf("/client/item/detail/") == -1
 				&& requestURL.indexOf("/client/user/delete/") == -1
 				&& !requestURL.endsWith("/client/user/regist/input/init")
+				&& !requestURL.endsWith("/client/user/reRegist/input/init")
 				&& !requestURL.endsWith("/client/user/regist/input")
 				&& !requestURL.endsWith("/client/user/regist/input/check")
 				&& !requestURL.endsWith("/client/user/regist/check")
 				&& !requestURL.endsWith("/client/user/regist/check/back")
-				&& !requestURL.endsWith("/client/user/regist/complete")) {
+				&& !requestURL.endsWith("/client/user/regist/complete")
+				&& requestURL.indexOf("/client/coupon/list") == -1) {
 			// URLのリクエスト先がフィルタ実行対象である場合
 			isCheckURLOK = true;
 		} else {
@@ -156,7 +158,8 @@ public class URLCheck {
 						|| requestURL.indexOf("/client/user/detail") != -1
 						|| requestURL.indexOf("/client/user/regist") != -1
 						|| requestURL.indexOf("/client/user/update") != -1
-						|| requestURL.indexOf("/client/user/delete") != -1)) {
+						|| requestURL.indexOf("/client/user/delete") != -1
+						|| requestURL.indexOf("/client/coupon/list") != -1)) {
 
 			// URLのリクエスト先がフィルタ実行対象である場合
 			isCheckURLOK = true;

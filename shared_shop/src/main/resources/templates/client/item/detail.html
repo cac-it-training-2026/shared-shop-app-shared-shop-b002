@@ -21,7 +21,12 @@
 				<dt>[[#{data.item.name}]]</dt>
 				<dd th:text="*{name}"></dd>
 				<dt>[[#{data.item.price}]]</dt>
-				<dd th:text="*{price}"></dd>
+				<dd>
+					<del th:if="*{discountRate != null}" th:text="*{basePrice}"></del>
+					<span th:text="*{price}"></span>
+					<span th:if="*{discountRate != null}" style="color:red; font-weight:bold;" th:text="*{discountRate} + '%OFF'"></span>
+					<div th:if="*{price > basePrice and stock > 0 and stock < 10}" style="color:red;">残りわずか</div>
+				</dd>
 				<dt>[[#{data.item.stock}]]</dt>
 				<dd th:if="*{stock > 5}" th:text="#{data.in.stock}"></dd>
 				<dd th:if="*{stock >= 1 and 5 >= stock }" th:text="*{stock}"></dd>
@@ -30,6 +35,11 @@
 				<dd th:text="*{categoryName}"></dd>
 				<dt>[[#{data.description}]]</dt>
 				<dd th:text="*{description}"></dd>
+				<dt>平均評価</dt>
+				<dd>
+					<span th:text="${averageStar}"></span>
+					(<span th:text="${#numbers.formatDecimal(averageRating, 1, 1)}"></span>)
+				</dd>
 			</dl>
 		</div>
 		<div class="detail_button_area">
@@ -37,9 +47,33 @@
 				<input type="hidden" th:field="*{id}" />
 				<input type="submit" value="買い物かごに入れる" class="send_button" />
 			</form>
+			<form th:action="@{/client/favorite/add/{itemId}(itemId=*{id})}" method="post" class="user_info_form" th:if="${session.user != null}">
+				<input type="submit" th:value="#{favorite.add}" class="send_button" />
+			</form>
 			<form th:action="@{/client/item/list/1}" method="post">
 				<input type="submit" value="戻る" class="back_button" />
 			</form>
+		</div>
+	</div>
+
+	<!-- レビュー表示エリア -->
+	<div class="review_area">
+		<h3 class="title">レビュー一覧</h3>
+		<div th:if="${#lists.isEmpty(reviews)}">
+			<p>まだレビューはありません。</p>
+		</div>
+		<div th:if="!${#lists.isEmpty(reviews)}" th:each="review : ${reviews}" class="review_item">
+			<div class="review_header">
+				<span class="review_rating" th:text="${review.star}"></span>
+				<span class="review_title" th:text="${review.title}"></span>
+			</div>
+			<div class="review_info">
+				<span class="review_user" th:text="'投稿者: ' + ${review.userName}"></span>
+				<span class="review_date" th:text="'投稿日: ' + ${review.insertDate}"></span>
+			</div>
+			<div class="review_content">
+				<p th:text="${review.content}"></p>
+			</div>
 		</div>
 	</div>
 

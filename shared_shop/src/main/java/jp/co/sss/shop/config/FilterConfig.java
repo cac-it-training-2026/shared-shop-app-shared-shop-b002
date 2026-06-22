@@ -4,6 +4,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import jp.co.sss.shop.filter.AccessControlFilter;
 import jp.co.sss.shop.filter.AdminAccountCheckFilter;
 import jp.co.sss.shop.filter.CategoryListMakeFilter;
 import jp.co.sss.shop.filter.ClientAccountCheckFilter;
@@ -19,6 +20,20 @@ import jp.co.sss.shop.filter.SystemAdminAccountCheckFilter;
 //TODO 開発中はフィルター制限を防ぐため無効化する
 @Configuration
 public class FilterConfig {
+	/**
+	 * アクセス制御用フィルタの設定
+	 *
+	 * @return フィルタ設定情報
+	 */
+	@Bean
+	public FilterRegistrationBean<AccessControlFilter> configAccessControlFilter() {
+		FilterRegistrationBean<AccessControlFilter> bean = new FilterRegistrationBean<AccessControlFilter>();
+
+		bean.setFilter(new AccessControlFilter());
+		bean.setOrder(0);
+		return bean;
+	}
+
 	/**
 	 * 非会員向けアクセス制限用フィルタの設定
 	 *
