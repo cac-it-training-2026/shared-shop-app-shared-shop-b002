@@ -97,6 +97,19 @@ public class ClientBasketController {
 	}
 
 	/**
+	 * クーポンをキャンセルする。
+	 * @param session セッション
+	 * @param model モデル
+	 * @return 買い物かご一覧画面
+	 */
+	@RequestMapping(path = "/client/basket/coupon/cancel", method = RequestMethod.POST)
+	public String cancelCoupon(HttpSession session, Model model) {
+		session.removeAttribute("appliedCoupon");
+		session.removeAttribute("discountAmount");
+		return showBasketlist(session, model);
+	}
+
+	/**
 	 * クーポンを適用する。
 	 * @param couponCode クーポンコード
 	 * @param session セッション

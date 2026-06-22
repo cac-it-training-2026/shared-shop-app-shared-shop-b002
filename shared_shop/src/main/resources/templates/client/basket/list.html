@@ -53,15 +53,20 @@
 		</table>
 
 		<div class="user_info_form_area">
-			<form th:action="@{/client/basket/coupon/apply}" method="post">
-				<p>クーポンコード</p>
-				<input type="text" name="couponCode" />
-				<input type="submit" value="適用" />
-				<p th:if="${couponError}" th:text="${couponError}" class="error"></p>
-			</form>
+			<th:block th:if="${session.appliedCoupon == null}">
+				<form th:action="@{/client/basket/coupon/apply}" method="post">
+					<p>クーポンコード</p>
+					<input type="text" name="couponCode" />
+					<input type="submit" value="適用" />
+					<p th:if="${couponError}" th:text="${couponError}" class="error"></p>
+				</form>
+			</th:block>
 			<th:block th:if="${session.appliedCoupon != null}">
 				<p>適用中のクーポン: <span th:text="${session.appliedCoupon.couponName}"></span></p>
 				<p>割引額: -¥<span th:text="${session.discountAmount}"></span></p>
+				<form th:action="@{/client/basket/coupon/cancel}" method="post">
+					<input type="submit" value="クーポンをキャンセル" class="delete" />
+				</form>
 			</th:block>
 			<p>商品合計：¥<span th:text="${total}"></span></p>
 			<p>お支払い合計：¥<span th:text="${total - session.discountAmount}"></span></p>
