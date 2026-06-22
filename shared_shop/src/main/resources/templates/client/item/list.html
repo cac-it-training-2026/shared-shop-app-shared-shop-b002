@@ -44,7 +44,8 @@
 					<del th:if="${item.discountRate != null}" th:text="${item.basePrice}"></del>
 					<span th:text="${item.price}"></span>
 					<span th:if="${item.discountRate != null}" style="color:red; font-weight:bold;" th:text="${item.discountRate} + '%OFF'"></span>
-					<div th:if="${item.price > item.basePrice and item.stock < 10}" style="color:red;">残りわずか</div>
+					<div th:if="${item.price > item.basePrice and item.stock > 0 and item.stock < 10}" style="color:red;">残りわずか</div>
+						<div th:if="${item.stock == 0}" style="color:red;" th:text="#{data.out.of.stock}"></div>
 				</td>
 				<td th:text="${item.categoryName}"></td>
 			</tr>
