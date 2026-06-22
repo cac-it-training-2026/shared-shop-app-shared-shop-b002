@@ -19,6 +19,7 @@ body {
 header {
   background-color: var(--primary-color) !important;
   border-bottom: 2px solid var(--border-color);
+  padding: 5px 0 !important;
 }
 
 .site_title {
