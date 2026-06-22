@@ -19,6 +19,7 @@ import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.repository.OrderRepository;
+import jp.co.sss.shop.repository.ReviewRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.PriceCalc;
 
@@ -54,6 +55,12 @@ public class ClientOrderShowController {
 	 */
 	@Autowired
 	BeanTools beanTools;
+
+	/**
+	 * レビューリポジトリ
+	 */
+	@Autowired
+	ReviewRepository reviewRepository;
 
 	/**
 	 * 一覧取得、一覧画面表示　処理
@@ -124,6 +131,13 @@ public class ClientOrderShowController {
 		OrderBean orderBean = beanTools.copyEntityToOrderBean(order);
 		// 注文商品情報を取得
 		List<OrderItemBean> itemBeans = beanTools.generateOrderItemBeanList(order.getOrderItemsList());
+
+		// レビュー済みチェック
+		for (OrderItemBean itemBean : itemBeans) {
+			if (reviewRepository.findByOrderItemId(itemBean.getOrderItemId()) != null) {
+				itemBean.setReviewed(true);
+			}
+		}
 		// 合計金額を算出
 		int total = priceCalc.orderItemBeanPriceTotalUseSubtotal(itemBeans);
 

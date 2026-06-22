@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{common/layout_5block :: layout(~{::title},~{::body/content()})}">
+
+<head>
+	<title th:text="#{review}+#{title.input}+' | '+ #{shop.title}"> </title>
+	<meta charset="UTF-8" />
+</head>
+
+<body class="user">
+
+	<h2 th:class="title" th:text="#{review}+#{title.input}"></h2>
+
+	<div class="info_form_area">
+		<div class="item_detail_area">
+			<div class="item_image_area">
+				<img th:if="${item.image != null}" th:src="@{/images/{image}(image=${item.image})}"></img>
+				<img th:if="${item.image == null}" th:src="@{/images/common/no_image.jpg}"></img>
+			</div>
+			<dl class="item_detail_list">
+				<dt>[[#{data.item.name}]]</dt>
+				<dd th:text="${item.name}"></dd>
+			</dl>
+		</div>
+
+		<form th:action="@{/client/review/regist}" th:object="${reviewForm}" method="post" class="user_info_form">
+			<ul th:if="${#fields.hasErrors('*')}" class="error_list">
+				<li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+			</ul>
+			<input type="hidden" th:field="*{itemId}" />
+			<input type="hidden" th:field="*{orderItemId}" />
+			<dl class="info_list">
+				<dt>評価</dt>
+				<dd>
+					<div class="rating_selection">
+						<input type="radio" th:field="*{rating}" value="5" id="star5" /><label for="star5">★</label>
+						<input type="radio" th:field="*{rating}" value="4" id="star4" /><label for="star4">★</label>
+						<input type="radio" th:field="*{rating}" value="3" id="star3" /><label for="star3">★</label>
+						<input type="radio" th:field="*{rating}" value="2" id="star2" /><label for="star2">★</label>
+						<input type="radio" th:field="*{rating}" value="1" id="star1" /><label for="star1">★</label>
+					</div>
+				</dd>
+				<dt>タイトル</dt>
+				<dd>
+					<input type="text" th:field="*{title}" class="text" />
+				</dd>
+				<dt>内容</dt>
+				<dd>
+					<textarea th:field="*{content}" rows="6" cols="50" class="textarea"></textarea>
+				</dd>
+			</dl>
+			<div class="detail_button_area">
+				<input type="submit" value="投稿する" class="send_button" />
+			</div>
+		</form>
+		<div class="detail_button_area">
+			<form th:action="@{/client/order/list}" method="get">
+				<input type="submit" value="戻る" class="back_button" />
+			</form>
+		</div>
+	</div>
+
+</body>
+
+</html>

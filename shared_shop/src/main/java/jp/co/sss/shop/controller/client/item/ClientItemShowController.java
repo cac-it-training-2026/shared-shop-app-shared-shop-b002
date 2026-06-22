@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.sss.shop.bean.ItemBean;
+import jp.co.sss.shop.bean.ReviewBean;
 import jp.co.sss.shop.entity.Category;
 import jp.co.sss.shop.entity.Item;
+import jp.co.sss.shop.entity.Review;
 import jp.co.sss.shop.repository.CategoryRepository;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.ReviewRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.util.Constant;
 
@@ -49,6 +52,12 @@ public class ClientItemShowController {
 	 */
 	@Autowired
 	CategoryRepository categoryRepository;
+
+	/**
+	 * レビューリポジトリ
+	 */
+	@Autowired
+	ReviewRepository reviewRepository;
 
 	@ModelAttribute("categories")
 	public List<Category> getCategories() {
@@ -149,6 +158,21 @@ public class ClientItemShowController {
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("item", itemBean);
+
+		// レビュー情報の取得
+		List<Review> reviewList = reviewRepository.findByItemIdOrderByInsertDateDesc(id);
+		List<ReviewBean> reviewBeanList = beanTools.copyEntityListToReviewBeanList(reviewList);
+		model.addAttribute("reviews", reviewBeanList);
+
+		// 平均評価の算出
+		Double averageRating = 0.0;
+		String averageStar = "☆☆☆☆☆";
+		if (!reviewList.isEmpty()) {
+			averageRating = reviewList.stream().mapToInt(Review::getRating).average().orElse(0.0);
+			averageStar = beanTools.convertRatingToStar((int) Math.round(averageRating));
+		}
+		model.addAttribute("averageRating", averageRating);
+		model.addAttribute("averageStar", averageStar);
 
 		return "client/item/detail";
 	}

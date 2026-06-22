@@ -30,6 +30,11 @@
 				<dd th:text="*{categoryName}"></dd>
 				<dt>[[#{data.description}]]</dt>
 				<dd th:text="*{description}"></dd>
+				<dt>平均評価</dt>
+				<dd>
+					<span th:text="${averageStar}"></span>
+					(<span th:text="${#numbers.formatDecimal(averageRating, 1, 1)}"></span>)
+				</dd>
 			</dl>
 		</div>
 		<div class="detail_button_area">
@@ -40,6 +45,27 @@
 			<form th:action="@{/client/item/list/1}" method="post">
 				<input type="submit" value="戻る" class="back_button" />
 			</form>
+		</div>
+	</div>
+
+	<!-- レビュー表示エリア -->
+	<div class="review_area">
+		<h3 class="title">レビュー一覧</h3>
+		<div th:if="${#lists.isEmpty(reviews)}">
+			<p>まだレビューはありません。</p>
+		</div>
+		<div th:if="!${#lists.isEmpty(reviews)}" th:each="review : ${reviews}" class="review_item">
+			<div class="review_header">
+				<span class="review_rating" th:text="${review.star}"></span>
+				<span class="review_title" th:text="${review.title}"></span>
+			</div>
+			<div class="review_info">
+				<span class="review_user" th:text="'投稿者: ' + ${review.userName}"></span>
+				<span class="review_date" th:text="'投稿日: ' + ${review.insertDate}"></span>
+			</div>
+			<div class="review_content">
+				<p th:text="${review.content}"></p>
+			</div>
 		</div>
 	</div>
 
