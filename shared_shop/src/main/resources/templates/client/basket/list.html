@@ -33,12 +33,14 @@
 		<table class="list_table basket">
 			<tr>
 				<th>[[#{data.basket.item.name}]]</th>
+				<th>単価</th>
 				<th>[[#{data.basket.count}]]</th>
 				<th>[[#{data.basket.operate}]]</th>
 				<th>[[#{data.basket.stock.status}]]</th>
 			</tr>
 			<tr th:each="item, status: ${session.basketBeans}">
 				<td><a th:href="@{/client/item/detail/{id}(id=${item.id})}" th:text="${item.name}"></a></td>
+				<td th:text="${item.price}"></td>
 				<td th:text="${item.orderNum}"></td>
 				<td>
 					<form th:action="@{/client/basket/delete}" method="post">
