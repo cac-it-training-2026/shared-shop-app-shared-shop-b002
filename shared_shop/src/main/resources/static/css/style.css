@@ -34,7 +34,7 @@ header {
 /* ナビゲーション */
 .navi_area {
   background-color: var(--bg-color) !important;
-  padding: 15px 0;
+  padding: 5px 0 !important;
 }
 
 .navi_menu li {
