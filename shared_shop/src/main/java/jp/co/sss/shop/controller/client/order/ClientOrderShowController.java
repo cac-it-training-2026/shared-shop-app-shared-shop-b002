@@ -44,7 +44,6 @@ public class ClientOrderShowController {
 	@Autowired
 	HttpSession session;
 
-
 	/**
 	 * Entity、Form、Bean間のデータ生成、コピーサービス
 	 */
@@ -76,7 +75,8 @@ public class ClientOrderShowController {
 
 		// すべての注文情報を取得(注文日降順)
 		// 表示画面でページングが必要なため、ページ情報付きの検索を行う
-		Page<Order> orderList = orderRepository.findByUserIdAndDeleteFlagOrderByInsertDateDescIdDesc(loginUser.getId(), 0, pageable);
+		Page<Order> orderList = orderRepository.findByUserIdAndDeleteFlagOrderByInsertDateDescIdDesc(loginUser.getId(),
+				0, pageable);
 
 		// 注文情報リストを生成
 		List<OrderBean> orderBeanList = new ArrayList<>();
@@ -119,7 +119,7 @@ public class ClientOrderShowController {
 		Order order = orderRepository.findByIdAndUserIdAndDeleteFlag(id, loginUser.getId(), 0);
 
 		if (order == null) {
-			return "redirect:/syserror";
+			return "redirect:/login";
 		}
 
 		// 表示する注文情報を生成
