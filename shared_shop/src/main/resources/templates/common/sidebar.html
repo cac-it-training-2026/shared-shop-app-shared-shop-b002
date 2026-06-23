@@ -7,7 +7,7 @@
 <aside th:fragment="layout-sidebar" th:class="${session.user == null or session.user.authority == 2} ? ${'search'} : ${'admin_menu'}" >
 	<!--/* 検索メニュー(非会員、一般会員用) */-->
 	<div  class="search_area" th:if="${session.user == null or session.user.authority == 2}">
-		<h2 th:class="title">🦆 <span th:text="#{category.select.title}"></span></h2>
+		<h2 th:class="title"><span th:text="#{category.select.title}"></span></h2>
 		<div class="form">
 			<!-- 商品一覧画面以外で表示 -->
 			<form th:if="${sortType == null}" th:action="@{/client/item/list/1}">

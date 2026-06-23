@@ -36,7 +36,7 @@ body {
 
 /* 絵本風の背景（画面下部に固定） */
 body::after {
-	content: "🦆 🦆 🌿 🌸 🫧 🫧 🌿 🦆";
+	content: "";
 	position: fixed;
 	bottom: 0;
 	left: 0;
@@ -135,9 +135,6 @@ header {
 	gap: 10px;
 }
 
-.duck_icon {
-	font-size: 1.2em;
-}
 
 .header_cart_icon {
 	display: inline-flex;
@@ -203,7 +200,7 @@ header {
 }
 
 .main .title::before, .main .title::after {
-	content: '🦆';
+	content: '';
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
@@ -477,4 +474,8 @@ small {
 	line-height:30px;
 	text-shadow: 1px 1px 1px #fff;
 	font-size: 8pt;
+}
+.site_logo {
+	height: 40px;
+	width: auto;
 }
