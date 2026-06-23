@@ -14,23 +14,23 @@
             --primary-light: #fef3c7; /* Amber 100 */
             --primary-dark: #d97706; /* Amber 600 */
 
-            /* Dark theme colors based on brown/amber */
-            --bg-body: #120904; /* Very dark brown, almost black */
-            --bg-card: #1f1006; /* Dark brown for cards */
-            --bg-mac: #1a0e06; /* Mac window bg */
-            --border-color: #3d200b; /* Medium brown border */
+            /* Light Yellow Theme colors */
+            --bg-body: #fffbeb; /* Amber 50 - Light yellow */
+            --bg-card: #ffffff; /* White for cards */
+            --bg-mac: #1a0e06; /* Mac window bg stays dark for contrast */
+            --border-color: #fde68a; /* Amber 200 */
 
-            --text-main: #fef3c7; /* Amber 100 for main text */
-            --text-dark: #ffffff; /* White for headings */
-            --text-muted: #d4b58e; /* Muted amber/brown */
+            --text-main: #3f3f46; /* Zinc 700 for readability */
+            --text-dark: #18181b; /* Zinc 900 for headings */
+            --text-muted: #71717a; /* Zinc 500 */
 
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
-            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
             --radius-lg: 16px;
             --radius-md: 12px;
 
-            --tree-line: #3d200b;
+            --tree-line: #3d200b; /* For Mac window */
         }
 
         body {
@@ -67,7 +67,7 @@
 
         .hero-subtitle {
             font-family: 'JetBrains Mono', monospace;
-            color: #8b6e51; /* Muted brown */
+            color: var(--primary-dark);
             font-size: 0.9rem;
             font-weight: 700;
             letter-spacing: 0.1em;
@@ -92,7 +92,7 @@
         }
 
         .hero h1 span {
-            color: #58a6ff; /* Blue accent from image for 'Shop' */
+            color: var(--primary-dark);
         }
 
         .hero p {
@@ -121,13 +121,13 @@
         }
 
         .btn-primary {
-            background-color: #27c93f; /* Green from the image */
-            color: #120904;
+            background-color: var(--primary);
+            color: #ffffff;
             border: none;
         }
 
         .btn-primary:hover {
-            background-color: #20a834;
+            background-color: var(--primary-dark);
             transform: translateY(-2px);
         }
 
@@ -191,7 +191,7 @@
             text-align: center;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: #d4b58e;
             margin-right: 42px; /* balance out the dots */
         }
 
@@ -200,7 +200,7 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.9rem;
             line-height: 1.6;
-            color: var(--text-main);
+            color: #fef3c7;
         }
 
         /* File Tree */
@@ -214,7 +214,7 @@
             position: relative;
             padding-left: 1.5rem;
             margin-bottom: 0.3rem;
-            color: var(--text-muted);
+            color: #d4b58e;
         }
 
         .file-tree li::before {
@@ -229,12 +229,12 @@
         }
 
         .tree-folder {
-            color: #58a6ff; /* Blue from image */
+            color: #58a6ff; /* Blue for folders */
             font-weight: 700;
         }
 
         .tree-file {
-            color: var(--text-main);
+            color: #fef3c7;
         }
 
         .tree-comment {
@@ -311,7 +311,7 @@
         }
 
         .feature-card h3 {
-            color: var(--primary-light);
+            color: var(--primary-dark);
             font-size: 1.3rem;
             margin-top: 0;
             margin-bottom: 1rem;
@@ -400,8 +400,8 @@
         }
 
         th {
-            background-color: rgba(255,255,255,0.02);
-            color: var(--primary-light);
+            background-color: var(--primary-light);
+            color: var(--text-dark);
             font-weight: 700;
             text-align: left;
         }
@@ -442,8 +442,8 @@
         }
 
         .tag {
-            background-color: var(--bg-mac);
-            color: var(--primary-light);
+            background-color: #ffffff;
+            color: var(--text-dark);
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
             font-size: 1rem;
@@ -451,11 +451,12 @@
             border: 1px solid var(--border-color);
             transition: all 0.2s ease;
             font-family: 'JetBrains Mono', monospace;
+            box-shadow: var(--shadow-sm);
         }
 
         .tag:hover {
             border-color: var(--primary);
-            color: var(--primary);
+            color: var(--primary-dark);
             transform: translateY(-2px);
         }
 
@@ -527,15 +528,18 @@
                             <li class="indent-1"><span class="tree-folder">login/</span></li>
 
                             <li><span class="tree-folder">entity/</span></li>
-                            <li class="indent-1"><span class="tree-file">User.java</span></li>
+                            <li class="indent-1"><span class="tree-file">Category.java</span></li>
                             <li class="indent-1"><span class="tree-file">Item.java</span></li>
                             <li class="indent-1"><span class="tree-file">Order.java</span></li>
                             <li class="indent-1"><span class="tree-file">OrderItem.java</span></li>
+                            <li class="indent-1"><span class="tree-file">User.java</span></li>
 
                             <li><span class="tree-folder">filter/</span> <span class="tree-comment">4段階アクセス制御</span></li>
-                            <li><span class="tree-folder">service/</span> <span class="tree-comment">BeanTools, PriceCalc</span></li>
+                            <li><span class="tree-folder">form/</span></li>
+                            <li><span class="tree-folder">repository/</span></li>
+                            <li><span class="tree-folder">service/</span> <span class="tree-comment">BeanTools, PriceCalc, UploadFileService</span></li>
                             <li><span class="tree-folder">validator/</span> <span class="tree-comment">独自バリデーション</span></li>
-                            <li><span class="tree-file" style="color: #27c93f;">SharedShopApplication.java</span> <span style="color: #27c93f;">█</span></li>
+                            <li><span class="tree-file" style="color: #27c93f;">SharedShopNameApplication.java</span> <span style="color: #27c93f;">█</span></li>
                         </ul>
                     </div>
                 </div>
