@@ -12,8 +12,8 @@
 		<li><a th:href="@{/client/basket/list}">🦆 <span th:text="#{basket}"></span></a></li>
 		<li><a th:href="@{/client/coupon/list}">🦆 クーポン一覧</a></li>
 		<th:block th:if="${session.user != null}">
-			<li style="display:none;"><a th:href="@{/client/favorite/list}">🦆 <span th:text="#{favorite}"></span></a></li>
-			<li style="display:none;"><a th:href="@{/client/order/list}">🦆 <span th:text="#{order}+#{title.list}"></span></a></li>
+			<li><a th:href="@{/client/favorite/list}">🦆 <span th:text="#{favorite}"></span></a></li>
+			<li><a th:href="@{/client/order/list}">🦆 <span th:text="#{order}+#{title.list}"></span></a></li>
 		</th:block>
 	</ul>
 </body>

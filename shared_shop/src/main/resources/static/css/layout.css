@@ -460,11 +460,12 @@ aside.admin_menu {
  * footer要素は画面,もしくはページの最下部に表示されるようになります。
  */
 footer {
-	background-color: #87ceeb;
+	background-color: var(--duck-yellow);
 	text-align: center;
 	position: absolute;
 	bottom: 0;
 	width: 100%;
+	border-top: 2px solid var(--duck-orange);
 }
 
 .admin footer {

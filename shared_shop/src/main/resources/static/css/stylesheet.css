@@ -489,7 +489,7 @@ select {
 /* ---- 共通 ---- */
 .list_table,
 .detail_table {
-	border-bottom: 1px solid #f0f8fb;
+	border-bottom: 1px solid var(--duck-yellow);
 	background-color: #fff;
 	border-collapse: collapse;
 	margin: 50px auto 20px;
@@ -498,8 +498,9 @@ select {
 .detail_table th {
 	white-space: nowrap;
 	padding: 5px;
-    background: #add8e6;
-    font-weight: normal;
+    background: var(--duck-yellow);
+    color: var(--duck-brown);
+    font-weight: bold;
     position: relative;
 }
 .list_table td,
@@ -514,7 +515,7 @@ select {
 	text-align: center;
 }
 .list_table tr:nth-of-type(odd) {
-    background: #f0f8fb;
+    background: var(--duck-cream);
 }
 .admin .list_table tr:nth-of-type(odd) {
     background: #fff0ec;
@@ -555,7 +556,7 @@ select {
 	background: #ffc6b9;
 }
 .detail_table td{
-	border-bottom: 1px solid #f0f8fb;
+	border-bottom: 1px solid var(--duck-yellow);
 }
 
 /* ---- 会員一覧 ---- */
