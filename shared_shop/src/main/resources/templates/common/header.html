@@ -6,7 +6,7 @@
 <body>
 <div th:fragment="layout-header" class="container">
 	<div class="header_left">
-		<h1 th:class="site_title"><img th:src="@{/images/logo.png}" alt="Duckle" class="site_logo"></h1>
+		<h1 th:class="site_title"><img th:src="@{../static/images/logo.png}" alt="Duckle" class="site_logo"></h1>
 	</div>
 	<div class="header_right">
 		<div th:if="${session.user != null and session.user.authority == 2}" class="user_info">
