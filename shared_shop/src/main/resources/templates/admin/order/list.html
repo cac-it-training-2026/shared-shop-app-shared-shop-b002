@@ -21,6 +21,7 @@
 				<th>[[#{user}+#{userForm.name}]]</th>
 				<th>[[#{data.order.date}]]</th>
 				<th>[[#{data.paymethod}]]</th>
+				<th>使用クーポン</th>
 				<th>[[#{data.total.price}]]</th>
 			</tr>
 
@@ -37,7 +38,11 @@
 					<span th:case="4">[[#{paymethod.emoney.str}]]</span>
 					<span th:case="5">[[#{paymethod.convenience.str}]]</span>
 				</td>
-				<td th:text="${order.total}"></td>
+				<td th:text="${order.couponCode}"></td>
+				<td>
+					<span th:if="${order.discountedTotal != null}" th:text="${order.discountedTotal}"></span>
+					<span th:if="${order.discountedTotal == null}" th:text="${order.total}"></span>
+				</td>
 			</tr>
 		</table>
 		<!--/* ページリンク */-->

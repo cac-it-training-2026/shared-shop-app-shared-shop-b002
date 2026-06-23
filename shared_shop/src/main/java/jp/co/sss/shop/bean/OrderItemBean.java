@@ -32,6 +32,16 @@ public class OrderItemBean {
 	private Integer subtotal;
 
 	/**
+	 * 注文明細ID
+	 */
+	private Integer orderItemId;
+
+	/**
+	 * レビュー済みフラグ
+	 */
+	private boolean reviewed;
+
+	/**
 	 * 注文商品IDの取得
 	 * @return 注文商品ID
 	 */
@@ -125,5 +135,37 @@ public class OrderItemBean {
 	 */
 	public void setOrderNum(Integer orderNum) {
 		this.orderNum = orderNum;
+	}
+
+	/**
+	 * 注文明細ID取得
+	 * @return 注文明細ID
+	 */
+	public Integer getOrderItemId() {
+		return orderItemId;
+	}
+
+	/**
+	 * 注文明細IDセット
+	 * @param orderItemId 注文明細ID
+	 */
+	public void setOrderItemId(Integer orderItemId) {
+		this.orderItemId = orderItemId;
+	}
+
+	/**
+	 * レビュー済みフラグ取得
+	 * @return レビュー済みフラグ
+	 */
+	public boolean isReviewed() {
+		return reviewed;
+	}
+
+	/**
+	 * レビュー済みフラグセット
+	 * @param reviewed レビュー済みフラグ
+	 */
+	public void setReviewed(boolean reviewed) {
+		this.reviewed = reviewed;
 	}
 }

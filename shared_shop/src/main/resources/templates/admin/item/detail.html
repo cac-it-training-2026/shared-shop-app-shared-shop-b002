@@ -24,7 +24,10 @@
 				<dt>[[#{itemForm.name}]]</dt>
 				<dd th:text="*{name}"></dd>
 				<dt>[[#{itemForm.price}]]</dt>
-				<dd th:text="*{price}"></dd>
+				<dd>
+					基準価格：<span th:text="*{basePrice}"></span>円<br/>
+					現在の価格：<span th:text="*{price}"></span>円
+				</dd>
 				<dt>[[#{itemForm.stock}]]</dt>
 				<dd th:text="*{stock}"></dd>
 				<dt>[[#{data.category}]]</dt>

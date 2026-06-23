@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{common/layout_5block :: layout(~{::title},~{::body/content()})}">
+
+<head>
+	<title th:text="#{order}+#{title.cancel.check}+' | '+ #{shop.title}"> </title>
+	<meta charset="UTF-8" />
+</head>
+
+<body class="user">
+	<h2 th:class="title" th:text="#{order}+#{title.cancel.check}"></h2>
+	<p class="check_message" th:text="#{msg.cancel.check}"></p>
+
+	<div class="info_form_area">
+		<form th:action="@{/client/order/delete/complete}" method="post" class="detail_button_area">
+			<input type="submit" value="キャンセル" class="send_button" />
+		</form>
+		<form th:action="@{/client/order/list}" method="post" class="detail_button_area">
+			<input type="submit" value="戻る" class="back_button" />
+		</form>
+	</div>
+</body>
+
+</html>

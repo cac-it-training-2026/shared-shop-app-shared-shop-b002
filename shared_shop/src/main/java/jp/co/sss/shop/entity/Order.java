@@ -61,10 +61,34 @@ public class Order {
 	private Integer payMethod;
 
 	/**
+	 * クーポンコード
+	 */
+	@Column
+	private String couponCode;
+
+	/**
+	 * 割引額
+	 */
+	@Column
+	private Integer discountAmount;
+
+	/**
+	 * 割引後請求額
+	 */
+	@Column
+	private Integer discountedTotal;
+
+	/**
 	 * 注文日付
 	 */
 	@Column(insertable = false)
 	private Date insertDate;
+
+	/**
+	 * 削除フラグ
+	 */
+	@Column(insertable = false)
+	private Integer deleteFlag;
 
 	/**
 	 * 会員情報
@@ -176,6 +200,54 @@ public class Order {
 	}
 
 	/**
+	 * クーポンコードの取得
+	 * @return クーポンコード
+	 */
+	public String getCouponCode() {
+		return couponCode;
+	}
+
+	/**
+	 * クーポンコードのセット
+	 * @param couponCode クーポンコード
+	 */
+	public void setCouponCode(String couponCode) {
+		this.couponCode = couponCode;
+	}
+
+	/**
+	 * 割引額の取得
+	 * @return 割引額
+	 */
+	public Integer getDiscountAmount() {
+		return discountAmount;
+	}
+
+	/**
+	 * 割引額のセット
+	 * @param discountAmount 割引額
+	 */
+	public void setDiscountAmount(Integer discountAmount) {
+		this.discountAmount = discountAmount;
+	}
+
+	/**
+	 * 割引後請求額の取得
+	 * @return 割引後請求額
+	 */
+	public Integer getDiscountedTotal() {
+		return discountedTotal;
+	}
+
+	/**
+	 * 割引後請求額のセット
+	 * @param discountedTotal 割引後請求額
+	 */
+	public void setDiscountedTotal(Integer discountedTotal) {
+		this.discountedTotal = discountedTotal;
+	}
+
+	/**
 	 * 登録日付の取得
 	 * @return 登録日付
 	 */
@@ -221,6 +293,22 @@ public class Order {
 	 */
 	public void setOrderItemsList(List<OrderItem> orderItemsList) {
 		this.orderItemsList = orderItemsList;
+	}
+
+	/**
+	 * 削除フラグの取得
+	 * @return 削除フラグ
+	 */
+	public Integer getDeleteFlag() {
+		return deleteFlag;
+	}
+
+	/**
+	 * 削除フラグのセット
+	 * @param deleteFlag 削除フラグ
+	 */
+	public void setDeleteFlag(Integer deleteFlag) {
+		this.deleteFlag = deleteFlag;
 	}
 
 }

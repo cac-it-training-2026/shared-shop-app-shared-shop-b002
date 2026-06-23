@@ -3,12 +3,12 @@
 	th:replace="~{common/layout_5block :: layout(~{::title},~{::body/content()})}">
 
 <head>
-	<title th:text="#{user}+#{title.input.new}+' | '+ #{shop.title}"> </title>
+	<title th:text="${userForm.reRegist} ? (#{user}+#{title.reRegist.input}+' | '+ #{shop.title}) : (#{user}+#{title.input.new}+' | '+ #{shop.title})"> </title>
 	<meta charset="UTF-8" />
 </head>
 
 <body class="user user_regist_input">
-	<h2 th:class="title" th:text="#{user}+#{title.input.new}"></h2>
+	<h2 th:class="title" th:text="${userForm.reRegist} ? (#{user}+#{title.reRegist.input}) : (#{user}+#{title.input.new})"></h2>
 	<p th:class="input_message" th:text="#{msg.regist.input}"></p>
 
 	<div class="user_info_form_area">
@@ -50,6 +50,7 @@
 				</li>
 			</ul>
 			<input type="hidden" name="authority" value="2" />
+			<input type="hidden" th:field="*{reRegist}" />
 			<input type="submit" value="確認" th:class="send_button" />
 		</form>
 		<form th:action="@{/}" method="post">

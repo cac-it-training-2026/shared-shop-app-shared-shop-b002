@@ -20,6 +20,7 @@ import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.UploadFileService;
 import jp.co.sss.shop.util.Constant;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 商品管理 登録機能のコントローラクラス
@@ -181,6 +182,10 @@ public class AdminItemRegistController {
 			// セッション情報がない場合、エラー
 			return "redirect:/syserror";
 		}
+		//現在の価格を算出 (新規登録時は直近30日の注文数は0)
+		int currentPrice = PriceCalc.calculateDynamicPrice(itemForm.getPrice(), itemForm.getStock(), 0L);
+		model.addAttribute("currentPrice", currentPrice);
+
 		//入力フォーム情報をスコープへ設定
 		model.addAttribute("itemForm", itemForm);
 
