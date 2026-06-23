@@ -18,9 +18,37 @@ html {
  * 下方向にmarginの余白を設定することでfooterの表示領域を確保します。
  * paddingプロパティの値0は、body要素が持つ枠の領域を取り消します。
  */
+:root {
+	--duck-yellow: #ffdf33;
+	--duck-cream: #fff9e6;
+	--duck-brown: #795548;
+	--duck-orange: #ff8c00;
+	--duck-white: #ffffff;
+}
+
 body {
 	margin: 0 0 30px;
 	padding: 0;
+	background-color: var(--duck-cream);
+	color: var(--duck-brown);
+	font-family: "Hiragino Rounded W4 JIS2004", "Hiragino Maru Gothic ProN", "Meiryo", sans-serif;
+}
+
+/* 絵本風の背景（画面下部に固定） */
+body::after {
+	content: "🦆 🦆 🌿 🌸 🫧 🫧 🌿 🦆";
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	font-size: 3rem;
+	letter-spacing: 2vw;
+	opacity: 0.15;
+	z-index: -1;
+	pointer-events: none;
+	background: linear-gradient(to top, rgba(173, 216, 230, 0.3) 0%, transparent 100%);
+	padding-bottom: 20px;
 }
 
 h2,
@@ -75,35 +103,63 @@ body > .container {
 header .container {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 }
 header {
-	background: #87ceeb;
-	padding: 10px 0;
+	background: linear-gradient(to bottom, #ffffff 0%, var(--duck-cream) 100%);
+	border-bottom: 3px solid var(--duck-yellow);
+	padding: 15px 0;
 }
 .admin header {
 	background: #ff8669;
 }
 
-/* スキルアップテクニック3
- * font-sizeの単位emは親要素に設定されたfont-sizeの相対指定となります。
- * 親要素のfont-sizeが16px設定だとしたら、1.8emでは1.8倍、即ち28.8pxの大きさとなります。
- * デザインにはジャンプ率の考え方があり、基本の大きさからの倍率で文字サイズを決めることが多々あります。
- * その様な場合、em指定をしておくと便利です。
- * 基本サイズが変更になったとしても、比例して大きさが変化します。
- */
-.site_title {
-	font-size: 1.8em;
-	font-weight: normal;
-	margin:0;
+.header_left {
+	display: flex;
+	align-items: center;
 }
 
-/* スキルアップテクニック4
- * 横幅の％指定はブロックの数が決まっている際、設定が容易に行えます。
- * また、レスポンシブにも対応できるため、px指定と比べ柔軟性に優れます。
- */
+.header_right {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.site_title {
+	font-size: 2.2em;
+	font-weight: bold;
+	color: var(--duck-brown);
+	margin:0;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.duck_icon {
+	font-size: 1.2em;
+}
+
+.header_cart_icon {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	background-color: var(--duck-yellow);
+	color: var(--duck-white);
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	font-size: 1.5rem;
+	text-decoration: none;
+	transition: background-color 0.2s;
+}
+
+.header_cart_icon:hover {
+	background-color: var(--duck-orange);
+}
+
 .user_info {
 	text-align: right;
-	padding-top: 15px;
+	font-weight: bold;
 }
 .user_info a {
 	text-decoration: none;
@@ -125,9 +181,7 @@ header {
 
 
 /* ---- タイトル共通 ---- */
-.search_area .title,
-.main .title
- {
+.search_area .title {
 	background-color: #3d98bf;
 	margin: 0;
 	padding: 5px 8px;
@@ -135,16 +189,45 @@ header {
 	text-shadow: 1px 1px 1px #12526d;
 }
 
+.main .title {
+	background-color: var(--duck-yellow);
+	margin: 0 0 20px 0;
+	padding: 10px 15px;
+	color: var(--duck-brown);
+	text-align: center;
+	border-radius: 30px;
+	position: relative;
+	box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+	font-weight: bold;
+	text-shadow: none;
+}
+
+.main .title::before, .main .title::after {
+	content: '🦆';
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 1.2em;
+}
+.main .title::before {
+	left: 20px;
+}
+.main .title::after {
+	right: 20px;
+}
+
 
 /* ---- ナビゲーションバー ---- */
 .navi_area {
-	background: #edf9fe;
+	background: transparent;
+	margin-top: -10px;
 }
 .navi_menu {
 	display: flex;
 	width: 960px;
-	padding:12px 0;
+	padding: 12px 0;
 	margin: 0 auto;
+	gap: 10px;
 }
 .navi_menu li {
 	flex: 1;
@@ -154,28 +237,32 @@ header {
 	width: 100%;
 	font-size: 1.5em;
 	line-height: 2.5em;
-	border: 1px solid #5fb4d9;
+	border: 2px solid var(--duck-yellow);
+	border-radius: 10px !important;
 	text-align: center;
 	text-decoration: none;
-	background: #fff;
-	transition: 0.18s;
+	background: var(--duck-white);
+	color: var(--duck-brown);
+	transition: 0.2s;
+	font-weight: bold;
 }
 .navi_menu a:hover {
-	background: #3d98bf;
-	color: #fff;
-	text-shadow: 1px 1px 1px #12526d;
-	border-color : #3d98bf;
+	background: var(--duck-yellow);
+	color: var(--duck-brown);
 }
-.navi_menu li:first-of-type a{
-	border-radius: 6px 0px 0px 6px;
-}
-.navi_menu li:last-of-type a{
-	border-radius: 0px 6px 6px 0px;
+body.index .navi_menu li:first-of-type a {
+	background: var(--duck-yellow);
+	color: var(--duck-brown);
 }
 
 /* ---- サイドバー ---- */
 .search .search_area{
 	flex:1;
+	background: var(--duck-cream);
+	border: 1px solid var(--duck-yellow);
+	border-radius: 12px;
+	padding: 10px;
+	box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 .search,
 aside.admin_menu {
@@ -187,6 +274,8 @@ aside.admin_menu {
 	border-radius: 6px 6px 0 0;
 	text-align: center;
 	font-size: 1.1em;
+	color: var(--duck-brown);
+	font-weight: bold;
 }
 .search_area .title{
 	border-radius: 6px 6px 6px 6px;
@@ -202,7 +291,18 @@ aside.admin_menu {
 	background: #ff6c49;
 }
 .search .form {
-	padding: 15px 0 50px 5px;
+	padding: 15px 0 20px 5px;
+	text-align: center;
+}
+.search .form [type="submit"] {
+	background: var(--duck-yellow);
+	color: var(--duck-brown);
+	font-weight: bold;
+	border: 1px solid var(--duck-orange);
+	border-radius: 20px;
+	padding: 4px 15px;
+	margin-top: 10px;
+	cursor: pointer;
 }
 .admin_menu .display_list {
 	display: block;
