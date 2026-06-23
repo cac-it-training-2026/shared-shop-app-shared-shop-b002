@@ -179,7 +179,7 @@ header {
 
 /* ---- タイトル共通 ---- */
 .search_area .title {
-	background-color: #3d98bf;
+	background-color:var(--duck-yellow);
 	margin: 0;
 	padding: 5px 8px;
 	color: #fff;
