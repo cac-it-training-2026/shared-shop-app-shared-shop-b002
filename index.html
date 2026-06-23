@@ -7,23 +7,30 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #f59e0b; /* Amber 500 */
             --primary-light: #fef3c7; /* Amber 100 */
             --primary-dark: #d97706; /* Amber 600 */
-            --text-main: #3f3f46; /* Zinc 700 */
-            --text-dark: #18181b; /* Zinc 900 */
-            --text-muted: #71717a; /* Zinc 500 */
-            --bg-body: #fffbeb; /* Amber 50 - subtle warm background */
-            --bg-card: #ffffff;
-            --border-color: #fde68a; /* Amber 200 */
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
-            --radius-lg: 20px;
+
+            /* Dark theme colors based on brown/amber */
+            --bg-body: #120904; /* Very dark brown, almost black */
+            --bg-card: #1f1006; /* Dark brown for cards */
+            --bg-mac: #1a0e06; /* Mac window bg */
+            --border-color: #3d200b; /* Medium brown border */
+
+            --text-main: #fef3c7; /* Amber 100 for main text */
+            --text-dark: #ffffff; /* White for headings */
+            --text-muted: #d4b58e; /* Muted amber/brown */
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+            --radius-lg: 16px;
             --radius-md: 12px;
+
+            --tree-line: #3d200b;
         }
 
         body {
@@ -36,311 +43,559 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Header */
-        header {
-            background: linear-gradient(135deg, #d97706, #b45309); /* Warm Amber/Brown tones */
-            color: #ffffff;
-            padding: 5rem 2rem 6rem;
-            text-align: center;
-            position: relative;
-        }
-        header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            background: var(--bg-body);
-            border-top-left-radius: 50% 100%;
-            border-top-right-radius: 50% 100%;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.8rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            color: #ffffff;
-        }
-        header h1 span {
-            color: #fef3c7; /* Lighter amber to contrast with dark amber background */
-        }
-        header p {
-            font-size: 1.1rem;
-            margin-top: 1.5rem;
-            color: #fef3c7; /* Amber 100 for better contrast */
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
         /* Container */
         .container {
-            max-width: 1000px;
-            margin: -2rem auto 3rem;
-            padding: 0 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            padding: 4rem 0;
+            gap: 4rem;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .hero-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            color: #8b6e51; /* Muted brown */
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero-subtitle::before {
+            content: '//';
+            color: #27c93f; /* Green accent from image */
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin: 0 0 1.5rem 0;
+            color: var(--text-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 span {
+            color: #58a6ff; /* Blue accent from image for 'Shop' */
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #27c93f; /* Green from the image */
+            color: #120904;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #20a834;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Mac Window / Code Editor */
+        .hero-visual {
+            flex: 1;
+            max-width: 550px;
+            perspective: 1000px;
+        }
+
+        .mac-window {
+            background-color: var(--bg-mac);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transform: rotateY(-2deg) rotateX(2deg);
+            transition: transform 0.3s ease;
+        }
+
+        .mac-window:hover {
+            transform: rotateY(0) rotateX(0);
+        }
+
+        .mac-header {
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .mac-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background-color: #ff5f56; }
+        .dot.yellow { background-color: #ffbd2e; }
+        .dot.green { background-color: #27c93f; }
+
+        .mac-title {
+            flex: 1;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-right: 42px; /* balance out the dots */
+        }
+
+        .mac-body {
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        /* File Tree */
+        .file-tree {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .file-tree li {
             position: relative;
-            z-index: 2;
+            padding-left: 1.5rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-muted);
+        }
+
+        .file-tree li::before {
+            content: '├─';
+            position: absolute;
+            left: 0;
+            color: var(--tree-line);
+        }
+
+        .file-tree li:last-child::before {
+            content: '└─';
+        }
+
+        .tree-folder {
+            color: #58a6ff; /* Blue from image */
+            font-weight: 700;
+        }
+
+        .tree-file {
+            color: var(--text-main);
+        }
+
+        .tree-comment {
+            color: #8b6e51;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+
+        .indent-1 { margin-left: 1.5rem; }
+        .indent-2 { margin-left: 3rem; }
+
+        .tree-root {
+            color: var(--primary-light);
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         /* Sections */
         section {
-            background-color: var(--bg-card);
-            padding: 3.5rem;
-            margin-bottom: 2.5rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            border: 1px solid rgba(245, 158, 11, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 5rem 0;
+            border-top: 1px solid var(--border-color);
         }
-        section:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
+
+        .section-header {
+            margin-bottom: 3rem;
         }
 
         h2 {
             color: var(--text-dark);
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             margin-top: 0;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
+
         h2::before {
             content: '';
             display: inline-block;
-            width: 6px;
-            height: 28px;
+            width: 8px;
+            height: 32px;
             background-color: var(--primary);
             border-radius: 4px;
         }
 
-        p {
-            font-size: 1.05rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-main);
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 700px;
         }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        ul li {
-            position: relative;
-            padding-left: 2rem;
-            margin-bottom: 1rem;
-            font-size: 1.05rem;
-        }
-        ul li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 10px;
-            width: 8px;
-            height: 8px;
-            background-color: var(--primary);
-            border-radius: 50%;
-        }
-        ul li strong {
-            color: var(--text-dark);
-            font-weight: 700;
-        }
-
-        /* Grid for Screens */
-        .grid {
+        /* Features List */
+        .features-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            margin-top: 2rem;
         }
 
-        .card {
+        .feature-card {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .feature-card h3 {
+            color: var(--primary-light);
+            font-size: 1.3rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .feature-card b, .feature-card strong {
+            color: var(--primary);
+        }
+
+        /* Screens Grid */
+        .screens-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .screen-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
             overflow: hidden;
             transition: all 0.3s ease;
-            box-shadow: var(--shadow-sm);
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary);
         }
 
-        .card-content {
-            padding: 1.5rem;
-        }
-        .card h3 {
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-            color: var(--text-dark);
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-        .card p {
-            margin-bottom: 0;
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            line-height: 1.6;
+        .screen-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+            transform: translateY(-5px);
         }
 
         .screen-thumb {
             width: 100%;
-            height: 180px;
-            background: linear-gradient(135deg, var(--primary-light), #fde68a);
+            height: 200px;
+            background: linear-gradient(135deg, var(--bg-mac), var(--border-color));
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary-dark);
+            color: var(--primary);
             font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
+            font-size: 1.2rem;
             position: relative;
-            overflow: hidden;
             border-bottom: 1px solid var(--border-color);
         }
-        .screen-thumb::after {
-            content: '拡大して見る';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(245, 158, 11, 0.85); /* Primary with opacity */
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            backdrop-filter: blur(2px);
+
+        .screen-card-content {
+            padding: 1.5rem;
         }
-        .screen-thumb:hover::after {
-            opacity: 1;
+
+        .screen-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-dark);
+        }
+
+        .screen-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
         }
 
         /* Table */
         .table-responsive {
             overflow-x: auto;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
+            background-color: var(--bg-card);
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            background-color: var(--bg-card);
         }
+
         th, td {
-            padding: 1.25rem 1rem;
+            padding: 1.25rem 1.5rem;
             text-align: center;
             border-bottom: 1px solid var(--border-color);
         }
+
         th {
-            background-color: #fafafa;
-            color: var(--text-dark);
+            background-color: rgba(255,255,255,0.02);
+            color: var(--primary-light);
             font-weight: 700;
-            font-size: 0.95rem;
+            text-align: left;
         }
+
+        th:not(:first-child) {
+            text-align: center;
+        }
+
         tbody tr:last-child td {
             border-bottom: none;
         }
-        tbody tr {
-            transition: background-color 0.2s ease;
-        }
+
         tbody tr:hover {
-            background-color: var(--primary-light);
+            background-color: rgba(245, 158, 11, 0.05);
         }
+
         .check-yes {
-            color: var(--primary-dark);
+            color: var(--primary);
             font-weight: 700;
             font-size: 1.2rem;
         }
+
         .check-no {
-            color: #cbd5e1; /* Slate 300 */
-            font-weight: 400;
+            color: var(--border-color);
         }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 3rem 2rem;
-            background-color: #78350f; /* Amber 900 - Dark warm brown */
-            color: #fde68a; /* Amber 200 */
-            margin-top: 4rem;
-        }
-        footer p {
-            margin: 0;
-            font-size: 0.9rem;
+        td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: var(--text-main);
         }
 
         /* Tech Tags */
         .tech-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-top: 1.5rem;
+            gap: 1rem;
         }
+
         .tag {
-            background-color: #ffffff;
-            color: var(--text-dark);
-            padding: 0.6rem 1.2rem;
-            border-radius: 9999px;
-            font-size: 0.9rem;
-            font-weight: 500;
+            background-color: var(--bg-mac);
+            color: var(--primary-light);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
             transition: all 0.2s ease;
+            font-family: 'JetBrains Mono', monospace;
         }
+
         .tag:hover {
             border-color: var(--primary);
-            color: var(--primary-dark);
+            color: var(--primary);
             transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 6rem 0 4rem;
+            }
+            .hero-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            .hero-visual {
+                width: 100%;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1><span>ECサイト</span>開発プロジェクト</h1>
-        <p>Spring BootとThymeleafを活用した実践的なECサイト構築</p>
-    </header>
-
     <div class="container">
+        <!-- Hero Section based on the image -->
+        <div class="hero">
+            <div class="hero-content">
+                <div class="hero-subtitle">SPRING BOOT ・ JAVA ・ THYMELEAF</div>
+                <h1>Shared<br><span>Shop</span><br>Application</h1>
+                <p>ECサイトの基本機能をひと通り実装した学習用Webアプリ。<br>会員管理・商品管理・買い物かご・注文フローを備えた、Spring Boot 製のフルスタックサンプルリポジトリです。</p>
+                <div class="hero-buttons">
+                    <a href="#features" class="btn btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        リポジトリを見る
+                    </a>
+                    <a href="#screens" class="btn btn-secondary">画面を確認する</a>
+                </div>
+            </div>
 
+            <div class="hero-visual">
+                <div class="mac-window">
+                    <div class="mac-header">
+                        <div class="mac-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="mac-title">jp.co.sss.shop</div>
+                    </div>
+                    <div class="mac-body">
+                        <div class="tree-root">📦 jp.co.sss.shop</div>
+                        <ul class="file-tree">
+                            <li><span class="tree-folder">controller/</span></li>
+                            <li class="indent-1"><span class="tree-folder">admin/</span> <span class="tree-comment">category, item, order, user</span></li>
+                            <li class="indent-1"><span class="tree-folder">client/</span> <span class="tree-comment">basket, item, order, user</span></li>
+                            <li class="indent-1"><span class="tree-folder">login/</span></li>
+
+                            <li><span class="tree-folder">entity/</span></li>
+                            <li class="indent-1"><span class="tree-file">User.java</span></li>
+                            <li class="indent-1"><span class="tree-file">Item.java</span></li>
+                            <li class="indent-1"><span class="tree-file">Order.java</span></li>
+                            <li class="indent-1"><span class="tree-file">OrderItem.java</span></li>
+
+                            <li><span class="tree-folder">filter/</span> <span class="tree-comment">4段階アクセス制御</span></li>
+                            <li><span class="tree-folder">service/</span> <span class="tree-comment">BeanTools, PriceCalc</span></li>
+                            <li><span class="tree-folder">validator/</span> <span class="tree-comment">独自バリデーション</span></li>
+                            <li><span class="tree-file" style="color: #27c93f;">SharedShopApplication.java</span> <span style="color: #27c93f;">█</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
         <section id="features">
-            <h2>主な機能</h2>
-            <p>標準的なECサイトの基本機能に加え、より実践的な拡張機能も実装されています。</p>
-            <ul>
-                <li><strong>会員管理:</strong> 会員登録・ログイン・退会機能に加え、不正アクセスを防ぐ<b>アカウントロック機能</b>を実装。</li>
-                <li><strong>商品閲覧:</strong> 商品一覧・カテゴリ分類・商品検索機能と、ユーザーからのフィードバックを集める<b>商品レビュー機能</b>。</li>
-                <li><strong>ショッピング:</strong> カートへの商品追加・数量変更・削除、および気になる商品を保存できる<b>お気に入り登録機能</b>。</li>
-                <li><strong>注文管理:</strong> 注文処理・注文履歴の参照に加え、購入時に割引を適用できる<b>クーポン機能</b>。</li>
-                <li><strong>管理者機能:</strong> 管理者による商品・カテゴリ・会員のCRUD一元管理機能。</li>
-            </ul>
+            <div class="section-header">
+                <h2>主な機能</h2>
+                <p class="section-desc">標準的なECサイトの基本機能に加え、より実践的な拡張機能も実装されています。</p>
+            </div>
+            <div class="features-list">
+                <div class="feature-card">
+                    <h3>👥 会員管理</h3>
+                    <p>会員登録・ログイン・退会機能に加え、不正アクセスを防ぐ<b>アカウントロック機能</b>を実装。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔍 商品閲覧</h3>
+                    <p>商品一覧・カテゴリ分類・検索機能と、ユーザーからのフィードバックを集める<b>商品レビュー機能</b>。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛒 ショッピング</h3>
+                    <p>カートへの商品追加・数量変更・削除、および気になる商品を保存できる<b>お気に入り登録機能</b>。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 注文管理</h3>
+                    <p>注文処理・注文履歴の参照に加え、購入時に割引を適用できる<b>クーポン機能</b>。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚙️ 管理者機能</h3>
+                    <p>管理者による商品・カテゴリ・会員情報のCRUD操作を含む一元管理機能。</p>
+                </div>
+            </div>
         </section>
 
+        <!-- Screens Section -->
         <section id="screens">
-            <h2>画面一覧</h2>
-            <p>各機能の実際の画面です。サムネイルをクリックすると拡大表示をシミュレートします。</p>
-            <div class="grid">
-                <div class="card">
-                    <div class="screen-thumb" onclick="alert('商品一覧画面の拡大画像を表示します')">商品一覧画面</div>
-                    <div class="card-content">
+            <div class="section-header">
+                <h2>画面一覧</h2>
+                <p class="section-desc">各機能の実際の画面構成です。</p>
+            </div>
+            <div class="screens-grid">
+                <div class="screen-card">
+                    <div class="screen-thumb">商品一覧画面</div>
+                    <div class="screen-card-content">
                         <h3>商品一覧</h3>
                         <p>トップページおよびカテゴリごとの商品を表示します。</p>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="screen-thumb" onclick="alert('カート画面の拡大画像を表示します')">カート画面</div>
-                    <div class="card-content">
+                <div class="screen-card">
+                    <div class="screen-thumb">カート画面</div>
+                    <div class="screen-card-content">
                         <h3>ショッピングカート</h3>
                         <p>選択した商品の確認と合計金額を計算します。</p>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="screen-thumb" onclick="alert('管理者ダッシュボードの拡大画像を表示します')">管理者画面</div>
-                    <div class="card-content">
+                <div class="screen-card">
+                    <div class="screen-thumb">管理者画面</div>
+                    <div class="screen-card-content">
                         <h3>管理者ダッシュボード</h3>
                         <p>会員や商品の情報を一元管理します。</p>
                     </div>
@@ -348,37 +603,56 @@
             </div>
         </section>
 
+        <!-- Tech Stack Section -->
         <section id="tech-stack">
-            <h2>技術スタック</h2>
-            <p>Spring エコシステムをベースに、フロントエンドは Thymeleaf を採用。</p>
+            <div class="section-header">
+                <h2>技術スタック</h2>
+                <p class="section-desc">Spring エコシステムをベースに、フロントエンドは Thymeleaf を採用。</p>
+            </div>
             <div class="tech-tags">
                 <span class="tag">Java 17</span>
                 <span class="tag">Spring Boot 4</span>
-                <span class="tag">Spring Data JPA (Hibernate)</span>
+                <span class="tag">Spring Data JPA</span>
+                <span class="tag">Hibernate</span>
                 <span class="tag">Thymeleaf</span>
                 <span class="tag">HTML5 / CSS3</span>
                 <span class="tag">Oracle Database</span>
             </div>
         </section>
 
+        <!-- Design Points Section -->
         <section id="design">
-            <h2>設計のポイント</h2>
-            <p>標準的なMVC構造に加え、独自の工夫が随所に施されています。</p>
-            <ul>
-                <li><strong>EntityとBeanの分離:</strong> データベースモデル(Entity)とビューモデル(Bean)を分離し、<code>BeanTools</code>で柔軟に変換。</li>
-                <li><strong>価格計算の切り出し:</strong> 複雑化しやすい価格・税金計算を<code>PriceCalc</code>クラスに集約し、保守性を向上。</li>
-                <li><strong>画像アップロード管理:</strong> <code>UploadFileService</code>により、商品画像の安全なアップロードと紐付けを実現。</li>
-            </ul>
+            <div class="section-header">
+                <h2>設計のポイント</h2>
+                <p class="section-desc">標準的なMVC構造に加え、独自の工夫が随所に施されています。</p>
+            </div>
+            <div class="features-list">
+                <div class="feature-card">
+                    <h3>EntityとBeanの分離</h3>
+                    <p>データベースモデル(Entity)とビューモデル(Bean)を分離し、<code>BeanTools</code>で柔軟に変換。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>価格計算の切り出し</h3>
+                    <p>複雑化しやすい価格・税金計算を<code>PriceCalc</code>クラスに集約し、保守性を向上。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>画像アップロード管理</h3>
+                    <p><code>UploadFileService</code>により、商品画像の安全なアップロードと紐付けを実現。</p>
+                </div>
+            </div>
         </section>
 
+        <!-- Authority Matrix Section -->
         <section id="authority">
-            <h2>権限と機能マトリクス</h2>
-            <p>3種類の権限ごとにアクセスできる機能が異なります。</p>
+            <div class="section-header">
+                <h2>権限と機能マトリクス</h2>
+                <p class="section-desc">3種類の権限ごとにアクセスできる機能が異なります。</p>
+            </div>
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th style="text-align: left;">機能 \ 権限</th>
+                            <th>機能 \ 権限</th>
                             <th>システム管理者 (0)</th>
                             <th>管理者 (1)</th>
                             <th>一般会員 (2)</th>
@@ -387,49 +661,49 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="text-align: left; font-weight: 500;">商品の閲覧・検索</td>
+                            <td>商品の閲覧・検索</td>
                             <td class="check-yes">○</td>
                             <td class="check-yes">○</td>
                             <td class="check-yes">○</td>
                             <td class="check-yes">○</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; font-weight: 500;">お気に入り・レビュー投稿</td>
+                            <td>お気に入り・レビュー投稿</td>
                             <td class="check-no">×</td>
                             <td class="check-no">×</td>
                             <td class="check-yes">○</td>
                             <td class="check-no">×</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; font-weight: 500;">カート利用・クーポン・注文</td>
+                            <td>カート利用・クーポン・注文</td>
                             <td class="check-no">×</td>
                             <td class="check-no">×</td>
                             <td class="check-yes">○</td>
                             <td class="check-no">×</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; font-weight: 500;">マイページ・注文履歴</td>
+                            <td>マイページ・注文履歴</td>
                             <td class="check-no">×</td>
                             <td class="check-no">×</td>
                             <td class="check-yes">○</td>
                             <td class="check-no">×</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; font-weight: 500;">商品・カテゴリ管理</td>
+                            <td>商品・カテゴリ管理</td>
                             <td class="check-yes">○</td>
                             <td class="check-yes">○</td>
                             <td class="check-no">×</td>
                             <td class="check-no">×</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; font-weight: 500;">会員情報の管理 (全ユーザー)</td>
+                            <td>会員情報の管理 (全ユーザー)</td>
                             <td class="check-yes">○</td>
                             <td class="check-yes">○</td>
                             <td class="check-no">×</td>
                             <td class="check-no">×</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; font-weight: 500;">管理者の追加・権限変更</td>
+                            <td>管理者の追加・権限変更</td>
                             <td class="check-yes">○</td>
                             <td class="check-no">×</td>
                             <td class="check-no">×</td>
