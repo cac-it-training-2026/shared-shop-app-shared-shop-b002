@@ -10,14 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #3b82f6; /* Blue */
-            --primary-dark: #2563eb;
-            --secondary-color: #1e293b; /* Slate */
-            --bg-color: #f8fafc;
+            --primary-color: #eab308; /* Yellow */
+            --primary-dark: #ca8a04;
+            --secondary-color: #422006; /* Dark Brown/Warm */
+            --bg-color: #fefce8; /* Light Yellow background */
             --card-bg: #ffffff;
-            --text-main: #334155;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
+            --text-main: #422006;
+            --text-light: #713f12;
+            --border-color: #fef08a; /* Yellow-200 */
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -35,8 +35,8 @@
 
         /* Header */
         header {
-            background: linear-gradient(135deg, var(--secondary-color), #334155);
-            color: #fff;
+            background: linear-gradient(135deg, var(--secondary-color), #78350f);
+            color: #fef3c7; /* Light warm color for text */
             padding: 4rem 2rem;
             text-align: center;
             position: relative;
@@ -63,7 +63,7 @@
         header p {
             font-size: 1.2rem;
             margin-top: 1rem;
-            color: #cbd5e1;
+            color: #fde68a; /* Yellow-200 */
             position: relative;
             z-index: 1;
         }
@@ -162,7 +162,7 @@
         .screen-thumb {
             width: 100%;
             height: 200px;
-            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            background: linear-gradient(135deg, #fef9c3, #fef08a);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -176,8 +176,8 @@
             content: '🔍 拡大する';
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(59, 130, 246, 0.9);
-            color: white;
+            background: rgba(234, 179, 8, 0.9); /* Yellow primary with opacity */
+            color: #422006; /* Dark text for contrast against yellow */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -208,7 +208,7 @@
             border-bottom: 1px solid var(--border-color);
         }
         th {
-            background-color: #f8fafc;
+            background-color: #fefce8;
             color: var(--secondary-color);
             font-weight: 700;
         }
@@ -216,7 +216,7 @@
             border-bottom: none;
         }
         tbody tr:hover {
-            background-color: #f1f5f9;
+            background-color: #fef9c3; /* Yellow-100 */
         }
         .check-yes {
             color: #10b981;
@@ -232,7 +232,7 @@
             text-align: center;
             padding: 2rem;
             background-color: var(--secondary-color);
-            color: #94a3b8;
+            color: #fde68a;
             margin-top: 4rem;
         }
         footer p {
@@ -248,13 +248,13 @@
             margin-top: 1.5rem;
         }
         .tag {
-            background-color: #eff6ff;
+            background-color: #fef9c3;
             color: var(--primary-dark);
             padding: 0.5rem 1rem;
             border-radius: 9999px;
             font-size: 0.9rem;
             font-weight: 500;
-            border: 1px solid #bfdbfe;
+            border: 1px solid #fde047; /* Yellow-300 */
         }
     </style>
 </head>
