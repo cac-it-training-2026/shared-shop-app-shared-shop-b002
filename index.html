@@ -352,17 +352,20 @@
         }
 
         .screen-thumb {
-            width: 100%;
+           width: 100%;
             height: 200px;
-            background: linear-gradient(135deg, var(--bg-mac), var(--border-color));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.2rem;
+            background: #ffffff; /* グレーのグラデーションから白背景に変更 */
+            overflow: hidden;    /* 枠からはみ出た画像をカット */
             position: relative;
             border-bottom: 1px solid var(--border-color);
+        }
+        
+        .screen-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;     /* 縦横比を維持したまま枠いっぱいに表示 */
+            object-position: top;  /* 画像の上側（ヘッダー部分）を優先して見せる */
+            display: block;
         }
 
         .screen-card-content {
@@ -496,19 +499,18 @@
     <div class="container">
         <!-- Hero Section based on the image -->
         <div class="hero">
-            <div class="hero-content">
-                <div class="hero-subtitle">SPRING BOOT ・ JAVA ・ THYMELEAF</div>
-                <h1>Shared<br><span>Shop</span><br>Application</h1>
-                <p>ECサイトの基本機能をひと通り実装した学習用Webアプリ。<br>会員管理・商品管理・買い物かご・注文フローを備えた、Spring Boot 製のフルスタックサンプルリポジトリです。</p>
-                <div class="hero-buttons">
-                    <a href="#features" class="btn btn-primary">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                        リポジトリを見る
-                    </a>
-                    <a href="#screens" class="btn btn-secondary">画面を確認する</a>
-                </div>
-            </div>
-
+           <div class="hero-content">
+    <div class="hero-subtitle">SPRING BOOT ・ JAVA ・ THYMELEAF</div>
+    <h1>Shared<br><span>Shop</span><br>Application</h1>
+    <p>フロントからバックエンドまで一気通貫で実装した、Spring BootのフルスタックECアプリ。会員・商品の基本CRUDに加え、お気に入り・レビュー投稿やアカウントロックなど、より実務に近い応用機能まで実装しています。</p>
+    <div class="hero-buttons">
+        <a href="https://github.com/cac-it-training-2026/shared-shop-app-shared-shop-b002" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; vertical-align: middle;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+            リポジトリを見る
+        </a>
+        <a href="#screens" class="btn btn-secondary">画面を確認する</a>
+    </div>
+</div>
             <div class="hero-visual">
                 <div class="mac-window">
                     <div class="mac-header">
@@ -583,22 +585,48 @@
                 <p class="section-desc">各機能の実際の画面構成です。</p>
             </div>
             <div class="screens-grid">
+				<div class="screen-card">
+    			<div class="screen-thumb">
+        		<img src="shared_shop/images/login.png" alt="商品一覧画面" class="screen-img">
+    		</div>
+    		<div class="screen-card-content">
+        		<h3>ログイン画面</h3>
+        		<p>ログインするユーザーによって表示画面が変わります。</p>
+    		</div>
+		</div>
                 <div class="screen-card">
-                    <div class="screen-thumb">商品一覧画面</div>
-                    <div class="screen-card-content">
-                        <h3>商品一覧</h3>
-                        <p>トップページおよびカテゴリごとの商品を表示します。</p>
-                    </div>
-                </div>
+    			<div class="screen-thumb">
+        		<img src="shared_shop/images/itiran.png" alt="商品一覧画面" class="screen-img">
+    		</div>
+    		<div class="screen-card-content">
+        		<h3>商品一覧</h3>
+        		<p>トップページおよびカテゴリごとの商品を表示します。</p>
+    		</div>
+		</div>
                 <div class="screen-card">
-                    <div class="screen-thumb">カート画面</div>
-                    <div class="screen-card-content">
+                    <div class="screen-thumb">
+                    <img src="shared_shop/images/kaimono.png" alt="商品一覧画面" class="screen-img">
+                     </div>
+                        <div class="screen-card-content">
                         <h3>ショッピングカート</h3>
                         <p>選択した商品の確認と合計金額を計算します。</p>
-                    </div>
+                   
+                </div>
                 </div>
                 <div class="screen-card">
-                    <div class="screen-thumb">管理者画面</div>
+                    <div class="screen-thumb">
+                    <img src="shared_shop/images/naiyou.png" alt="商品一覧画面" class="screen-img">
+                     </div>
+                        <div class="screen-card-content">
+                        <h3>注文確認</h3>
+                        <p>お届け先やお支払方法の最後の確認を行います。</p>
+                   
+                </div>
+                </div>
+                <div class="screen-card">
+                    <div class="screen-thumb">
+						<img src="shared_shop/images/kanri.png" alt="商品一覧画面" class="screen-img">
+                     </div>
                     <div class="screen-card-content">
                         <h3>管理者ダッシュボード</h3>
                         <p>会員や商品の情報を一元管理します。</p>
@@ -650,79 +678,101 @@
         <section id="authority">
             <div class="section-header">
                 <h2>権限と機能マトリクス</h2>
-                <p class="section-desc">3種類の権限ごとにアクセスできる機能が異なります。</p>
+                <p class="section-desc">4種類の権限ごとにアクセスできる機能が異なります。</p>
             </div>
             <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>機能 \ 権限</th>
-                            <th>システム管理者 (0)</th>
-                            <th>管理者 (1)</th>
-                            <th>一般会員 (2)</th>
-                            <th>非会員 (未ログイン)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>商品の閲覧・検索</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-yes">○</td>
-                        </tr>
-                        <tr>
-                            <td>お気に入り・レビュー投稿</td>
-                            <td class="check-no">×</td>
-                            <td class="check-no">×</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-no">×</td>
-                        </tr>
-                        <tr>
-                            <td>カート利用・クーポン・注文</td>
-                            <td class="check-no">×</td>
-                            <td class="check-no">×</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-no">×</td>
-                        </tr>
-                        <tr>
-                            <td>マイページ・注文履歴</td>
-                            <td class="check-no">×</td>
-                            <td class="check-no">×</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-no">×</td>
-                        </tr>
-                        <tr>
-                            <td>商品・カテゴリ管理</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-no">×</td>
-                            <td class="check-no">×</td>
-                        </tr>
-                        <tr>
-                            <td>会員情報の管理 (全ユーザー)</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-no">×</td>
-                            <td class="check-no">×</td>
-                        </tr>
-                        <tr>
-                            <td>管理者の追加・権限変更</td>
-                            <td class="check-yes">○</td>
-                            <td class="check-no">×</td>
-                            <td class="check-no">×</td>
-                            <td class="check-no">×</td>
-                        </tr>
-                    </tbody>
-                </table>
+               <table>
+    <thead>
+        <tr>
+            <th>機能 \ 権限</th>
+            <th>システム管理者</th>
+            <th>運用管理者</th>
+            <th>一般会員</th>
+            <th>非会員</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>商品の閲覧・検索</td>
+            <td class="check-yes">○</td>
+            <td class="check-yes">○</td>
+            <td class="check-yes">○</td>
+            <td class="check-yes">○</td>
+        </tr>
+        <tr>
+            <td>お気に入り・レビュー投稿</td>
+            <td class="check-no">×</td>
+            <td class="check-no">×</td>
+            <td class="check-yes">○</td>
+            <td class="check-no">×</td>
+        </tr>
+        <tr>
+            <td>カート利用・クーポン・注文</td>
+            <td class="check-no">×</td>
+            <td class="check-no">×</td>
+            <td class="check-yes">○</td>
+            <td class="check-no">×</td>
+        </tr>
+        <tr>
+            <td>マイページ・注文履歴</td>
+            <td class="check-no">×</td>
+            <td class="check-no">×</td>
+            <td class="check-yes">○</td>
+            <td class="check-no">×</td>
+        </tr>
+        <tr>
+            <td>商品・カテゴリ管理</td>
+            <td class="check-no">×</td>
+            <td class="check-yes">○</td>
+            <td class="check-no">×</td>
+            <td class="check-no">×</td>
+        </tr>
+        <tr>
+            <td>会員情報の管理 (全ユーザー)</td>
+            <td class="check-yes">○</td>
+            <td class="check-yes">○</td>
+            <td class="check-no">×</td>
+            <td class="check-no">×</td>
+        </tr>
+       
+    </tbody>
+</table>
             </div>
         </section>
 
     </div>
 
     <footer>
-        <p>&copy; 2023 Shared Shop Project. All rights reserved.</p>
+        <p>sShop — shared-shop sample repository · Built with Spring Boot & Thymeleaf</p>
     </footer>
+    
+    <div id="imageModal" style="display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); align-items: center; justify-content: center; cursor: zoom-out;">
+        <img id="modalImg" src="" alt="拡大画像" style="max-width: 90%; max-height: 90%; object-fit: contain; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border-radius: 4px;">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
+
+            // class="screen-img" がついた画像をすべて対象にする
+            document.querySelectorAll('.screen-img').forEach(img => {
+                // 画像にマウスが乗ったとき、虫眼鏡カーソルにする
+                img.style.cursor = 'zoom-in';
+                
+                // クリックされたら拡大画面を開く
+                img.addEventListener('click', () => {
+                    modalImg.src = img.src;
+                    modal.style.display = 'flex';
+                });
+            });
+
+            // 拡大画面がクリックされたら閉じる
+            modal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+        });
+    </script>
 
 </body>
 </html>
