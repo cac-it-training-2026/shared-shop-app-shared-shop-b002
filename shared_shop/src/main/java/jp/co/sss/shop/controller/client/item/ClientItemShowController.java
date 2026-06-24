@@ -12,12 +12,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.sss.shop.bean.ItemBean;
+import jp.co.sss.shop.bean.ReviewBean;
 import jp.co.sss.shop.entity.Category;
 import jp.co.sss.shop.entity.Item;
+import java.time.LocalDate;
+
 import jp.co.sss.shop.repository.CategoryRepository;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.OrderItemRepository;
+import jp.co.sss.shop.entity.Review;
+import jp.co.sss.shop.repository.ReviewRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.util.Constant;
+import jp.co.sss.shop.util.PriceCalc;
 
 /**
  * 商品管理 一覧表示機能(一般会員用)のコントローラクラス
@@ -50,6 +57,17 @@ public class ClientItemShowController {
 	@Autowired
 	CategoryRepository categoryRepository;
 
+	/**
+	 * 注文商品情報
+	 */
+	@Autowired
+	OrderItemRepository orderItemRepository;
+	/**
+	 * レビューリポジトリ
+	 */
+	@Autowired
+	ReviewRepository reviewRepository;
+
 	@ModelAttribute("categories")
 	public List<Category> getCategories() {
 		List<Category> list = categoryRepository.findByDeleteFlagOrderByInsertDateDescIdDesc(Constant.NOT_DELETED);
@@ -74,6 +92,9 @@ public class ClientItemShowController {
 
 		// エンティティ内の検索結果をJavaBeansにコピー
 		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
+
+		// ダイナミックプライシングの計算
+		PriceCalc.setDynamicPriceInfoList(itemList, itemBeanList, orderItemRepository);
 
 		// 商品情報をViewへ渡す
 		model.addAttribute("items", itemBeanList);
@@ -119,6 +140,10 @@ public class ClientItemShowController {
 
 		// JavaBeansへのコピーと画面への引き渡し
 		List<ItemBean> itemBeanList = beanTools.copyEntityListToItemBeanList(itemList);
+
+		// ダイナミックプライシングの計算
+		PriceCalc.setDynamicPriceInfoList(itemList, itemBeanList, orderItemRepository);
+
 		model.addAttribute("items", itemBeanList);
 		model.addAttribute("sortType", sortType);
 
@@ -147,8 +172,28 @@ public class ClientItemShowController {
 		// Itemエンティティの各フィールドの値をItemBeanにコピー
 		ItemBean itemBean = beanTools.copyEntityToItemBean(item);
 
+		// ダイナミックプライシングの計算
+		java.sql.Date date = java.sql.Date.valueOf(LocalDate.now().minusDays(30));
+		Long itemsSold = orderItemRepository.countQuantityByItemIdAndOrderInsertDateAfter(item.getId(), date);
+		PriceCalc.setDynamicPriceInfo(item, itemBean, itemsSold != null ? itemsSold : 0L);
+
 		// 商品情報をViewへ渡す
 		model.addAttribute("item", itemBean);
+
+		// レビュー情報の取得
+		List<Review> reviewList = reviewRepository.findByItemIdOrderByInsertDateDesc(id);
+		List<ReviewBean> reviewBeanList = beanTools.copyEntityListToReviewBeanList(reviewList);
+		model.addAttribute("reviews", reviewBeanList);
+
+		// 平均評価の算出
+		Double averageRating = 0.0;
+		String averageStar = "☆☆☆☆☆";
+		if (!reviewList.isEmpty()) {
+			averageRating = reviewList.stream().mapToInt(Review::getRating).average().orElse(0.0);
+			averageStar = beanTools.convertRatingToStar((int) Math.round(averageRating));
+		}
+		model.addAttribute("averageRating", averageRating);
+		model.addAttribute("averageStar", averageStar);
 
 		return "client/item/detail";
 	}

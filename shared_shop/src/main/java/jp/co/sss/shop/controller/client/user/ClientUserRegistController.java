@@ -15,6 +15,7 @@ import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.util.Constant;
 
 /**
  * 会員登録機能を制御するコントローラー
@@ -45,6 +46,22 @@ public class ClientUserRegistController {
 	public String inputInit() {
 		// 入力フォーム情報を新規生成
 		UserForm form = new UserForm();
+		form.setReRegist(false);
+		// 入力フォーム情報をセッションスコープに保存
+		session.setAttribute("userForm", form);
+		// 登録入力画面表示処理にリダイレクト
+		return "redirect:/client/user/regist/input";
+	}
+
+	/**
+	 * 会員再登録用初期化処理
+	 * @return 登録入力画面のHTMLパス("redirect:/client/user/regist/input")
+	 */
+	@RequestMapping(path = "/client/user/reRegist/input/init", method = RequestMethod.GET)
+	public String reRegistInputInit() {
+		// 入力フォーム情報を新規生成
+		UserForm form = new UserForm();
+		form.setReRegist(true);
 		// 入力フォーム情報をセッションスコープに保存
 		session.setAttribute("userForm", form);
 		// 登録入力画面表示処理にリダイレクト
@@ -148,16 +165,23 @@ public class ClientUserRegistController {
 		// セッションスコープから入力フォーム情報を取得
 		UserForm form = (UserForm) session.getAttribute("userForm");
 
-		// 入力フォーム情報を元にDB登録用エンティティオブジェクトを生成
-		User user = new User();
-		user.setId(form.getId()); // フォームの値をエンティティに移す
+		// メールアドレスに該当する会員情報を取得
+		User user = repository.findByEmail(form.getEmail());
+
+		if (user == null) {
+			// 新規会員の場合
+			user = new User();
+		}
+
+		// 入力フォーム情報をエンティティに移す
 		user.setEmail(form.getEmail());
 		user.setPassword(form.getPassword());
 		user.setName(form.getName());
 		user.setPostalCode(form.getPostalCode());
 		user.setAddress(form.getAddress());
 		user.setPhoneNumber(form.getPhoneNumber());
-		user.setAuthority(2);// DB登録
+		user.setAuthority(Constant.AUTH_CLIENT);
+		user.setDeleteFlag(Constant.NOT_DELETED);
 
 		repository.save(user); // リポジトリを使って保存
 
@@ -165,8 +189,11 @@ public class ClientUserRegistController {
 		UserBean userBean = new UserBean();
 		BeanUtils.copyProperties(user, userBean);
 
+		boolean reRegist = form.isReRegist();
+
 		// セッションスコープの入力フォーム情報削除
 		session.removeAttribute("userForm");
+		session.setAttribute("reRegist", reRegist);
 
 		// 未ログインでの会員登録の場合、セッションに会員（ログイン情報）をセット
 		session.setAttribute("user", userBean);
@@ -180,7 +207,11 @@ public class ClientUserRegistController {
 	 * @return 登録完了画面のHTMLパス("client/user/regist_complete")
 	 */
 	@RequestMapping(path = "/client/user/regist/complete", method = RequestMethod.GET)
-	public String completeGet() {
+	public String completeGet(Model model) {
+		Boolean reRegist = (Boolean) session.getAttribute("reRegist");
+		model.addAttribute("reRegist", reRegist != null && reRegist);
+		session.removeAttribute("reRegist");
+
 		// 登録完了画面表示
 		return "client/user/regist_complete";
 	}

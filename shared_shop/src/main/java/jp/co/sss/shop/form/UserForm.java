@@ -73,7 +73,16 @@ public class UserForm implements Serializable {
 	 */
 	private Integer authority;
 
-	
+	/**
+	 * 再登録フラグ
+	 */
+	private boolean reRegist;
+
+	/**
+	 * ロック状態
+	 */
+	private Integer isLocked;
+
 	/**
 	 * 会員IDの取得
 	 * @return 会員ID
@@ -201,5 +210,36 @@ public class UserForm implements Serializable {
 		this.authority = authority;
 	}
 
+	/**
+	 * 再登録フラグの取得
+	 * @return 再登録フラグ
+	 */
+	public boolean isReRegist() {
+		return reRegist;
+	}
+
+	/**
+	 * 再登録フラグのセット
+	 * @param reRegist 再登録フラグ
+	 */
+	public void setReRegist(boolean reRegist) {
+		this.reRegist = reRegist;
+	}
+
+	/**
+	 * ロック状態の取得
+	 * @return ロック状態
+	 */
+	public Integer getIsLocked() {
+		return isLocked;
+	}
+
+	/**
+	 * ロック状態のセット
+	 * @param isLocked ロック状態
+	 */
+	public void setIsLocked(Integer isLocked) {
+		this.isLocked = isLocked;
+	}
 
 }

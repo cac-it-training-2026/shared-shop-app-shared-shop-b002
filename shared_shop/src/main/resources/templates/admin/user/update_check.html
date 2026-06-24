@@ -37,6 +37,13 @@
 				<span class="input_value" th:text="*{phoneNumber}"></span>
 			</li>
 			<li>
+				<span class="input_title">[[#{data.isLocked}]]</span>
+				<th:block th:switch="*{isLocked}">
+					<span class="input_value" th:case="0">[[#{data.unlocked.str}]]</span>
+					<span class="input_value" th:case="1">[[#{data.locked.str}]]</span>
+				</th:block>
+			</li>
+			<li>
 				<span class="input_title">[[#{data.authority}]]</span>
 				<th:block th:switch="*{authority}">
 					<span class="input_value" th:case="0">[[#{auth.system.str}]]</span>

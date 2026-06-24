@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{common/layout_5block :: layout(~{::title},~{::body/content()})}">
+
+<head>
+	<title th:text="'クーポン一覧 | '+ #{shop.title}"> </title>
+	<meta charset="UTF-8" />
+</head>
+
+<body class="user coupon_list">
+	<h2 th:class="title">お得なクーポン一覧</h2>
+	<p th:class="input_message">現在利用可能なクーポンです。カート画面でコードを入力してご利用ください。</p>
+
+	<div th:if="${coupons == null or coupons.isEmpty()}">
+		<p>現在利用可能なクーポンはありません。</p>
+	</div>
+
+	<th:block th:if="${coupons != null and !coupons.isEmpty()}">
+		<table class="list_table">
+			<tr>
+				<th>クーポン名</th>
+				<th>クーポンコード</th>
+				<th>割引内容</th>
+				<th>有効期限</th>
+			</tr>
+			<tr th:each="coupon : ${coupons}">
+				<td th:text="${coupon.couponName}"></td>
+				<td th:text="${coupon.couponCode}" style="font-weight: bold; color: #d32f2f;"></td>
+				<td>
+					<span th:if="${coupon.discountType == 'FIXED'}" th:text="${coupon.discountValue} + '円引き'"></span>
+					<span th:if="${coupon.discountType == 'PERCENT'}" th:text="${coupon.discountValue} + '%引き'"></span>
+				</td>
+				<td>
+					<span th:if="${coupon.startDate != null}" th:text="${#dates.format(coupon.startDate, 'yyyy/MM/dd')}"></span>
+					〜
+					<span th:if="${coupon.endDate != null}" th:text="${#dates.format(coupon.endDate, 'yyyy/MM/dd')}"></span>
+				</td>
+			</tr>
+		</table>
+	</th:block>
+
+	<p class="complete_link"><a th:href="@{/}" th:text="#{msg.back.to.top}"></a></p>
+</body>
+
+</html>
